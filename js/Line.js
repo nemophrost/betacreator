@@ -50,14 +50,17 @@ bc.model.Line.prototype.updateBoundingBox = function() {
 }
 
 /**
- * @type {CanvasRenderingContext2d} ctx
+ * @param {CanvasRenderingContext2d} ctx
+ * @param {string=} color
+ * @param {number=} lineWidth
+ * 
  * @private
  */
-bc.model.Line.prototype.draw = function(ctx) {
+bc.model.Line.prototype._draw = function(ctx, color, lineWidth) {
 	var me = this;
 	
-	ctx.strokeStyle = this.color;
-	ctx.lineWidth = this.lineWidth;
+	ctx.strokeStyle = color || this.color;
+	ctx.lineWidth = lineWidth || this.lineWidth;
 	
 	if (this.isDashed)
 		ctx = new bc.render.DashedLine(ctx, this.onLength, this.offLength);
@@ -107,6 +110,31 @@ bc.model.Line.prototype.draw = function(ctx) {
 }
 
 /**
+ * @param {CanvasRenderingContext2d} ctx
+ * @param {boolean=} selected
+ * 
+ * @private
+ */
+bc.model.Line.prototype.draw = function(ctx, selected) {
+	ctx.save();
+	ctx.lineCap = 'round';
+	
+	if (selected) {
+		ctx.save();
+		this._draw(ctx, 'palegoldenrod', this.lineWidth + 10);
+		ctx.restore();
+	}
+	else {
+		ctx.save();
+		this._draw(ctx, '#ffffff', this.lineWidth + 2);
+		ctx.restore();
+	}
+
+	this._draw(ctx, selected);
+	ctx.restore();
+}
+
+/**
  * @param {number=) pageScale
  * @private
  */
@@ -114,8 +142,8 @@ bc.model.Line.prototype.updateLocation = function(scale) {
 	scale = scale || 1;
 	
 	this.canvas.css({
-		'left': Math.round(scale*(this.offset.x) - this.padding) + 'px',
-		'top': Math.round(scale*(this.offset.y) - this.padding) + 'px'
+		'left': Math.round(scale*(this.offset.x + this.bb.x) - this.padding) + 'px',
+		'top': Math.round(scale*(this.offset.y + this.bb.y) - this.padding) + 'px'
 	});
 }
 
@@ -205,14 +233,16 @@ bc.model.Line.prototype.applyOffset = function() {
 
 /**
  * @param {number=) scale
+ * @param {boolean=} selected
  * 
  * @return {boolean}
  */
-bc.model.Line.prototype.render = function(scale) {
+bc.model.Line.prototype.render = function(scale, selected) {
 	scale = scale || 1;
 
 	var drawProperties = this.serializeParams();
 	drawProperties.scale = scale;
+	drawProperties.selected = !!selected;
 	
 	var locationProperties = {
 		dx: this.offset.x,
@@ -237,10 +267,10 @@ bc.model.Line.prototype.render = function(scale) {
 		ctx.clearRect(0, 0, canvasWidth, canvasHeight);
 		
 		ctx.save();
-		ctx.translate(this.padding, this.padding);
+		ctx.translate(this.padding - Math.round(scale*this.bb.x), this.padding - Math.round(scale*this.bb.y));
 		ctx.scale(scale, scale);
 		
-		this.draw(ctx);
+		this.draw(ctx, selected);
 		
 		ctx.restore();
 	}
