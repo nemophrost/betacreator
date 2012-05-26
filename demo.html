@@ -7,7 +7,7 @@
 
 <script type="text/javascript" src="js/jquery/jquery.min.js"></script>
 
-<script type="text/javascript" src="js/closure/base.js"></script>
+<script type="text/javascript" src="js/closure/closure/goog/base.js"></script>
 <script type="text/javascript" src="js/util.js"></script>
 <script type="text/javascript" src="js/math.js"></script>
 <script type="text/javascript" src="js/DashedLine.js"></script>
@@ -45,7 +45,7 @@ function init() {
 	
 	$(document).mousemove(function(e) {
 		var hit = line.hitTest(e.clientX, e.clientY);
-		$('body').css('background-color', hit ? 'palegoldenrod' : '#fff');
+		$('body').css('background-color', hit ? 'palegoldenrod' : '#556688');
 //		console.log(hit ? 'HIT' : 'NO HIT');
 	});
 }
@@ -53,6 +53,6 @@ function init() {
 </script>
 </head>
 
-<body onLoad="init()">
+<body onLoad="init()" style="background-color: #556688;">
 </body>
 </html>
