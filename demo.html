@@ -8,51 +8,20 @@
 <script type="text/javascript" src="js/jquery/jquery.min.js"></script>
 
 <script type="text/javascript" src="js/closure/closure/goog/base.js"></script>
-<script type="text/javascript" src="js/util.js"></script>
-<script type="text/javascript" src="js/math.js"></script>
-<script type="text/javascript" src="js/DashedLine.js"></script>
-<script type="text/javascript" src="js/Stamp.js"></script>
-<script type="text/javascript" src="js/Line.js"></script>
-
-<!--<script type="text/javascript" src="deps.js"></script>
+<script type="text/javascript" src="js/bin/deps.js"></script>
 <script>
-goog.require("bc");
-</script>-->
+goog.require("bc.Client");
+</script>
 
 <script type="text/javascript">
 
 function init() {
-	var anchor = new bc.model.Anchor();
-	anchor.canvas.appendTo('body');
-	anchor.x = 300;
-	anchor.y = 200;
-	anchor.render();
-	
-	var line = new bc.model.Line({
-		isDashed: true,
-		curved: true,
-		color: '#003399'
-	});
-	line.canvas.appendTo('body');
-	line.controlPoints = [
-		new bc.math.Point(10,10),
-		new bc.math.Point(100,100),
-		new bc.math.Point(50,200),
-		new bc.math.Point(200,300),
-		new bc.math.Point(100,350)
-	];
-	line.render();
-	
-	$(document).mousemove(function(e) {
-		var hit = line.hitTest(e.clientX, e.clientY);
-		$('body').css('background-color', hit ? 'palegoldenrod' : '#556688');
-//		console.log(hit ? 'HIT' : 'NO HIT');
-	});
+	new bc.Client();
 }
 
 </script>
 </head>
 
-<body onLoad="init()" style="background-color: #556688;">
+<body onLoad="init()">
 </body>
 </html>
