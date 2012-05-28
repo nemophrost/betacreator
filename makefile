@@ -69,6 +69,7 @@ compilejs = $(CLOSUREBUILDER)                                                   
             -f "--js=js/bin/deps.js"                                                 \
             -f "--create_source_map=js/bin/$(1)-source-map"                          \
             -f "--variable_map_output_file=js/bin/$(1)-var-map"                      \
+            -f "--output_wrapper=\"(function() {%output%})();\""                     \
             --output_file=$(3);
 
 
@@ -96,4 +97,6 @@ clean-js:
 	      app/webroot/js/closure/bin/betacreator-var-map
 
 js/bin/betacreator.js: js/bin/deps.js
-	$(call compilejs,betacreator,js/betacreator/Client.js,$@)
+	$(call compilejs,betacreator,js/betacreator/Client.js,$@.tmp)
+	cat tools/COPYRIGHT $@.tmp > $@
+	rm $@.tmp
