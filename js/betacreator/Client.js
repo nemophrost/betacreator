@@ -15,8 +15,8 @@
  */
 goog.provide('bc.Client');
 
-goog.require('bc.model.Line');
-goog.require('bc.model.Anchor');
+goog.require('bc.view.Line');
+goog.require('bc.view.stamp.Anchor');
 
 /**
  * @param {Image} image
@@ -25,29 +25,33 @@ goog.require('bc.model.Anchor');
  * @constructor
  */
 bc.Client = function(image, params) {
-	var anchor = new bc.model.Anchor();
-	anchor.canvas.appendTo('body');
-	anchor.x = 300;
-	anchor.y = 200;
-	anchor.render();
+	var anchorModel = new bc.model.stamp.Anchor({
+		x: 300,
+		y: 200
+	});
 	
-	var line = new bc.model.Line({
+	var anchorView = new bc.view.stamp.Anchor(anchorModel);
+	anchorView.canvas.appendTo('body');
+	anchorView.render();
+	
+	var lineModel = new bc.model.Line({
 		isDashed: true,
 		curved: true,
 		color: '#003399'
 	});
-	line.canvas.appendTo('body');
-	line.controlPoints = [
+	lineModel.controlPoints = [
 		new bc.math.Point(10,10),
 		new bc.math.Point(100,100),
 		new bc.math.Point(50,200),
 		new bc.math.Point(200,300),
 		new bc.math.Point(100,350)
 	];
-	line.render();
+	var lineView = new bc.view.Line(lineModel);
+	lineView.canvas.appendTo('body');
+	lineView.render();
 	
 	$(document).mousemove(function(e) {
-		var hit = line.hitTest(e.clientX, e.clientY);
+		var hit = lineModel.hitTest(e.clientX, e.clientY);
 		$('body').css('background-color', hit ? 'palegoldenrod' : '#556688');
 //		console.log(hit ? 'HIT' : 'NO HIT');
 	});

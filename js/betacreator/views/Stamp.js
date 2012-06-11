@@ -14,108 +14,71 @@
  *  limitations under the License.
  */
 
-goog.provide('bc.model.Stamp');
+goog.provide('bc.view.Stamp');
+
+goog.require('bc.model.Stamp');
+goog.require('bc.object');
 
 /**
- * @param {Object=} params
+ * @param {bc.model.Stamp} model
  * @constructor
  */
-bc.model.Stamp = function(params) {
-	params = params || {};
-	
-	this.type = null;
-    this.scale = params.scale || 1;
-    this.color = params.color || '#ffff00';
-    this.alpha = params.alpha || 1;
-    this.x = params.x || 0;
-    this.y = params.y || 0;
-    this.w = params.w || 20;
-    this.h = params.h || 20;
-	
+bc.view.Stamp = function(model) {
+	this.model = model;
 	this.padding = 10;
 	
-	this.canvas = $('<canvas width="' + (this.w + 2*this.padding) + '" + height="' + (this.h + 2*this.padding) + '"></canvas>')
-		.css({ 'position': 'absolute' });
-}
-
-/**
- * @param {Object} params
- * @return {Object}
- */
-bc.model.Stamp.parseParams = function(params) {
-	params = params || {};
+	/** @type {?Object} */
+	this.drawProperties = null;
+	/** @type {?Object} */
+	this.locationProperties = null;
 	
-	return {
-		type:	params['t'],
-		scale:	params['s'],
-		color:	params['c'],
-		alpha:	params['a'],
-		x:		params['x'],
-		y:		params['y'],
-		w:		params['w'],
-		h:		params['h']
-	};
-}
-
-/**
- * @return {Object}
- */
-bc.model.Stamp.prototype.serializeParams = function() {
-	return {
-		't': this.type,
-		's': this.scale,
-		'c': this.color,
-		'a': this.alpha,
-		'x': this.x,
-		'y': this.y,
-		'w': this.w,
-		'h': this.h
-	};
+	this.canvas = $('<canvas width="' + (this.model.w + 2*this.padding) + '" + height="' + (this.model.h + 2*this.padding) + '"></canvas>')
+		.css({ 'position': 'absolute' });
 }
 
 /**
  * @param {CanvasRenderingContext2D} ctx
  */
-bc.model.Stamp.prototype.draw = function(ctx) {}
+bc.view.Stamp.prototype.draw = function(ctx) {}
 
 /**
  * @param {number=} pageScale
  */
-bc.model.Stamp.prototype.updateLocation = function(pageScale) {
+bc.view.Stamp.prototype.updateLocation = function(pageScale) {
 	pageScale = pageScale || 1;
 	
-	var scale = pageScale*this.scale,
-		canvasWidth = Math.round(scale*this.w) + 2*this.padding,
-		canvasHeight = Math.round(scale*this.h) + 2*this.padding;
+	var scale = pageScale*this.model.scale,
+		canvasWidth = Math.round(scale*this.model.w) + 2*this.padding,
+		canvasHeight = Math.round(scale*this.model.h) + 2*this.padding;
 	
 	this.canvas.css({
-		'left': Math.round(pageScale*this.x - canvasWidth/2) + 'px',
-		'top': Math.round(pageScale*this.y - canvasHeight/2) + 'px'
+		'left': Math.round(pageScale*this.model.x - canvasWidth/2) + 'px',
+		'top': Math.round(pageScale*this.model.y - canvasHeight/2) + 'px'
 	});
 }
 
 /**
  * @param {number=} pageScale
  */
-bc.model.Stamp.prototype.render = function(pageScale) {
+bc.view.Stamp.prototype.render = function(pageScale) {
 	pageScale = pageScale || 1;
 	
 	// get total scale (individual scale of stamp times page scale)
-	var scale = pageScale*this.scale;
+	var scale = pageScale*this.model.scale;
 	
 	var drawProperties = {
-		w: this.w,
-		h: this.h,
-		color: this.color,
-		alpha: this.alpha,
+		w: this.model.w,
+		h: this.model.h,
+		color: this.model.color,
+		alpha: this.model.alpha,
 		scale: scale
 	};
 	
 	var locationProperties = {
-		x: this.x,
-		y: this.y,
-		w: this.w,
-		h: this.h,
+		x: this.model.x,
+		y: this.model.y,
+		w: this.model.w,
+		h: this.model.h,
 		scale: scale
 	}
 	
@@ -125,8 +88,8 @@ bc.model.Stamp.prototype.render = function(pageScale) {
 		this.drawProperties = drawProperties;
 		
 		var ctx = this.canvas.get(0).getContext('2d'),
-			canvasWidth = Math.round(scale*this.w) + 2*this.padding,
-			canvasHeight = Math.round(scale*this.h) + 2*this.padding;
+			canvasWidth = Math.round(scale*this.model.w) + 2*this.padding,
+			canvasHeight = Math.round(scale*this.model.h) + 2*this.padding;
 		
 		ctx.canvas.width = canvasWidth;
 		ctx.canvas.height = canvasHeight;
