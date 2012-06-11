@@ -22,15 +22,16 @@ goog.provide('bc.model.Stamp');
  */
 bc.model.Stamp = function(params) {
 	params = params || {};
-	
+
 	this.type = null;
-    this.scale = params.scale || 1;
-    this.color = params.color || '#ffff00';
-    this.alpha = params.alpha || 1;
-    this.x = params.x || 0;
-    this.y = params.y || 0;
-    this.w = params.w || 20;
-    this.h = params.h || 20;
+	this.scale = params.scale || 1;
+	this.color = params.color || '#ffff00';
+	this.alpha = params.alpha || 1;
+	this.lineWidth = params.lineWidth || 3;
+	this.x = params.x || 0;
+	this.y = params.y || 0;
+	this.w = params.w || 20;
+	this.h = params.h || 20;
 }
 
 /**

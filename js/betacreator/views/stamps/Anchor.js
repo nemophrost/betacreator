@@ -35,12 +35,12 @@ bc.view.stamp.Anchor = function(model) {
 goog.inherits(bc.view.stamp.Anchor, bc.view.Stamp);
 
 /**
- * @param {CanvasRenderingContext2D} ctx
+ * @inheritDoc
  */
-bc.view.stamp.Anchor.prototype.draw = function(ctx) {
-   	ctx.fillStyle = '#ffffff';
-   	ctx.strokeStyle = this.model.color;
-    ctx.lineWidth = 3;
+bc.view.stamp.Anchor.prototype.draw = function(ctx, color, lineWidth) {
+//	ctx.fillStyle = '#ffffff';
+   	ctx.strokeStyle = color || this.model.color;
+    ctx.lineWidth = lineWidth || this.model.lineWidth;
     ctx.beginPath();
     ctx.moveTo(0,0);
     ctx.lineTo(this.model.w,this.model.h);

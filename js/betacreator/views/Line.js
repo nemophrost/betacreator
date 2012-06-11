@@ -20,6 +20,7 @@ goog.require('bc.model.Line');
 goog.require('bc.math');
 goog.require('bc.array');
 goog.require('bc.object');
+goog.require('bc.color');
 goog.require('bc.render.DashedLine');
 
 /**
@@ -119,7 +120,7 @@ bc.view.Line.prototype.draw = function(ctx, selected) {
 	}
 	else {
 		ctx.save();
-		this._draw(ctx, '#ffffff', this.model.lineWidth + 2);
+		this._draw(ctx, bc.color.highContrastWhiteOrBlack(this.model.color, .5), this.model.lineWidth + 2);
 		ctx.restore();
 	}
 

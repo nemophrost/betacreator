@@ -38,8 +38,10 @@ bc.view.Stamp = function(model) {
 
 /**
  * @param {CanvasRenderingContext2D} ctx
+ * @param {string=} color
+ * @param {number=} lineWidth
  */
-bc.view.Stamp.prototype.draw = function(ctx) {}
+bc.view.Stamp.prototype.draw = function(ctx, color, lineWidth) {}
 
 /**
  * @param {number=} pageScale
@@ -59,8 +61,9 @@ bc.view.Stamp.prototype.updateLocation = function(pageScale) {
 
 /**
  * @param {number=} pageScale
+ * @param {boolean=} selected
  */
-bc.view.Stamp.prototype.render = function(pageScale) {
+bc.view.Stamp.prototype.render = function(pageScale, selected) {
 	pageScale = pageScale || 1;
 	
 	// get total scale (individual scale of stamp times page scale)
@@ -71,7 +74,8 @@ bc.view.Stamp.prototype.render = function(pageScale) {
 		h: this.model.h,
 		color: this.model.color,
 		alpha: this.model.alpha,
-		scale: scale
+		scale: scale,
+		selected: selected
 	};
 	
 	var locationProperties = {
@@ -99,6 +103,18 @@ bc.view.Stamp.prototype.render = function(pageScale) {
 		ctx.save();
 		ctx.translate(this.padding, this.padding);
 		ctx.scale(scale, scale);
+		ctx.lineCap = 'round';
+		
+		if (selected) {
+			ctx.save();
+			this.draw(ctx, 'palegoldenrod', this.model.lineWidth + 10);
+			ctx.restore();
+		}
+		else {
+			ctx.save();
+			this.draw(ctx, bc.color.highContrastWhiteOrBlack(this.model.color, .5), this.model.lineWidth + 2);
+			ctx.restore();
+		}
 		
 		this.draw(ctx);
 		
