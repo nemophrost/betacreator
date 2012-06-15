@@ -20,6 +20,7 @@ goog.provide('bc.Client');
 goog.require('bc.GUI');
 goog.require('bc.model.Canvas');
 goog.require('goog.dom');
+goog.require('goog.style');
 goog.require('goog.events');
 goog.require('goog.pubsub.PubSub');
 
@@ -31,6 +32,8 @@ goog.require('goog.pubsub.PubSub');
  */
 bc.Client = function(sourceImg, params) {
 	var me = this;
+	
+	params = params || {};
 	
 	this.params = {
 		w: params['width'] || null, // null for auto
@@ -56,7 +59,12 @@ bc.Client.prototype.init = function(image) {
 	this.canvas = new bc.model.Canvas(image);
 	this.gui = new bc.GUI(this);
 	
-	this.gui.wrapper.style.display = (this.sourceImage.style.display == 'inherit' ? 'inline' : (this.sourceImage.style.display || 'inline'));
+	goog.style.setStyle(this.gui.wrapper, {
+		'position': 'relative',
+		'display': (this.sourceImage.style.display == 'inherit' ? 'inline-block' : (this.sourceImage.style.display || 'inline-block')),
+		'width': (this.params.w || image.width) + 'px',
+		'height': (this.params.h || image.height) + 'px'
+	});
 	goog.dom.replaceNode(this.gui.wrapper, this.sourceImage);
 	
 //	var anchorModel = new bc.model.stamp.Anchor({

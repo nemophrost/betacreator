@@ -27,22 +27,18 @@ bc.GUI = function(client) {
 	this.client = client;
 	
 	// create the wrapper
-	this.wrapper = goog.dom.createElement(goog.dom.TagName.DIV);
+	this.wrapper = goog.dom.createDom(goog.dom.TagName.DIV);
 	
 	// create the viewport
-	this.viewport = goog.dom.createElement(goog.dom.TagName.DIV);
+	this.viewport = goog.dom.createDom(goog.dom.TagName.DIV, 'fullsize');
 	goog.dom.appendChild(this.wrapper, this.viewport);
 	
 	// create the hit test div
-	this.hitTestDiv = goog.dom.createElement(goog.dom.TagName.DIV);
-	goog.dom.appendChild(this.wrapper, this.hitTestDiv);
-	
-	// create the hit test div
-	this.hitTestDiv = goog.dom.createElement(goog.dom.TagName.DIV);
+	this.hitTestDiv = goog.dom.createDom(goog.dom.TagName.DIV, 'fullsize');
 	goog.dom.appendChild(this.wrapper, this.hitTestDiv);
 	
 	// create the ui container div
-	this.uiContainer = goog.dom.createElement(goog.dom.TagName.DIV);
+	this.uiContainer = goog.dom.createDom(goog.dom.TagName.DIV, 'absolute');
 	goog.dom.appendChild(this.wrapper, this.uiContainer);
 	
 	// create the canvas view and add it to the viewport
@@ -61,6 +57,7 @@ bc.GUI.prototype.bindMouseListeners = function() {
 	
 	// mouse down
 	goog.events.listen(this.hitTestDiv, goog.events.EventType.MOUSEDOWN, function(e) {
+		alert('mousedown');
 		me.canvas.model.mouseDown(e);
 	});
 	

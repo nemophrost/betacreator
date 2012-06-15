@@ -98,7 +98,7 @@ bc.model.Line.prototype.getCurvePoints = function(sx, sy, cx, cy, x, y, pointDis
  * Apply the offset to all the control points
  * @private
  */
-bc.view.Line.prototype.applyOffset = function() {
+bc.model.Line.prototype.applyOffset = function() {
 	if (this.offset.x == 0 && this.offset.y == 0)
 		return;
 	

@@ -1,0 +1,15 @@
+.fullsize {
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	width: auto;
+	height: auto;
+}
+
+.absolute {
+	position: absolute;
+	width: 0;
+	height: 0;
+}
