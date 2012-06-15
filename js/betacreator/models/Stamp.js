@@ -16,14 +16,19 @@
 
 goog.provide('bc.model.Stamp');
 
+goog.require('bc.model.Item');
+goog.require('bc.uuid');
+
 /**
  * @param {Object=} params
  * @constructor
+ * @implements {bc.model.Item}
  */
 bc.model.Stamp = function(params) {
 	params = params || {};
 
 	this.type = null;
+	this.id = bc.uuid(params.id);
 	this.scale = params.scale || 1;
 	this.color = params.color || '#ffff00';
 	this.alpha = params.alpha || 1;

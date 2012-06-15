@@ -16,29 +16,33 @@
 
 goog.provide('bc.view.Line');
 
+goog.require('bc.view.Item');
 goog.require('bc.model.Line');
 goog.require('bc.math');
 goog.require('bc.array');
 goog.require('bc.object');
 goog.require('bc.color');
 goog.require('bc.render.DashedLine');
+goog.require('goog.dom');
 
 /**
  * @param {bc.model.Line} model
  * @constructor
+ * @implements {bc.view.Item}
  */
 bc.view.Line = function(model) {
 	this.model = model;
 	this.padding = 10;
-	this.offset = new bc.math.Point(0,0);
 	
 	/** @type {?Object} */
 	this.drawProperties = null;
 	/** @type {?Object} */
 	this.locationProperties = null;
 	
-	this.canvas = $('<canvas width="' + (2*this.padding) + '" + height="' + (2*this.padding) + '"></canvas>')
-		.css({ 'position': 'absolute' });
+	this.canvas = goog.dom.createElement('canvas');
+	this.canvas.width = 2*this.padding;
+	this.canvas.height = 2*this.padding;
+	this.canvas.style.position = 'absolute';
 }
 
 
@@ -135,10 +139,8 @@ bc.view.Line.prototype.draw = function(ctx, selected) {
 bc.view.Line.prototype.updateLocation = function(scale) {
 	scale = scale || 1;
 	
-	this.canvas.css({
-		'left': Math.round(scale*(this.offset.x + this.model.bb.x) - this.padding) + 'px',
-		'top': Math.round(scale*(this.offset.y + this.model.bb.y) - this.padding) + 'px'
-	});
+	this.canvas.style.left = Math.round(scale*(this.model.offset.x + this.model.bb.x) - this.padding) + 'px';
+	this.canvas.style.top = Math.round(scale*(this.model.offset.y + this.model.bb.y) - this.padding) + 'px';
 }
 
 
@@ -153,24 +155,6 @@ bc.view.Line.prototype.updateLocation = function(scale) {
 
 
 /**
- */
-bc.view.Line.prototype.applyOffset = function() {
-	if (this.offset.x == 0 && this.offset.y == 0)
-		return;
-	
-	var cp = [];
-	
-	bc.array.map(this.model.controlPoints, function(point) {
-		cp.push(new bc.math.Point(point.x + this.offset.x, point.y + this.offset.y));
-	});
-	
-	this.model.controlPoints = cp;
-	this.model.updatePoints();
-	this.offset.x = 0;
-	this.offset.y = 0;
-}
-
-/**
  * @param {number=} scale
  * @param {boolean=} selected
  */
@@ -182,8 +166,8 @@ bc.view.Line.prototype.render = function(scale, selected) {
 	drawProperties.selected = !!selected;
 	
 	var locationProperties = {
-		dx: this.offset.x,
-		dy: this.offset.y
+		dx: this.model.offset.x,
+		dy: this.model.offset.y
 	}
 	
 	// if something has changed since last rendering that will affect rendering, 
@@ -194,7 +178,7 @@ bc.view.Line.prototype.render = function(scale, selected) {
 		this.model.updateBoundingBox();
 		this.model.updatePoints();
 		
-		var ctx = this.canvas.get(0).getContext('2d'),
+		var ctx = this.canvas.getContext('2d'),
 			canvasWidth = Math.round(scale*this.model.bb.w) + 2*this.padding,
 			canvasHeight = Math.round(scale*this.model.bb.h) + 2*this.padding;
 		

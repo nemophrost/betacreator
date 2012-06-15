@@ -16,12 +16,15 @@
 
 goog.provide('bc.view.Stamp');
 
+goog.require('bc.view.Item');
 goog.require('bc.model.Stamp');
 goog.require('bc.object');
+goog.require('goog.dom');
 
 /**
  * @param {bc.model.Stamp} model
  * @constructor
+ * @implements {bc.view.Item}
  */
 bc.view.Stamp = function(model) {
 	this.model = model;
@@ -32,19 +35,23 @@ bc.view.Stamp = function(model) {
 	/** @type {?Object} */
 	this.locationProperties = null;
 	
-	this.canvas = $('<canvas width="' + (this.model.w + 2*this.padding) + '" + height="' + (this.model.h + 2*this.padding) + '"></canvas>')
-		.css({ 'position': 'absolute' });
+	this.canvas = goog.dom.createElement('canvas');
+	this.canvas.width = this.model.w + 2*this.padding;
+	this.canvas.height = this.model.h + 2*this.padding;
+	this.canvas.style.position = 'absolute';
 }
 
 /**
  * @param {CanvasRenderingContext2D} ctx
  * @param {string=} color
  * @param {number=} lineWidth
+ * @protected
  */
 bc.view.Stamp.prototype.draw = function(ctx, color, lineWidth) {}
 
 /**
  * @param {number=} pageScale
+ * @private
  */
 bc.view.Stamp.prototype.updateLocation = function(pageScale) {
 	pageScale = pageScale || 1;
@@ -53,11 +60,19 @@ bc.view.Stamp.prototype.updateLocation = function(pageScale) {
 		canvasWidth = Math.round(scale*this.model.w) + 2*this.padding,
 		canvasHeight = Math.round(scale*this.model.h) + 2*this.padding;
 	
-	this.canvas.css({
-		'left': Math.round(pageScale*this.model.x - canvasWidth/2) + 'px',
-		'top': Math.round(pageScale*this.model.y - canvasHeight/2) + 'px'
-	});
+	this.canvas.style.left = Math.round(pageScale*this.model.x - canvasWidth/2) + 'px';
+	this.canvas.style.top = Math.round(pageScale*this.model.y - canvasHeight/2) + 'px';
 }
+
+
+/*******************************************************************************
+ * 
+ * 
+ *                         PUBLIC METHODS
+ * 
+ * 
+ ******************************************************************************/
+
 
 /**
  * @param {number=} pageScale
@@ -91,7 +106,7 @@ bc.view.Stamp.prototype.render = function(pageScale, selected) {
 	if (!bc.object.areEqual(drawProperties, this.drawProperties)) {
 		this.drawProperties = drawProperties;
 		
-		var ctx = this.canvas.get(0).getContext('2d'),
+		var ctx = this.canvas.getContext('2d'),
 			canvasWidth = Math.round(scale*this.model.w) + 2*this.padding,
 			canvasHeight = Math.round(scale*this.model.h) + 2*this.padding;
 		

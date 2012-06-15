@@ -13,19 +13,42 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-goog.provide('bc.model.stamp.Anchor');
+goog.provide('bc.Mode');
 
-goog.require('bc.model.Stamp');
+//goog.require('bc.model.Canvas');
 
 /**
- * @param {Object=} params
- *
+ * @param {bc.model.Canvas} canvas
  * @constructor
- * @extends {bc.model.Stamp}
  */
-bc.model.stamp.Anchor = function(params) {
-	bc.model.Stamp.call(this, params);
-	
-	this.type = 'anchor';
+bc.Mode = function(canvas) {
+	this.canvas = canvas;
 }
-goog.inherits(bc.model.stamp.Anchor, bc.model.Stamp);
+
+/**
+ * @param {bc.math.Point} point
+ */
+bc.Mode.prototype.mouseDown = function(point) {
+	
+}
+
+/**
+ * @param {bc.math.Point} point
+ */
+bc.Mode.prototype.mouseMove = function(point) {
+	
+}
+
+/**
+ * @param {bc.math.Point} point
+ */
+bc.Mode.prototype.mouseUp = function(point) {
+	
+}
+
+/**
+ * @return {string}
+ */
+bc.Mode.prototype.getCursor = function() {
+	return 'default';
+}

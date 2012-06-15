@@ -16,18 +16,23 @@
 
 goog.provide('bc.model.Line');
 
+goog.require('bc.model.Item');
 goog.require('bc.math');
 goog.require('bc.array');
 goog.require('bc.object');
 goog.require('bc.render.DashedLine');
+goog.require('bc.uuid');
 
 /**
  * @param {Object=} params
  * @constructor
+ * @implements {bc.model.Item}
  */
 bc.model.Line = function(params) {
 	params = params || {};
 	
+	this.type = 'line';
+	this.id = bc.uuid(params.id);
     this.color = params.color || '#ffff00';
     this.alpha = params.alpha || 1;
 	this.lineWidth = params.lineWidth || 3;
@@ -36,6 +41,8 @@ bc.model.Line = function(params) {
 	this.onLength = params.onLength || 10;
 	this.offLength = params.offLength || 10;
 	this.curved = params.curved || false;
+	
+	this.offset = new bc.math.Point(0,0);
 	
 	/** @type {Array.<bc.math.Point>} */
 	this.points = [];
@@ -85,6 +92,26 @@ bc.model.Line.prototype.getCurvePoints = function(sx, sy, cx, cy, x, y, pointDis
 	}
 	
 	return ret;
+}
+
+/**
+ * Apply the offset to all the control points
+ * @private
+ */
+bc.view.Line.prototype.applyOffset = function() {
+	if (this.offset.x == 0 && this.offset.y == 0)
+		return;
+	
+	var cp = [];
+	
+	bc.array.map(this.controlPoints, function(point) {
+		cp.push(new bc.math.Point(point.x + this.offset.x, point.y + this.offset.y));
+	});
+	
+	this.controlPoints = cp;
+	this.updatePoints();
+	this.offset.x = 0;
+	this.offset.y = 0;
 }
 
 

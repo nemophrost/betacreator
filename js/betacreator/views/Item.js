@@ -13,19 +13,16 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-goog.provide('bc.model.stamp.Anchor');
 
-goog.require('bc.model.Stamp');
+goog.provide('bc.view.Item');
 
 /**
- * @param {Object=} params
- *
- * @constructor
- * @extends {bc.model.Stamp}
+ * @interface
  */
-bc.model.stamp.Anchor = function(params) {
-	bc.model.Stamp.call(this, params);
-	
-	this.type = 'anchor';
-}
-goog.inherits(bc.model.stamp.Anchor, bc.model.Stamp);
+bc.view.Item = function() {}
+
+/**
+ * @param {number=} pageScale
+ * @param {boolean=} selected
+ */
+bc.view.Item.prototype.render = function(pageScale, selected) {}

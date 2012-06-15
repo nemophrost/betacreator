@@ -15,46 +15,92 @@
  */
 goog.provide('bc.Client');
 
-goog.require('bc.view.Line');
-goog.require('bc.view.stamp.Anchor');
+//goog.require('bc.view.Line');
+//goog.require('bc.view.stamp.Anchor');
+goog.require('bc.GUI');
+goog.require('bc.model.Canvas');
+goog.require('goog.dom');
+goog.require('goog.events');
+goog.require('goog.pubsub.PubSub');
 
 /**
- * @param {Image} image
+ * @param {Image} sourceImg
  * @param {Object=} params
  *
  * @constructor
  */
-bc.Client = function(image, params) {
-	var anchorModel = new bc.model.stamp.Anchor({
-		x: 300,
-		y: 200
-	});
+bc.Client = function(sourceImg, params) {
+	var me = this;
 	
-	var anchorView = new bc.view.stamp.Anchor(anchorModel);
-	anchorView.canvas.appendTo('body');
-	anchorView.render();
+	this.params = {
+		w: params['width'] || null, // null for auto
+		h: params['height'] || null, // null for auto
+		imageScale: params['imageScale'] || 1,
+		zoom: params['zoom'] || null, // null for auto
+		replaceImg: params['replaceImg'] || false
+	};
 	
-	var lineModel = new bc.model.Line({
-		isDashed: true,
-		curved: true,
-		color: '#003399'
-	});
-	lineModel.controlPoints = [
-		new bc.math.Point(10,10),
-		new bc.math.Point(100,100),
-		new bc.math.Point(50,200),
-		new bc.math.Point(200,300),
-		new bc.math.Point(100,350)
-	];
-	var lineView = new bc.view.Line(lineModel);
-	lineView.canvas.appendTo('body');
-	lineView.render();
+	this.sourceImage = sourceImg;
 	
-	$(document).mousemove(function(e) {
-		var hit = lineModel.hitTest(e.clientX, e.clientY);
-		$('body').css('background-color', hit ? 'palegoldenrod' : '#556688');
-//		console.log(hit ? 'HIT' : 'NO HIT');
+	// load the image url into a new img element and call init on completion
+	var image = goog.dom.createElement('img');
+	this.imageLoadHandle = goog.events.listen(image, goog.events.EventType.LOAD, function() {
+		me.init(image);
 	});
+	image.src = this.sourceImage.src;
+}
+
+bc.Client.prototype.init = function(image) {
+	goog.events.unlistenByKey(this.imageLoadHandle);
+	
+	this.canvas = new bc.model.Canvas(image);
+	this.gui = new bc.GUI(this);
+	
+	this.gui.wrapper.style.display = (this.sourceImage.style.display == 'inherit' ? 'inline' : (this.sourceImage.style.display || 'inline'));
+	goog.dom.replaceNode(this.gui.wrapper, this.sourceImage);
+	
+//	var anchorModel = new bc.model.stamp.Anchor({
+//		x: 300,
+//		y: 200
+//	});
+//	
+//	var anchorView = new bc.view.stamp.Anchor(anchorModel);
+//	anchorView.canvas.appendTo('body');
+//	anchorView.render();
+//	
+//	var lineModel = new bc.model.Line({
+//		isDashed: true,
+//		curved: true,
+//		color: '#003399'
+//	});
+//	lineModel.controlPoints = [
+//		new bc.math.Point(10,10),
+//		new bc.math.Point(100,100),
+//		new bc.math.Point(50,200),
+//		new bc.math.Point(200,300),
+//		new bc.math.Point(100,350)
+//	];
+//	var lineView = new bc.view.Line(lineModel);
+//	lineView.canvas.appendTo('body');
+//	lineView.render();
+//	
+//	$(document).mousemove(function(e) {
+//		var hit = lineModel.hitTest(e.clientX, e.clientY);
+//		$('body').css('background-color', hit ? 'palegoldenrod' : '#556688');
+////		console.log(hit ? 'HIT' : 'NO HIT');
+//	});
+}
+
+/**
+ * @type {goog.pubsub.PubSub}
+ */
+bc.Client.pubsub = new goog.pubsub.PubSub();
+
+/**
+ * @enum {string}
+ */
+bc.Client.pubsubTopics = {
+	CANVASRENDER: 'cr'
 }
 
 goog.exportSymbol('bc.Client', bc.Client);
