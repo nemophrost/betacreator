@@ -28,9 +28,11 @@ goog.require('goog.dom');
 bc.view.Canvas = function(model) {
 	this.model = model;
 	
-	this.container = goog.dom.createElement('div');
-	
+	this.container = goog.dom.createDom(goog.dom.TagName.DIV, 'fullsize');
 	goog.dom.appendChild(this.container, this.model.image);
+	
+	this.itemContainer = goog.dom.createDom(goog.dom.TagName.DIV, 'fullsize');
+	goog.dom.appendChild(this.container, this.itemContainer);
 	
 	/** @type {Object.<string,bc.view.Item>} */
 	this.views = {};
@@ -97,6 +99,7 @@ bc.view.Canvas.prototype.renderItem = function(item, pageScale) {
 			return;
 		
 		this.views[item.id] = view;
+		goog.dom.appendChild(this.container, view.canvas);
 	}
 	
 	view.render(pageScale, this.model.isItemSelected(item));

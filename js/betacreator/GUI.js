@@ -57,7 +57,6 @@ bc.GUI.prototype.bindMouseListeners = function() {
 	
 	// mouse down
 	goog.events.listen(this.hitTestDiv, goog.events.EventType.MOUSEDOWN, function(e) {
-		alert('mousedown');
 		me.canvas.model.mouseDown(e);
 	});
 	
