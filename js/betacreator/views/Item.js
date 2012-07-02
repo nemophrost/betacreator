@@ -26,3 +26,7 @@ bc.view.Item = function() {}
  * @param {boolean=} selected
  */
 bc.view.Item.prototype.render = function(pageScale, selected) {}
+
+/**
+ */
+bc.view.Item.prototype.destroy = function() {}

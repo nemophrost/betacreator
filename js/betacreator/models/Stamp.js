@@ -37,6 +37,23 @@ bc.model.Stamp = function(params) {
 	this.y = params.y || 0;
 	this.w = params.w || 20;
 	this.h = params.h || 20;
+	
+	this.offset = new bc.math.Point(0,0);
+}
+
+/**
+ * Apply the offset
+ * @protected
+ */
+bc.model.Stamp.prototype.applyOffset = function() {
+	if (this.offset.x == 0 && this.offset.y == 0)
+		return;
+	
+	this.x += this.offset.x;
+	this.y += this.offset.y;
+	
+	this.offset.x = 0;
+	this.offset.y = 0;
 }
 
 /**

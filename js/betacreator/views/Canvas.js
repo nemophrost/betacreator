@@ -68,8 +68,20 @@ bc.view.Canvas.prototype.checkRender = function() {
  * @private
  */
 bc.view.Canvas.prototype.render = function(pageScale) {
-	for (var i = 0, l = this.model.items.length; i < l; i++)
+	var itemIdMap = {};
+	
+	for (var i = 0, l = this.model.items.length; i < l; i++) {
 		this.renderItem(this.model.items[i], pageScale);
+		itemIdMap[this.model.items[i].id] = true;
+	}
+	
+	// destroy the views for any deleted items
+	for (var viewId in this.views) {
+		if (!itemIdMap[viewId]) {
+			this.views[viewId].destroy();
+			delete this.views[viewId];
+		}
+	}
 }
 
 /**

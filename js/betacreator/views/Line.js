@@ -203,3 +203,12 @@ bc.view.Line.prototype.render = function(scale, selected) {
 		this.updateLocation(scale);
 	}
 }
+
+bc.view.Line.prototype.destroy = function() {
+	this.model = null;
+	this.drawProperties = null;
+	this.locationProperties = null;
+	
+	goog.dom.removeNode(this.canvas);
+	this.canvas = null;
+}

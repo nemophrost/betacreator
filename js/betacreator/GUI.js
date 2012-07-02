@@ -17,6 +17,7 @@ goog.provide('bc.GUI');
 
 goog.require('bc.view.Canvas');
 goog.require('goog.dom');
+goog.require('goog.events.KeyCodes');
 
 /**
  * @param {bc.Client} client
@@ -46,13 +47,13 @@ bc.GUI = function(client) {
 	goog.dom.appendChild(this.viewport, this.canvas.container);
 	
 	// bind all mouse event listeners
-	this.bindMouseListeners();
+	this.bindEventListeners();
 }
 
 /**
- * bind mouse event listeners to hitTestDiv
+ * bind mouse and keyboard event listeners to hitTestDiv and document respectively
  */
-bc.GUI.prototype.bindMouseListeners = function() {
+bc.GUI.prototype.bindEventListeners = function() {
 	var me = this;
 	
 	// mouse down
@@ -68,5 +69,34 @@ bc.GUI.prototype.bindMouseListeners = function() {
 	// mouse up
 	goog.events.listen(this.hitTestDiv, goog.events.EventType.MOUSEUP, function(e) {
 		me.canvas.model.mouseUp(e);
+	});
+	
+	// key down
+	goog.events.listen(document, goog.events.EventType.KEYDOWN, function(e) {
+		var preventDefault = false;
+		switch (e.keyCode) {
+			case goog.events.KeyCodes.Y:
+				if (e.ctrlKey || e.metaKey) {
+					preventDefault = true;
+					me.client.canvas.redo();
+				}
+				break;
+			case goog.events.KeyCodes.Z:
+				if (e.ctrlKey || e.metaKey) {
+					preventDefault = true;
+					if (e.shiftKey)
+						me.client.canvas.redo();
+					else
+						me.client.canvas.undo();
+				}
+				break;
+			default:
+				break;
+		}
+		
+		if (preventDefault)
+			e.preventDefault();
+		
+		e.stopPropagation();
 	});
 }

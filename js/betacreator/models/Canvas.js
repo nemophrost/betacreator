@@ -18,6 +18,7 @@ goog.provide('bc.model.Canvas');
 
 goog.require('bc.mode.Anchor');
 goog.require('bc.model.Action');
+goog.require('goog.array');
 
 /**
  * @constructor
@@ -89,6 +90,14 @@ bc.model.Canvas = function(image) {
  */
 bc.model.Canvas.prototype.addItem = function(item) {
 	this.items.push(item);
+}
+
+/**
+ * @param {bc.model.Item} item
+ * @private
+ */
+bc.model.Canvas.prototype.removeItem = function(item) {
+	goog.array.remove(this.items, item);
 }
 
 /**
@@ -238,6 +247,7 @@ bc.model.Canvas.prototype.clearUndoHistory = function() {
 
 /**
  * @param {bc.model.Action} action
+ * @return {boolean} success
  */
 bc.model.Canvas.prototype.runAction = function(action) {
 	switch (action.type) {
@@ -251,15 +261,40 @@ bc.model.Canvas.prototype.runAction = function(action) {
 					break;
 			}
 			
-			if (stamp)
+			if (stamp) {
+				action.params.id = stamp.id;
 				this.addItem(stamp);
+			}
+			else
+				return false;
+			
+			bc.Client.pubsub.publish(bc.Client.pubsubTopics.CANVASRENDER);
+			
+			break;
+		case bc.model.ActionType.DeleteStamp:
+			var stamp = this.getItem(action.params.id);
+			
+			if (stamp)
+				this.removeItem(stamp);
+			else
+				return false;
 			
 			bc.Client.pubsub.publish(bc.Client.pubsubTopics.CANVASRENDER);
 			
 			break;
 		default:
+			return false;
 			break;
 	}
+	
+	this.startUndoBatch();
+	
+	if(!action.isUndo && !action.isRedo)
+		this.addToUndoBatch(action);
+
+	this.endUndoBatch();
+	
+	return true;
 }
 
 /**
@@ -268,6 +303,17 @@ bc.model.Canvas.prototype.runAction = function(action) {
  */
 bc.model.Canvas.prototype.isItemSelected = function(item) {
 	return false;
+}
+
+/**
+ * @param {string} id
+ * @return {bc.model.Item|null}
+ */
+bc.model.Canvas.prototype.getItem = function(id) {
+	return /** @type {bc.model.Item|null} */(goog.array.find(this.items, function(item) {
+		if (item.id == id)
+			return true;
+	}));
 }
 
 /**

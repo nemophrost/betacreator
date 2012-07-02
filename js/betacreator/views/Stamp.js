@@ -35,7 +35,7 @@ bc.view.Stamp = function(model) {
 	/** @type {?Object} */
 	this.locationProperties = null;
 	
-	this.canvas = goog.dom.createElement('canvas');
+	this.canvas = goog.dom.createElement(goog.dom.TagName.CANVAS);
 	this.canvas.width = this.model.w + 2*this.padding;
 	this.canvas.height = this.model.h + 2*this.padding;
 	this.canvas.style.position = 'absolute';
@@ -142,4 +142,84 @@ bc.view.Stamp.prototype.render = function(pageScale, selected) {
 
 		this.updateLocation(pageScale);
 	}
+}
+
+
+/**
+ * @param {number=} pageScale
+ * @param {boolean=} selected
+ */
+bc.view.Stamp.prototype.getPNG = function(pageScale, selected) {
+	pageScale = pageScale || 1;
+	
+	// get total scale (individual scale of stamp times page scale)
+	var scale = pageScale*this.model.scale;
+	
+	var drawProperties = {
+		w: this.model.w,
+		h: this.model.h,
+		color: this.model.color,
+		alpha: this.model.alpha,
+		scale: scale,
+		selected: selected
+	};
+	
+	var locationProperties = {
+		x: this.model.x,
+		y: this.model.y,
+		w: this.model.w,
+		h: this.model.h,
+		scale: scale
+	}
+	
+	// if something has changed since last rendering that will affect rendering, 
+	// redraw the stamp
+	if (!bc.object.areEqual(drawProperties, this.drawProperties)) {
+		this.drawProperties = drawProperties;
+		
+		var ctx = this.canvas.getContext('2d'),
+			canvasWidth = Math.round(scale*this.model.w) + 2*this.padding,
+			canvasHeight = Math.round(scale*this.model.h) + 2*this.padding;
+		
+		ctx.canvas.width = canvasWidth;
+		ctx.canvas.height = canvasHeight;
+		
+		ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+		
+		ctx.save();
+		ctx.translate(this.padding, this.padding);
+		ctx.scale(scale, scale);
+		ctx.lineCap = 'round';
+		
+		if (selected) {
+			ctx.save();
+			this.draw(ctx, 'palegoldenrod', this.model.lineWidth + 10);
+			ctx.restore();
+		}
+		else {
+			ctx.save();
+			this.draw(ctx, bc.color.highContrastWhiteOrBlack(this.model.color, .5), this.model.lineWidth + 2);
+			ctx.restore();
+		}
+		
+		this.draw(ctx);
+		
+		ctx.restore();
+	}
+	
+	// if the location or size has changed, update the location
+	if (!bc.object.areEqual(locationProperties, this.locationProperties)) {
+		this.locationProperties = locationProperties;
+
+		this.updateLocation(pageScale);
+	}
+}
+
+bc.view.Stamp.prototype.destroy = function() {
+	this.model = null;
+	this.drawProperties = null;
+	this.locationProperties = null;
+	
+	goog.dom.removeNode(this.canvas);
+	this.canvas = null;
 }
