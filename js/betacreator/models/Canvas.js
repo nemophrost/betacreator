@@ -82,7 +82,7 @@ bc.model.Canvas = function(image) {
 	setInterval(function() {
 		me.endUndoBatch();
 	}, 100);
-}
+};
 
 /**
  * @param {bc.model.Item} item
@@ -90,7 +90,7 @@ bc.model.Canvas = function(image) {
  */
 bc.model.Canvas.prototype.addItem = function(item) {
 	this.items.push(item);
-}
+};
 
 /**
  * @param {bc.model.Item} item
@@ -98,7 +98,7 @@ bc.model.Canvas.prototype.addItem = function(item) {
  */
 bc.model.Canvas.prototype.removeItem = function(item) {
 	goog.array.remove(this.items, item);
-}
+};
 
 /**
  * @param {Event} e
@@ -110,14 +110,14 @@ bc.model.Canvas.prototype.eventToCoord = function(e) {
 		y = e.clientY;
 	
 	return new bc.math.Point(x, y);
-}
+};
 
 /**
  * @private
  */
 bc.model.Canvas.prototype.initUndoData = function() {
 	
-}
+};
 
 /**
  * Start a batch of actions that should be undone as a unit.
@@ -125,7 +125,7 @@ bc.model.Canvas.prototype.initUndoData = function() {
  */
 bc.model.Canvas.prototype.startUndoBatch = function() {
 	this.undoBatchLevel++;
-}
+};
 
 /**
  * Put an action into the current undo history batch.
@@ -134,7 +134,7 @@ bc.model.Canvas.prototype.startUndoBatch = function() {
  */
 bc.model.Canvas.prototype.addToUndoBatch = function(a) {
 	this.undoBatch.unshift(a);
-}
+};
 
 /**
  * End a batch of actions that should be undone as a unit
@@ -148,7 +148,7 @@ bc.model.Canvas.prototype.endUndoBatch = function() {
 		this.redoHistory = [];
 		this.undoBatch = [];
 	}
-}
+};
 
 /**
  * @return {boolean} True if there is something in the undo history
@@ -156,7 +156,7 @@ bc.model.Canvas.prototype.endUndoBatch = function() {
  */
 bc.model.Canvas.prototype.canUndo = function() {
 	return this.undoHistory.length > 0;
-}
+};
 
 /**
  * @return {boolean} True if there is something in the redo history
@@ -164,7 +164,7 @@ bc.model.Canvas.prototype.canUndo = function() {
  */
 bc.model.Canvas.prototype.canRedo = function() {
 	return this.redoHistory.length > 0;
-}
+};
 
 /**
  * Undoes the most recent batch in the undo history
@@ -194,7 +194,7 @@ bc.model.Canvas.prototype.undo = function() {
 	
 	//Add the new actionset to the redo history
 	this.redoHistory.unshift(newBatch);
-}
+};
 
 /**
  * Redoes the most recent batch in the redo history
@@ -224,7 +224,7 @@ bc.model.Canvas.prototype.redo = function() {
 	
 	//Add the new actionset to the undo history
 	this.undoHistory.unshift(newBatch);
-}
+};
 
 /**
  * Clears all undo and redo history
@@ -233,7 +233,7 @@ bc.model.Canvas.prototype.redo = function() {
 bc.model.Canvas.prototype.clearUndoHistory = function() {
 	this.undoHistory = [];
 	this.redoHistory = [];
-}
+};
 
 
 
@@ -268,7 +268,7 @@ bc.model.Canvas.prototype.runAction = function(action) {
 			else
 				return false;
 			
-			bc.Client.pubsub.publish(bc.Client.pubsubTopics.CANVASRENDER);
+			bc.Client.pubsub.publish(bc.Client.pubsubTopics.CANVAS_RENDER);
 			
 			break;
 		case bc.model.ActionType.DeleteStamp:
@@ -279,7 +279,7 @@ bc.model.Canvas.prototype.runAction = function(action) {
 			else
 				return false;
 			
-			bc.Client.pubsub.publish(bc.Client.pubsubTopics.CANVASRENDER);
+			bc.Client.pubsub.publish(bc.Client.pubsubTopics.CANVAS_RENDER);
 			
 			break;
 		default:
@@ -295,7 +295,7 @@ bc.model.Canvas.prototype.runAction = function(action) {
 	this.endUndoBatch();
 	
 	return true;
-}
+};
 
 /**
  * @param {bc.model.Item} item
@@ -303,7 +303,7 @@ bc.model.Canvas.prototype.runAction = function(action) {
  */
 bc.model.Canvas.prototype.isItemSelected = function(item) {
 	return false;
-}
+};
 
 /**
  * @param {string} id
@@ -311,28 +311,27 @@ bc.model.Canvas.prototype.isItemSelected = function(item) {
  */
 bc.model.Canvas.prototype.getItem = function(id) {
 	return /** @type {bc.model.Item|null} */(goog.array.find(this.items, function(item) {
-		if (item.id == id)
-			return true;
+		return item.id == id;
 	}));
-}
+};
 
 /**
  * @param {Event} e
  */
 bc.model.Canvas.prototype.mouseDown = function(e) {
 	this.mode.mouseDown(this.eventToCoord(e));
-}
+};
 
 /**
  * @param {Event} e
  */
 bc.model.Canvas.prototype.mouseMove = function(e) {
 	this.mode.mouseMove(this.eventToCoord(e));
-}
+};
 
 /**
  * @param {Event} e
  */
 bc.model.Canvas.prototype.mouseUp = function(e) {
 	this.mode.mouseUp(this.eventToCoord(e));
-}
+};

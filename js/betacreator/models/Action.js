@@ -68,7 +68,7 @@ bc.model.Action = function(type, params) {
 	 * @type {boolean}
 	 */
 	this.isUndo = false;
-}
+};
 
 /**
  * Return a copy of an action
@@ -77,7 +77,7 @@ bc.model.Action = function(type, params) {
  */
 bc.model.Action.prototype.copy = function() {
 	return new bc.model.Action(this.type, bc.object.copy(this.params));
-}
+};
 
 /**
  * Given an action, return the action that undoes that action.
@@ -123,4 +123,4 @@ bc.model.Action.getReverseAction = function(action) {
 	}
 	
 	return ret;
-}
+};

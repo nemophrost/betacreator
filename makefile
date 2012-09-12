@@ -13,6 +13,11 @@ CALCDEPS := js/closure/closure/bin/calcdeps.py
 CLOSUREBUILDER := js/closure/closure/bin/build/closurebuilder.py
 COMPILED_JS_SOURCES = $(shell find js/betacreator -type f -name "*.js")
 
+LESSC := tools/less/bin/lessc
+LESS_FILES := $(shell find css/ -name "*.less")
+LESS_CSS_SOURCES := $(shell find css/ -name "*.less" -a -not -name "_*.less")
+LESS_CSS_COMPILED := $(subst .less,.css,$(LESS_CSS_SOURCES))
+
 
 #######################################
 # Common Targets                      #
@@ -26,13 +31,15 @@ help:
 	@echo "### MAKE TARGETS ###"
 	@echo "  help                    Print this help"
 	@echo "  js                      Compile the JavaScript sources to create the minified and optimized betacreator.js"
+	@echo "  css                     Less CSS Compiler"
 	@echo "  deps                    Generate the JavaScript dependency file"
 	@echo "  clean                   Clean all targets"
 	@echo "  clean-js                Clean js target"
+	@echo "  clean-css               Clean CSS"
 	@echo "  clean-deps              Clean deps target"
 
 .PHONY: clean
-clean: clean-deps clean-js
+clean: clean-js clean-css clean-deps
 
 
 #######################################
@@ -100,3 +107,18 @@ js/bin/betacreator.js: js/bin/deps.js
 	$(call compilejs,betacreator,js/betacreator/Client.js,$@.tmp)
 	cat tools/COPYRIGHT $@.tmp > $@
 	rm $@.tmp
+
+
+#######################################
+# CSS Targets                         #
+#######################################
+
+.PHONY: css clean-css clean-css-compiled
+css: $(LESS_CSS_COMPILED)
+clean-css: clean-css-compiled
+clean-css-compiled:
+	rm -f $(LESS_CSS_COMPILED)
+
+.SECONDARY: $(LESS_CSS_COMPILED)
+css/%.css: css/%.less $(LESS_FILES)
+	$(LESSC) $< -x > $@

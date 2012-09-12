@@ -97,7 +97,7 @@ bc.Client.prototype.init = function(image) {
 //		$('body').css('background-color', hit ? 'palegoldenrod' : '#556688');
 ////		console.log(hit ? 'HIT' : 'NO HIT');
 //	});
-}
+};
 
 /**
  * @type {goog.pubsub.PubSub}
@@ -108,7 +108,10 @@ bc.Client.pubsub = new goog.pubsub.PubSub();
  * @enum {string}
  */
 bc.Client.pubsubTopics = {
-	CANVASRENDER: 'cr'
-}
+	CANVAS_RENDER: 'cr',
+	SELECTION_CHANGE: 'sc',
+	SHOW_COLOR_PICKER: 'scp',
+	HIDE_OVERLAYS: 'ho'
+};
 
 goog.exportSymbol('bc.Client', bc.Client);

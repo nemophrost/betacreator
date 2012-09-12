@@ -39,8 +39,8 @@ bc.view.Canvas = function(model) {
 	
 	setInterval(goog.bind(this.checkRender, this), 100);
 	
-	bc.Client.pubsub.subscribe(bc.Client.pubsubTopics.CANVASRENDER, goog.bind(this.invalidate, this));
-}
+	bc.Client.pubsub.subscribe(bc.Client.pubsubTopics.CANVAS_RENDER, goog.bind(this.invalidate, this));
+};
 
 /**
  * @param {boolean=} force Force re-render
@@ -51,7 +51,7 @@ bc.view.Canvas.prototype.invalidate = function(force) {
 	
 	if (force)
 		this.checkRender();
-}
+};
 
 /**
  * @private
@@ -61,7 +61,7 @@ bc.view.Canvas.prototype.checkRender = function() {
 		this.render();
 		
 	this.needsRender = false;
-}
+};
 
 /**
  * @param {number=} pageScale
@@ -82,7 +82,7 @@ bc.view.Canvas.prototype.render = function(pageScale) {
 			delete this.views[viewId];
 		}
 	}
-}
+};
 
 /**
  * @param {bc.model.Item} item
@@ -115,7 +115,7 @@ bc.view.Canvas.prototype.renderItem = function(item, pageScale) {
 	}
 	
 	view.render(pageScale, this.model.isItemSelected(item));
-}
+};
 
 /********************************************************************
 *********************************************************************

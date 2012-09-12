@@ -43,6 +43,15 @@ bc.math.Box = function(x,y,w,h) {
 	this.h = h;
 }
 
+/**
+ * Return a string with set precision (number of decimal places) and trailing zeroes removed
+ * @param {number} value
+ * @param {number=} precision
+ * @return {string}
+ */
+bc.math.toFixed = function(value, precision) {
+	return value.toFixed(precision || 0).replace(/^([^\.]*)$/, '$1.').replace(/\.?0*$/, '');
+}
 
 /**
  * @param {number} sx

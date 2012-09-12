@@ -1,0 +1,36 @@
+
+.callout {
+	position: absolute;
+	z-index: 10000;
+}
+
+.callout-bubble { 
+	padding: 10px;
+    border: 1px solid #999;
+    background-color: #FFF;
+	position: absolute;
+
+	.border-radius(4px);
+	.box-shadow(0px, 8px, 16px, 0px, rgba(0, 0, 0, .3));
+}
+
+.callout-pointer-border, .callout-pointer {
+	position: absolute;
+	height: 0;
+	width: 0;
+	border: transparent solid 12px;
+	font-size: 0;
+	line-height: 0;
+}
+
+.callout-pointer-up-border { border-bottom: 12px solid #999; }
+.callout-pointer-up { border-bottom: 12px solid #FFF; }
+
+.callout-pointer-right-border { border-left: 12px solid #999; }
+.callout-pointer-right { border-left: 12px solid #FFF; }
+
+.callout-pointer-down-border { border-top: 12px solid #999; }
+.callout-pointer-down { border-top: 12px solid #FFF; }
+
+.callout-pointer-left-border { border-right: 12px solid #999; }
+.callout-pointer-left { border-right: 12px solid #FFF; }
