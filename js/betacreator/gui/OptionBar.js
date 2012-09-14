@@ -25,6 +25,12 @@ bc.gui.OptionBar = function() {
 	this.viewportSelection = null;
 
 	this.createControls(this.container);
+
+	this.mode = '';
+	bc.Client.pubsub.subscribe(bc.Client.pubsubTopics.MODE, function(mode) {
+		me.mode = mode;
+		me.refresh();
+	});
 };
 
 /**
@@ -132,6 +138,32 @@ bc.gui.OptionBar.prototype.createControls = function(container) {
 		return buttons;
 	};
 
+	var createToolButton = function(icon, mode, tooltip) {
+		return new bc.gui.input.ButtonBar(
+			[{
+				icon:icon,
+				action: function() {
+					bc.Client.pubsub.publish(bc.Client.pubsubTopics.MODE, mode);
+				},
+				tooltip:bc.i18n(tooltip),
+				selected: function() { return me.mode == mode },
+				disabled: function() { return false; }
+			}],
+			null,
+			me.getInputWrapper(container)
+		);
+	};
+
+	var selectButton = createToolButton('tool-select', 'select', 'Select Tool');
+	var lineButton = createToolButton('tool-line', 'line', 'Line Tool');
+	var anchorButton = createToolButton('tool-anchor', 'anchor', 'Anchor Tool');
+	var pitonButton = createToolButton('tool-piton', 'piton', 'Piton Tool');
+	var rappelButton = createToolButton('tool-rappel', 'rappel', 'Rappel Tool');
+	var belayButton = createToolButton('tool-belay', 'belay', 'Belay Tool');
+	var textButton = createToolButton('tool-text', 'text', 'Text Tool');
+
+	this.addDivider(container);
+
 	var colorWell = new bc.gui.input.ColorWell(
 		{
 			change: function(val, programmatic) {
@@ -226,36 +258,40 @@ bc.gui.OptionBar.prototype.createControls = function(container) {
 
 	var lineCurveButton = new bc.gui.input.ButtonBar(
 		createButtons({
-			buttons: [
-				{
-					icon:'line-curved',
-					property: bc.properties.LINE_CURVED,
-					tooltip:bc.i18n('Toggle Line Curvature')
-				}
-			]
+			buttons: [{
+				icon:'line-curved',
+				property: bc.properties.LINE_CURVED,
+				tooltip:bc.i18n('Toggle Line Curvature')
+			}]
 		}),
 		null,
 		this.getInputWrapper(container)
 	);
 
 	var lineEditButton = new bc.gui.input.ButtonBar(
-		[
-			{
-				icon:'line-edit',
-				action: function() {alert("edit the line");},
-				tooltip:bc.i18n('Edit Line Shape'),
-				selected: function() { return false; },
-				disabled: function() { return false; }
-			}
-		],
+		[{
+			icon:'line-edit',
+			action: function() {alert("edit the line");},
+			tooltip:bc.i18n('Edit Line Shape'),
+			selected: function() { return false; },
+			disabled: function() { return false; }
+		}],
 		null,
 		this.getInputWrapper(container)
 	);
 
 	var inputs = [
+		selectButton,
+		lineButton,
+		anchorButton,
+		pitonButton,
+		rappelButton,
+		belayButton,
+		textButton,
 		colorWell,
 		scaleSpinner,
 		textAlignButtonBar,
+		lineStyleButtonBar,
 		lineCurveButton,
 		lineEditButton
 	];

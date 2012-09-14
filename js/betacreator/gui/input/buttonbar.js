@@ -177,8 +177,8 @@ bc.gui.input.ButtonBar.prototype.refresh = function(resultOfClick) {
 		if (selected && (button.value || button.value === 0 || button.value === false))
 			me._setValue(button.value);
 		
-		me.container.children().get(idx).className = 'button-bar-item' + 
-			(selected ? ' selected' : '') + 
+		goog.dom.getChildren(me.container)[idx].className = 'button-bar-item' +
+			(selected ? ' selected' : '') +
 			(disabled && !me._disabled ? ' disabled' : '');
 	});
 	

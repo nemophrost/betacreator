@@ -51,7 +51,7 @@ bc.Client = function(sourceImg, params) {
 		me.init(image);
 	});
 	image.src = this.sourceImage.src;
-}
+};
 
 bc.Client.prototype.init = function(image) {
 	goog.events.unlistenByKey(this.imageLoadHandle);
@@ -63,7 +63,7 @@ bc.Client.prototype.init = function(image) {
 		'position': 'relative',
 		'display': (this.sourceImage.style.display == 'inherit' ? 'inline-block' : (this.sourceImage.style.display || 'inline-block')),
 		'width': (this.params.w || image.width) + 'px',
-		'height': (this.params.h || image.height) + 'px'
+		'height': ((this.params.h || image.height) + 29) + 'px'
 	});
 	goog.dom.replaceNode(this.gui.wrapper, this.sourceImage);
 	
@@ -111,7 +111,8 @@ bc.Client.pubsubTopics = {
 	CANVAS_RENDER: 'cr',
 	SELECTION_CHANGE: 'sc',
 	SHOW_COLOR_PICKER: 'scp',
-	HIDE_OVERLAYS: 'ho'
+	HIDE_OVERLAYS: 'ho',
+	MODE: 'm'
 };
 
 goog.exportSymbol('bc.Client', bc.Client);

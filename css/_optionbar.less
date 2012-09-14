@@ -2,8 +2,8 @@
 ============================================================================= */
 .option-bar {
 	position: relative;
-	height: 26px;
-    border-bottom: .6*#fff solid 1px;
+	height: 28px;
+	border-bottom: .6*#fff solid 1px;
 	padding: 0;
 	overflow: hidden;
 	font-family: "Lucida Sans", "Lucida Grande", Arial, Helvetica, sans-serif;
@@ -30,7 +30,7 @@
 	float: left;
 	position: relative;
 	width: 1px;
-	height: 26px;
+	height: 28px;
 	background: .9*#fff;
 	margin-left: 6px;
 }
@@ -39,16 +39,12 @@
 	height: 18px;
 	line-height: 18px;
 	float: left;
-	margin: 4px 0 0 6px;
+	margin: 5px 0 0 6px;
 	font-size: 10px;
 	color: #000;
 	cursor: default;
 
 	.text-shadow(0, 1px, 0, #fff);
-
-	.icon-13 {
-		margin: 2px 0 3px;
-	}
 }
 
 .option-bar-label-left {
@@ -76,7 +72,7 @@
 ============================================================================= */
 
 .button-bar {
-	height: 17px;
+	height: 19px;
 	overflow: hidden; 
 	float: left;
 
@@ -89,16 +85,17 @@
 }
 
 .button-bar-item {
-    position: relative;
-	border: .5*#fff solid 1px;
+	position: relative;
+	border: .7*#fff solid 1px;
 	border-left-width: 0;
 	width: 13px;
 	height: 13px;
-	padding: 1px 2px;
+	padding: 2px 3px;
 	float: left;
 
+	background-color:.95*#fff;
 	.box-shadow-inset(0, 1px, 0, 0, #fff);
-	.gradientVertical(.95*#fff, .8*#fff);
+	.text-shadow(0, 1px, 0, #fff);
 
 	&:first-child {
 		border-left-width: 1px;
@@ -109,27 +106,26 @@
 		.border-radius-right(3px);
 	}
 
-	&:active {
-		.box-shadow-inset(0, 1px, 0, 0, .9*#fff);
-		.gradientVertical(.85*#fff, .7*#fff);
+	&:hover{
+		border-color: .67*#fff .67*#fff .6*#fff;
+		.gradientVertical(.95*#fff, .9*#fff);
+		.box-shadow-both(0, 1px, 2px, 0, rgba(0,0,0,0.1), 0, 1px, 0, 0, #fff);
+		color: .2*#fff;
+		text-decoration: none;
 	}
 
-	&.selected {
-		.box-shadow-inset(0, 1px, 0, 0, .85*#fff);
-		.gradientVertical(.75*#fff, .6*#fff);
-
-		&:active {
-			.box-shadow-inset(0, 1px, 0, 0, .75*#fff);
-			.gradientVertical(.65*#fff, .5*#fff);
-		}
+	&:active,&.selected{
+		border-color: .6*#fff .67*#fff .74*#fff;
+		.gradientVertical(.85*#fff, .9*#fff);
+		.box-shadow-both(0, 1px, 0, 0, #fff, 0, 1px, 2px, 0, rgba(0, 0, 0, 0.1));
 	}
 }
 
 .button-bar .button-bar-item.disabled, .button-bar.disabled .button-bar-item {
-	border-color: .7*#fff;
+	border-color: .8*#fff;
 
 	.box-shadow-inset(0, 1px, 0, 0, #fff);
-	.gradientVertical(.95*#fff, .85*#fff);
+	background:.95*#fff;
 }
 
 
@@ -139,6 +135,7 @@
 .spinner {
 	height: 17px;
 	position: relative;
+	margin-top: 1px;
 }
 
 .spinner-textbox {
@@ -157,7 +154,7 @@
 
 	input {
 		background-color: transparent;
-	    display: block;
+		display: block;
 		border: none;
 		outline: none;
 		width: 100%;
@@ -255,7 +252,7 @@
 		border-color: .7*#fff;
 
 		&:active {
-		    background: none;
+			background: none;
 			border-color: .7*#fff;
 		}
 	}
@@ -272,190 +269,6 @@
 }
 
 
-/* INPUT SELECT (LIKE SELECT BOX BUT THE VALUE CAN BE TYPED IN AS WELL)
-============================================================================= */
-
-.input-select {
-	height: 17px;
-	position: relative;
-}
-
-.input-select-wrapper {
-	position: absolute;
-	top: 0;
-	right: 0;
-	left: 0;
-	bottom: 0;
-	border: .5*#fff solid 1px;
-
-	.border-radius-right(3px);
-	.box-shadow(0, 1px, 0, 0, #fff);
-}
-
-.input-select-textbox {
-	position: absolute;
-	top: 0;
-	right: 14px;
-	left: 0;
-	bottom: 0;
-	background-color: #fff;
-	padding: 0 2px;
-
-	.box-shadow-inset(0, 1px, 2px, 0, rgba(0,0,0,.2));
-
-	input {
-		background-color: transparent;
-	    display: block;
-		border: none;
-		outline: none;
-		width: 100%;
-		height: 100%;
-		font-size: 10px;
-		text-align: left;
-		line-height: 15px;
-		padding: 0;
-		-webkit-appearance: none;
-
-		.user-select-text;
-	}
-}
-
-.input-select-button {
-	position: absolute;
-	top: 0;
-	right: 0;
-	bottom: 0;
-	width: 13px;
-	border-top: #fff solid 1px;
-	border-left: .5*#fff solid 1px;
-
-	.border-radius-right(2px);
-	.gradientVertical(.95*#fff, .8*#fff);
-
-	.icon-13 {
-		position: absolute;
-		left: 0;
-		top: 0;
-	}
-
-	&:active {
-		border-top-color: .85*#fff;
-		.gradientVertical(.75*#fff, .65*#fff);
-	}
-}
-
-
-.input-select.disabled {
-	.input-select-wrapper {
-		border-color: .7*#fff;
-	}
-
-	.input-select-textbox {
-		.box-shadow-inset(0, 0, 0, 0, #000);
-
-		input {
-			color: #999;
-			-webkit-text-fill-color: .6*#fff;
-		}
-	}
-
-	.input-select-button {
-		border-top-color: #fff;
-		border-left-color: .7*#fff;
-		.gradientVertical(.95*#fff, .85*#fff);
-	}
-}
-
-
-/* SELECT
-============================================================================= */
-
-.select {
-	height: 17px;
-	position: relative;
-}
-
-.select-wrapper {
-	position: absolute;
-	top: 0;
-	right: 0;
-	left: 0;
-	bottom: 0;
-	border: .5*#fff solid 1px;
-
-	.border-radius(3px);
-	.gradientVertical(.95*#fff, .8*#fff);
-	.box-shadow(0, 1px, 0, 0, #fff);
-
-	&:active {
-		.gradientVertical(.75*#fff, .6*#fff);
-	}
-
-	> * {
-		border-top: #fff solid 1px;
-	}
-
-	&:active > * {
-		border-top-color: .85*#fff;
-	}
-}
-
-.select-content {
-	position: absolute;
-	padding: 0 0 0 4px;
-	right: 13px;
-	left: 0;
-	height: 13px;
-	font-size: 10px;
-	line-height: 13px;
-	text-align: left;
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	cursor: default;
-
-	.border-radius-left(2px);
-	.text-shadow(0, 1px, 0, rgba(255,255,255,.5));
-
-	&> .icon-13 {
-		position: absolute;
-		left: 4px;
-	}
-}
-
-.select-button {
-	position: absolute;
-	top: 0;
-	right: 0;
-	bottom: 0;
-	width: 13px;
-
-	.border-radius-right(2px);
-
-	.icon-13 {
-		position: absolute;
-		left: 0;
-		top: 0;
-	}
-}
-
-
-.select.disabled {
-	.select-wrapper {
-		border-color: .7*#fff;
-		.gradientVertical(.95*#fff, .85*#fff);
-
-		> * {
-			border-top-color: #fff;
-		}
-	}
-
-	.select-content, .select-button {
-		color: .5*#fff;
-	}
-}
-
-
 /* COLOR WELL
 ============================================================================= */
 
@@ -463,6 +276,7 @@
 	height: 17px;
 	width: 26px;
 	position: relative;
+	margin-top: 1px;
 
 	&.fullwidth {
 		width: 100%;
@@ -470,7 +284,7 @@
 }
 
 .color-well-wrapper {
-    position: absolute;
+	position: absolute;
 	top: 0;
 	right: 0;
 	left: 0;

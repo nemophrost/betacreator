@@ -35,11 +35,6 @@ bc.gui.ColorPicker = function() {
 	/**
 	 * @type {Element}
 	 */
-	this.buttonContainer = null;
-
-	/**
-	 * @type {Element}
-	 */
 	this.container = bc.domBuilder({
 		classes: 'callout hidden',
 		children: [
@@ -97,11 +92,6 @@ bc.gui.ColorPicker = function() {
 
 								// 	me.resetPreview();
 								// });
-							}
-						},{
-							classes: 'button-container',
-							create: function(dom) {
-								me.buttonContainer = dom;
 							}
 						}
 					]

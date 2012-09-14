@@ -36,12 +36,12 @@ bc.GUI = function(client) {
 		id: 'betacreator',
 		children: [
 			{
-				classes: 'fullsize',
+				classes: 'fullsize viewport',
 				create: function(dom) {
 					me.viewport = dom;
 				}
 			},{
-				classes: 'fullsize',
+				classes: 'fullsize viewport',
 				create: function(dom) {
 					me.hitTestDiv = dom;
 				}
