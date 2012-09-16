@@ -115,4 +115,18 @@ bc.Client.pubsubTopics = {
 	MODE: 'm'
 };
 
+/**
+ * @enum {string}
+ */
+bc.Client.modes = {
+	SELECT: 's',
+	LINE: 'l',
+	ANCHOR: 'a',
+	PITON: 'p',
+	RAPPEL: 'r',
+	BELAY: 'b',
+	TEXT: 't',
+	LINE_EDIT: 'le'
+};
+
 goog.exportSymbol('bc.Client', bc.Client);

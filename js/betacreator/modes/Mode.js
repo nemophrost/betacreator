@@ -23,32 +23,31 @@ goog.provide('bc.Mode');
  */
 bc.Mode = function(canvas) {
 	this.canvas = canvas;
-}
+};
 
 /**
  * @param {bc.math.Point} point
  */
-bc.Mode.prototype.mouseDown = function(point) {
-	
-}
+bc.Mode.prototype.mouseDown = function(point) {};
 
 /**
  * @param {bc.math.Point} point
  */
-bc.Mode.prototype.mouseMove = function(point) {
-	
-}
+bc.Mode.prototype.mouseMove = function(point) {};
 
 /**
  * @param {bc.math.Point} point
  */
-bc.Mode.prototype.mouseUp = function(point) {
-	
-}
+bc.Mode.prototype.mouseUp = function(point) {};
+
+/**
+ * @param {Event} e
+ */
+bc.Mode.prototype.keyDown = function(e) {};
 
 /**
  * @return {string}
  */
 bc.Mode.prototype.getCursor = function() {
 	return 'default';
-}
+};

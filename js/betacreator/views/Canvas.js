@@ -37,7 +37,7 @@ bc.view.Canvas = function(model) {
 	/** @type {Object.<string,bc.view.Item>} */
 	this.views = {};
 	
-	setInterval(goog.bind(this.checkRender, this), 100);
+	setInterval(goog.bind(this.checkRender, this), 10);
 	
 	bc.Client.pubsub.subscribe(bc.Client.pubsubTopics.CANVAS_RENDER, goog.bind(this.invalidate, this));
 };

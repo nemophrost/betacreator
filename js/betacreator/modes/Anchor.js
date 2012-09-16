@@ -26,7 +26,7 @@ goog.require('bc.math.Point');
  */
 bc.mode.Anchor = function(canvas) {
 	bc.Mode.call(this, canvas);
-}
+};
 goog.inherits(bc.mode.Anchor, bc.Mode);
 
 /**
@@ -38,11 +38,11 @@ bc.mode.Anchor.prototype.mouseDown = function(point) {
 		x: point.x,
 		y: point.y
 	}));
-}
+};
 
 /**
  * @inheritDoc
  */
 bc.mode.Anchor.prototype.getCursor = function() {
 	return 'url(http://cdn1.iconfinder.com/data/icons/BRILLIANT/sports/png/24/ballooning.png) 12 12';
-}
+};

@@ -39,7 +39,7 @@ bc.view.Stamp = function(model) {
 	this.canvas.width = this.model.w + 2*this.padding;
 	this.canvas.height = this.model.h + 2*this.padding;
 	this.canvas.style.position = 'absolute';
-}
+};
 
 /**
  * @param {CanvasRenderingContext2D} ctx
@@ -47,7 +47,7 @@ bc.view.Stamp = function(model) {
  * @param {number=} lineWidth
  * @protected
  */
-bc.view.Stamp.prototype.draw = function(ctx, color, lineWidth) {}
+bc.view.Stamp.prototype.draw = function(ctx, color, lineWidth) {};
 
 /**
  * @param {number=} pageScale
@@ -60,9 +60,9 @@ bc.view.Stamp.prototype.updateLocation = function(pageScale) {
 		canvasWidth = Math.round(scale*this.model.w) + 2*this.padding,
 		canvasHeight = Math.round(scale*this.model.h) + 2*this.padding;
 	
-	this.canvas.style.left = Math.round(pageScale*this.model.x - canvasWidth/2) + 'px';
-	this.canvas.style.top = Math.round(pageScale*this.model.y - canvasHeight/2) + 'px';
-}
+	this.canvas.style.left = Math.round(pageScale*(this.model.x + this.model.offset.x) - canvasWidth/2) + 'px';
+	this.canvas.style.top = Math.round(pageScale*(this.model.y + this.model.offset.y) - canvasHeight/2) + 'px';
+};
 
 
 /*******************************************************************************
@@ -98,8 +98,10 @@ bc.view.Stamp.prototype.render = function(pageScale, selected) {
 		y: this.model.y,
 		w: this.model.w,
 		h: this.model.h,
+		dx: this.model.offset.x,
+		dy: this.model.offset.y,
 		scale: scale
-	}
+	};
 	
 	// if something has changed since last rendering that will affect rendering, 
 	// redraw the stamp
@@ -114,22 +116,22 @@ bc.view.Stamp.prototype.render = function(pageScale, selected) {
 		ctx.canvas.height = canvasHeight;
 		
 		ctx.clearRect(0, 0, canvasWidth, canvasHeight);
-		
+
 		ctx.save();
 		ctx.translate(this.padding, this.padding);
 		ctx.scale(scale, scale);
 		ctx.lineCap = 'round';
-		
+
 		if (selected) {
 			ctx.save();
-			this.draw(ctx, 'palegoldenrod', this.model.lineWidth + 10);
+			// this.draw(ctx, 'rgba(52,156,240,0.75)', this.model.lineWidth + 4);
+			this.draw(ctx, 'rgba(255,0,0,0.75)', this.model.lineWidth + 4);
 			ctx.restore();
 		}
-		else {
-			ctx.save();
-			this.draw(ctx, bc.color.highContrastWhiteOrBlack(this.model.color, .5), this.model.lineWidth + 2);
-			ctx.restore();
-		}
+		
+		ctx.save();
+		this.draw(ctx, bc.color.highContrastWhiteOrBlack(this.model.color, .5), this.model.lineWidth + 2);
+		ctx.restore();
 		
 		this.draw(ctx);
 		
@@ -142,7 +144,7 @@ bc.view.Stamp.prototype.render = function(pageScale, selected) {
 
 		this.updateLocation(pageScale);
 	}
-}
+};
 
 
 /**
@@ -170,7 +172,7 @@ bc.view.Stamp.prototype.getPNG = function(pageScale, selected) {
 		w: this.model.w,
 		h: this.model.h,
 		scale: scale
-	}
+	};
 	
 	// if something has changed since last rendering that will affect rendering, 
 	// redraw the stamp
@@ -213,7 +215,7 @@ bc.view.Stamp.prototype.getPNG = function(pageScale, selected) {
 
 		this.updateLocation(pageScale);
 	}
-}
+};
 
 bc.view.Stamp.prototype.destroy = function() {
 	this.model = null;
@@ -222,4 +224,4 @@ bc.view.Stamp.prototype.destroy = function() {
 	
 	goog.dom.removeNode(this.canvas);
 	this.canvas = null;
-}
+};

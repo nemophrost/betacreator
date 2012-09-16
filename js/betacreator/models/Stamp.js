@@ -39,22 +39,24 @@ bc.model.Stamp = function(params) {
 	this.h = params.h || 20;
 	
 	this.offset = new bc.math.Point(0,0);
-}
+};
 
 /**
- * Apply the offset
- * @protected
+ * Apply the offset and return the result
+ * 
+ * @return {Object}
  */
 bc.model.Stamp.prototype.applyOffset = function() {
-	if (this.offset.x == 0 && this.offset.y == 0)
-		return;
-	
-	this.x += this.offset.x;
-	this.y += this.offset.y;
+	var ret = {
+		x: this.x + this.offset.x,
+		y: this.y + this.offset.y
+	};
 	
 	this.offset.x = 0;
 	this.offset.y = 0;
-}
+
+	return ret;
+};
 
 /**
  * @param {Object} params
@@ -73,7 +75,15 @@ bc.model.Stamp.parseParams = function(params) {
 		w:		params['w'],
 		h:		params['h']
 	};
-}
+};
+
+/**
+ * Set an offset for the stamp
+ * @param {bc.math.Point} p
+ */
+bc.model.Stamp.prototype.setOffset = function(p) {
+	this.offset = p;
+};
 
 /**
  * @return {Object}
@@ -89,4 +99,39 @@ bc.model.Stamp.prototype.serializeParams = function() {
 		'w': this.w,
 		'h': this.h
 	};
-}
+};
+
+/**
+ * @return {Object}
+ */
+bc.model.Stamp.prototype.getActionParams = function() {
+	return {
+		scale: this.scale,
+		color: this.color,
+		alpha: this.alpha,
+		x: this.x,
+		y: this.y,
+		w: this.w,
+		h: this.h
+	};
+};
+
+/**
+ * @param {Object} params
+ */
+bc.model.Stamp.prototype.setActionParams = function(params) {
+	if (params.scale !== undefined)
+		this.scale = params.scale;
+	if (params.color !== undefined)
+		this.color = params.color;
+	if (params.alpha !== undefined)
+		this.alpha = params.alpha;
+	if (params.x !== undefined)
+		this.x = params.x;
+	if (params.y !== undefined)
+		this.y = params.y;
+	if (params.w !== undefined)
+		this.w = params.w;
+	if (params.h !== undefined)
+		this.h = params.h;
+};

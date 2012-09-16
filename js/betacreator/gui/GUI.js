@@ -101,8 +101,19 @@ bc.GUI.prototype.bindEventListeners = function() {
 	
 	// key down
 	goog.events.listen(document, goog.events.EventType.KEYDOWN, function(e) {
+		e.stopPropagation();
+
+		if (me.canvas.model.keyDown(e))
+			return;
+
 		var preventDefault = false;
 		switch (e.keyCode) {
+			case goog.events.KeyCodes.A:
+				bc.Client.pubsub.publish(bc.Client.pubsubTopics.MODE, bc.Client.modes.ANCHOR);
+				break;
+			case goog.events.KeyCodes.V:
+				bc.Client.pubsub.publish(bc.Client.pubsubTopics.MODE, bc.Client.modes.SELECT);
+				break;
 			case goog.events.KeyCodes.Y:
 				if (e.ctrlKey || e.metaKey) {
 					preventDefault = true;
@@ -124,7 +135,5 @@ bc.GUI.prototype.bindEventListeners = function() {
 		
 		if (preventDefault)
 			e.preventDefault();
-		
-		e.stopPropagation();
 	});
 }

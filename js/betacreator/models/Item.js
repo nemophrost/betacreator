@@ -19,9 +19,14 @@ goog.provide('bc.model.Item');
 /**
  * @interface
  */
-bc.model.Item = function() {}
+bc.model.Item = function() {};
 
 /**
  * @return {Object}
  */
-bc.model.Item.prototype.serializeParams = function() {}
+bc.model.Item.prototype.serializeParams = function() {};
+
+/**
+ * @param {bc.math.Point} p
+ */
+bc.model.Item.prototype.setOffset = function(p) {};

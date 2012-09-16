@@ -33,10 +33,10 @@ bc.model.Line = function(params) {
 	
 	this.type = 'line';
 	this.id = bc.uuid(params.id);
-    this.color = params.color || '#ffff00';
-    this.alpha = params.alpha || 1;
+	this.color = params.color || '#ffff00';
+	this.alpha = params.alpha || 1;
 	this.lineWidth = params.lineWidth || 3;
-    this.controlPoints = params.controlPoints || [];
+	this.controlPoints = params.controlPoints || [];
 	this.isDashed = params.isDashed || false;
 	this.onLength = params.onLength || 10;
 	this.offLength = params.offLength || 10;
@@ -48,7 +48,7 @@ bc.model.Line = function(params) {
 	this.points = [];
 	
 	this.updatePoints();
-}
+};
 
 /**
 * Get points along a curve
@@ -92,27 +92,7 @@ bc.model.Line.prototype.getCurvePoints = function(sx, sy, cx, cy, x, y, pointDis
 	}
 	
 	return ret;
-}
-
-/**
- * Apply the offset to all the control points
- * @private
- */
-bc.model.Line.prototype.applyOffset = function() {
-	if (this.offset.x == 0 && this.offset.y == 0)
-		return;
-	
-	var cp = [];
-	
-	bc.array.map(this.controlPoints, function(point) {
-		cp.push(new bc.math.Point(point.x + this.offset.x, point.y + this.offset.y));
-	});
-	
-	this.controlPoints = cp;
-	this.updatePoints();
-	this.offset.x = 0;
-	this.offset.y = 0;
-}
+};
 
 
 /*******************************************************************************
@@ -122,6 +102,31 @@ bc.model.Line.prototype.applyOffset = function() {
  * 
  * 
  ******************************************************************************/
+
+/**
+ * Apply the offset to all the control points and return the result
+ *
+ * @return {Object}
+ */
+bc.model.Line.prototype.applyOffset = function() {
+	// if (this.offset.x == 0 && this.offset.y == 0)
+	// 	return;
+	
+	var cp = [];
+	
+	bc.array.map(this.controlPoints, function(point) {
+		cp.push(new bc.math.Point(point.x + this.offset.x, point.y + this.offset.y));
+	});
+	
+	// this.controlPoints = cp;
+	// this.updatePoints();
+	this.offset.x = 0;
+	this.offset.y = 0;
+
+	return {
+		controlPoints: cp
+	};
+};
 
 /**
  * @param {Object} params
@@ -148,7 +153,15 @@ bc.model.Line.parseParams = function(params) {
 	}
 	
 	return ret;
-}
+};
+
+/**
+ * Set an offset for the stamp
+ * @param {bc.math.Point} p
+ */
+bc.model.Line.prototype.setOffset = function(p) {
+	this.offset = p;
+};
 
 /**
  * @return {Object}
@@ -176,7 +189,7 @@ bc.model.Line.prototype.serializeParams = function() {
 	ret['cp'] = cp;
 	
 	return ret;
-}
+};
 
 /**
  * @param {number} x
@@ -191,7 +204,7 @@ bc.model.Line.prototype.hitTest = function(x,y) {
 		}
 	}
 	return false;
-}
+};
 
 /**
  * Calculate the bounding box based on the control points and set the 'bb' property.
@@ -215,7 +228,7 @@ bc.model.Line.prototype.updateBoundingBox = function() {
 	});
 	
 	this.bb = new bc.math.Box(minX, minY, maxX - minX, maxY - minY);
-}
+};
 
 /**
  * Get all the points for the line (used in hit test) and set the 'points' 
@@ -269,4 +282,4 @@ bc.model.Line.prototype.updatePoints = function() {
 	}
 	
 	this.points = ret;
-}
+};

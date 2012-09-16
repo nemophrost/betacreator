@@ -119,7 +119,7 @@ bc.view.Line.prototype.draw = function(ctx, selected) {
 	
 	if (selected) {
 		ctx.save();
-		this._draw(ctx, 'palegoldenrod', this.model.lineWidth + 10);
+		this._draw(ctx, '#00bbee', this.model.lineWidth + 4);
 		ctx.restore();
 	}
 	else {
@@ -168,7 +168,7 @@ bc.view.Line.prototype.render = function(scale, selected) {
 	var locationProperties = {
 		dx: this.model.offset.x,
 		dy: this.model.offset.y
-	}
+	};
 	
 	// if something has changed since last rendering that will affect rendering, 
 	// redraw the stamp

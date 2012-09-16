@@ -27,5 +27,28 @@ bc.model.stamp.Anchor = function(params) {
 	bc.model.Stamp.call(this, params);
 	
 	this.type = 'anchor';
-}
+};
 goog.inherits(bc.model.stamp.Anchor, bc.model.Stamp);
+
+/**
+ * @param {number} x
+ * @param {number} y
+ * @return {boolean}
+ */
+bc.model.stamp.Anchor.prototype.hitTest = function(x,y) {
+	var dist = this.lineWidth/2 + 2;
+	
+	if(bc.math.distanceFromLineSegment(
+			new bc.math.Point(x,y),
+			new bc.math.Point(this.x - this.w/2, this.y - this.h/2),
+			new bc.math.Point(this.x + this.w/2, this.y + this.h/2)
+		) < dist || bc.math.distanceFromLineSegment(
+			new bc.math.Point(x,y),
+			new bc.math.Point(this.x + this.w/2, this.y - this.h/2),
+			new bc.math.Point(this.x - this.w/2, this.y + this.h/2)
+		) < dist) {
+		return true;
+	}
+
+	return false;
+};

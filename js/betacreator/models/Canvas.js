@@ -16,6 +16,8 @@
 
 goog.provide('bc.model.Canvas');
 
+goog.require('bc.mode.Select');
+// goog.require('bc.mode.Line');
 goog.require('bc.mode.Anchor');
 goog.require('bc.model.Action');
 goog.require('goog.array');
@@ -33,17 +35,36 @@ bc.model.Canvas = function(image) {
 	
 	/** @type {Array.<bc.model.Item>} */
 	this.items = [];
-	
+
+	/** @type {string|null} */
+	this.selected = null;
 	
 	/* Modes
 	 ======================================================================== */
 	
-	this.modes = {
-		ANCHOR: new bc.mode.Anchor(this)
-	};
+	this.modes = {};
+
+	this.modes[bc.Client.modes.SELECT] = new bc.mode.Select(this);
+	// this.modes[bc.Client.modes.LINE] = new bc.mode.Line(this);
+	this.modes[bc.Client.modes.ANCHOR] = new bc.mode.Anchor(this);
+	// this.modes[bc.Client.modes.PITON] = new bc.mode.Piton(this);
+	// this.modes[bc.Client.modes.RAPPEL] = new bc.mode.Rappel(this);
+	// this.modes[bc.Client.modes.BELAY] = new bc.mode.Belay(this);
+	// this.modes[bc.Client.modes.TEXT] = new bc.mode.Text(this);
+	// this.modes[bc.Client.modes.LINE_EDIT] = new bc.mode.LineEdit(this);
+
+
+	bc.Client.pubsub.subscribe(bc.Client.pubsubTopics.MODE, function(mode) {
+		if (me.modes[mode]) {
+			me.mode = me.modes[mode];
+
+			if (me.mode.onActivate)
+				me.mode.onActivate();
+		}
+	});
 	
 	/** @type {bc.Mode} */
-	this.mode = this.modes.ANCHOR;
+	this.mode = this.modes.SELECT;
 	
 	
 	/* Undo/redo functionality
@@ -250,36 +271,55 @@ bc.model.Canvas.prototype.clearUndoHistory = function() {
  * @return {boolean} success
  */
 bc.model.Canvas.prototype.runAction = function(action) {
+	var item;
 	switch (action.type) {
 		case bc.model.ActionType.CreateStamp:
-			var stamp;
 			switch (action.params.type) {
 				case 'anchor':
-					stamp = new bc.model.stamp.Anchor(action.params);
+					item = new bc.model.stamp.Anchor(action.params);
 					break;
 				default:
 					break;
 			}
 			
-			if (stamp) {
-				action.params.id = stamp.id;
-				this.addItem(stamp);
+			if (item) {
+				action.params.id = item.id;
+				this.addItem(item);
 			}
 			else
 				return false;
 			
-			bc.Client.pubsub.publish(bc.Client.pubsubTopics.CANVAS_RENDER);
-			
 			break;
-		case bc.model.ActionType.DeleteStamp:
-			var stamp = this.getItem(action.params.id);
+		case bc.model.ActionType.EditStamp:
+			item = this.getItem(action.params.id);
 			
-			if (stamp)
-				this.removeItem(stamp);
+			if (item) {
+				if (!action.oldParams) {
+					var allParams = item.getActionParams(),
+						oldParams = {
+							id: action.params.id
+						};
+
+					for (var key in action.params) {
+						if (allParams[key] !== undefined)
+							oldParams[key] = allParams[key];
+					}
+					action.oldParams = oldParams;
+				}
+
+				item.setActionParams(action.params);
+			}
 			else
 				return false;
 			
-			bc.Client.pubsub.publish(bc.Client.pubsubTopics.CANVAS_RENDER);
+			break;
+		case bc.model.ActionType.DeleteStamp:
+			item = this.getItem(action.params.id);
+			
+			if (item)
+				this.removeItem(item);
+			else
+				return false;
 			
 			break;
 		default:
@@ -293,6 +333,8 @@ bc.model.Canvas.prototype.runAction = function(action) {
 		this.addToUndoBatch(action);
 
 	this.endUndoBatch();
+
+	bc.Client.pubsub.publish(bc.Client.pubsubTopics.CANVAS_RENDER);
 	
 	return true;
 };
@@ -302,7 +344,39 @@ bc.model.Canvas.prototype.runAction = function(action) {
  * @return {boolean}
  */
 bc.model.Canvas.prototype.isItemSelected = function(item) {
-	return false;
+	return this.selected == item.id;
+};
+
+/**
+ * @param {bc.model.Item} item
+ */
+bc.model.Canvas.prototype.selectItem = function(item) {
+	this.selected = item.id;
+
+	bc.Client.pubsub.publish(bc.Client.pubsubTopics.CANVAS_RENDER);
+};
+
+/**
+ * @return {Array.<bc.model.Item>} items
+ */
+bc.model.Canvas.prototype.getSelectItems = function() {
+	if (!this.selected)
+		return [];
+
+	var item = this.getItem(this.selected);
+
+	if (item)
+		return [item];
+	else
+		return [];
+};
+
+/**
+ */
+bc.model.Canvas.prototype.deselectAll = function() {
+	this.selected = null;
+
+	bc.Client.pubsub.publish(bc.Client.pubsubTopics.CANVAS_RENDER);
 };
 
 /**
@@ -334,4 +408,11 @@ bc.model.Canvas.prototype.mouseMove = function(e) {
  */
 bc.model.Canvas.prototype.mouseUp = function(e) {
 	this.mode.mouseUp(this.eventToCoord(e));
+};
+
+/**
+ * @param {Event} e
+ */
+bc.model.Canvas.prototype.keyDown = function(e) {
+	return this.mode.keyDown(e);
 };

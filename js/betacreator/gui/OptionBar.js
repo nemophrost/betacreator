@@ -31,6 +31,7 @@ bc.gui.OptionBar = function() {
 		me.mode = mode;
 		me.refresh();
 	});
+	bc.Client.pubsub.publish(bc.Client.pubsubTopics.MODE, bc.Client.modes.SELECT);
 };
 
 /**
@@ -146,7 +147,7 @@ bc.gui.OptionBar.prototype.createControls = function(container) {
 					bc.Client.pubsub.publish(bc.Client.pubsubTopics.MODE, mode);
 				},
 				tooltip:bc.i18n(tooltip),
-				selected: function() { return me.mode == mode },
+				selected: function() { return me.mode == mode; },
 				disabled: function() { return false; }
 			}],
 			null,
@@ -154,13 +155,13 @@ bc.gui.OptionBar.prototype.createControls = function(container) {
 		);
 	};
 
-	var selectButton = createToolButton('tool-select', 'select', 'Select Tool');
-	var lineButton = createToolButton('tool-line', 'line', 'Line Tool');
-	var anchorButton = createToolButton('tool-anchor', 'anchor', 'Anchor Tool');
-	var pitonButton = createToolButton('tool-piton', 'piton', 'Piton Tool');
-	var rappelButton = createToolButton('tool-rappel', 'rappel', 'Rappel Tool');
-	var belayButton = createToolButton('tool-belay', 'belay', 'Belay Tool');
-	var textButton = createToolButton('tool-text', 'text', 'Text Tool');
+	var selectButton = createToolButton('tool-select', bc.Client.modes.SELECT, 'Select Tool');
+	var lineButton = createToolButton('tool-line', bc.Client.modes.LINE, 'Line Tool');
+	var anchorButton = createToolButton('tool-anchor', bc.Client.modes.ANCHOR, 'Anchor Tool');
+	var pitonButton = createToolButton('tool-piton', bc.Client.modes.PITON, 'Piton Tool');
+	var rappelButton = createToolButton('tool-rappel', bc.Client.modes.RAPPEL, 'Rappel Tool');
+	var belayButton = createToolButton('tool-belay', bc.Client.modes.BELAY, 'Belay Tool');
+	var textButton = createToolButton('tool-text', bc.Client.modes.TEXT, 'Text Tool');
 
 	this.addDivider(container);
 
