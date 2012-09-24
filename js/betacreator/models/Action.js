@@ -26,12 +26,10 @@ bc.model.ActionType = {
 	CreateStamp:	1,
 	CreateLine:		2,
 	CreateText:		3,
-	EditStamp:		4,
-	EditLine:		5,
-	EditText:		6,
-	DeleteStamp:	7,
-	DeleteLine:		8,
-	DeleteText:		9
+	EditItem:		4,
+	DeleteStamp:	5,
+	DeleteLine:		6,
+	DeleteText:		7
 };
 
 /**
@@ -100,9 +98,7 @@ bc.model.Action.getReverseAction = function(action) {
 			ret.type = bc.model.ActionType.DeleteText;
 			break;
 
-		case bc.model.ActionType.EditStamp:
-		case bc.model.ActionType.EditLine:
-		case bc.model.ActionType.EditText:
+		case bc.model.ActionType.EditItem:
 			ret.params = bc.object.copy(action.oldParams);
 			break;
 

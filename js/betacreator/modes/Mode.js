@@ -42,6 +42,7 @@ bc.Mode.prototype.mouseUp = function(point) {};
 
 /**
  * @param {Event} e
+ * @return {boolean|undefined}
  */
 bc.Mode.prototype.keyDown = function(e) {};
 

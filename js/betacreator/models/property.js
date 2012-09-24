@@ -4,63 +4,6 @@ goog.provide('bc.properties');
 goog.require('bc.model.Action');
 
 /**
- * @param {string} property
- * @param {*} val
- * @private
- */
-bc.property._set = function(property, val) {
-	var canvas = bc.property.canvas;
-	if (!canvas)
-		return;
-
-	var cleanProperty = bc.property._clean(property),
-		isTextProperty = bc.property._forText(property);
-
-	// if (lucid.CanvasEditor.active) {
-	// 	if (!isTextProperty)
-	// 		return;
-
-	// 	lucid.CanvasEditor.active.setStyle(cleanProperty, val);
-	// }
-	// else if (canvas.selection && isTextProperty) {
-	// 	canvas.selection.editor.select();
-	// 	canvas.selection.editor.setStyle(cleanProperty, val);
-	// 	canvas.selection.dirty = true;
-	// }
-	// else if (canvas.selection) {
-	// 	canvas.selection.properties[property] = val;
-	// 	canvas.selection.dirty = true;
-	// }
-	// else {
-	// 	canvas.document.properties[property] = val;
-	// }
-};
-
-/**
- * @param {string} property
- * @return {string}
- * @private
- */
-bc.property._clean = function(property) {
-	if (property.search(/^text\./) === 0)
-		return property.substr(5);
-
-	return property;
-};
-
-/**
- * @param {string} property
- * @return {boolean}
- * @private
- */
-bc.property._forText = function(property) {
-	if (property.search(/^text\./) === 0)
-		return true;
-
-	return false;
-};
-
-/**
  * @type {bc.model.Canvas|null}
  */
 bc.property.canvas = null;
@@ -70,25 +13,27 @@ bc.property.canvas = null;
  * @param {*} val
  */
 bc.property.set = function(property, val) {
-	// var canvas = bc.property.canvas;
-	// if (!canvas)
-	// 	return;
+	var canvas = bc.property.canvas;
+	if (!canvas)
+		return;
 
-	var oldProp = bc.property.get(property),
-		isTextProperty = bc.property._forText(property);
+	var selection = canvas.getSelectedItems();
 
-	// // setting text properties will run an action elsewhere
-	// if (isTextProperty) {
-	// 	bc.property._set(property, val);
-	// }
-	// // for non-text properties we need to run the action ourselves
-	// else {
-	// 	lucid.pressit.run(new lucid.pressit.Action(function() {
-	// 		bc.property._set(property, val);
-	// 	}, function() {
-	// 		bc.property._set(property, oldProp);
-	// 	}));
-	// }
+	if (selection.length > 0) {
+		goog.array.forEach(selection, function(item, i) {
+			if (item.properties[property] !== undefined)
+				item.properties[property] = val;
+
+			var changed = {
+				id: item.id
+			};
+			changed[property] = val;
+			canvas.runAction(new bc.model.Action(bc.model.ActionType.EditItem, changed));
+		});
+	}
+	else {
+		canvas.properties[property] = val;
+	}
 };
 
 /**
@@ -96,43 +41,58 @@ bc.property.set = function(property, val) {
  * @return {*}
  */
 bc.property.get = function(property) {
-	// var canvas = bc.property.canvas;
-	// if (!canvas)
-		return undefined;
+	var canvas = bc.property.canvas;
+	if (!canvas)
+		return;
 
-	// var cleanProperty = bc.property._clean(property),
-	// 	isTextProperty = bc.property._forText(property);
+	var selection = canvas.getSelectedItems(),
+		ret;
 
-	// if (lucid.CanvasEditor.active) {
-	// 	if (!isTextProperty)
-	// 		return undefined;
+	if (selection.length > 0) {
+		goog.array.some(selection, function(item, i) {
+			if (item.properties[property] !== undefined) {
+				ret = item.properties[property];
+				return true;
+			}
+			return false;
+		});
+	}
+	else {
+		ret = canvas.properties[property];
+	}
 
-	// 	return lucid.CanvasEditor.active.getSelectedStyle()[cleanProperty] || null;
-	// }
-	// else if (canvas.selection && isTextProperty) {
-	// 	if (!canvas.selection.editor)
-	// 		return undefined;
+	return ret;
+};
 
-	// 	canvas.selection.editor.select();
-	// 	return canvas.selection.editor.getSelectedStyle()[cleanProperty] || null;
-	// }
-	// else if (canvas.selection) {
-	// 	return canvas.selection.properties[property];
-	// }
-	// else {
-	// 	if (isTextProperty)
-	// 		return undefined;
-	// 	return canvas.document.properties[property];
-	// }
+/**
+ * @param {string} property
+ * @return {function(?=):?}
+ */
+bc.property.getterSetter = function(properties, property) {
+	return function(val) {
+		if (val !== undefined && properties[property] !== undefined)
+			properties[property] = val;
+
+		return properties[property];
+	};
 };
 
 /**
  * @enum {string}
  */
 bc.properties = {
+	ITEM_TYPE: 'it',
 	ITEM_COLOR: 'ic',
 	ITEM_SCALE: 'is',
+	ITEM_ALPHA: 'ia',
+	ITEM_LINEWIDTH: 'lw',
+	ITEM_X: 'x',
+	ITEM_Y: 'y',
+	ITEM_W: 'w',
+	ITEM_H: 'h',
 	TEXT_ALIGN: 'ta',
+	LINE_CONTROLPOINTS: 'cp',
 	LINE_CURVED: 'lc',
-	LINE_STYLE: 'ls'
+	LINE_OFFLENGTH: 'fl',
+	LINE_ONLENGTH: 'nl'
 };

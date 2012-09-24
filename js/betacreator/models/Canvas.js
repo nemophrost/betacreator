@@ -17,9 +17,10 @@
 goog.provide('bc.model.Canvas');
 
 goog.require('bc.mode.Select');
-// goog.require('bc.mode.Line');
+goog.require('bc.mode.Line');
 goog.require('bc.mode.Anchor');
 goog.require('bc.model.Action');
+goog.require('bc.property');
 goog.require('goog.array');
 
 /**
@@ -36,8 +37,13 @@ bc.model.Canvas = function(image) {
 	/** @type {Array.<bc.model.Item>} */
 	this.items = [];
 
+	/** @type {Object} */
+	this.properties = {};
+
 	/** @type {string|null} */
 	this.selected = null;
+
+	bc.property.canvas = this;
 	
 	/* Modes
 	 ======================================================================== */
@@ -45,7 +51,7 @@ bc.model.Canvas = function(image) {
 	this.modes = {};
 
 	this.modes[bc.Client.modes.SELECT] = new bc.mode.Select(this);
-	// this.modes[bc.Client.modes.LINE] = new bc.mode.Line(this);
+	this.modes[bc.Client.modes.LINE] = new bc.mode.Line(this);
 	this.modes[bc.Client.modes.ANCHOR] = new bc.mode.Anchor(this);
 	// this.modes[bc.Client.modes.PITON] = new bc.mode.Piton(this);
 	// this.modes[bc.Client.modes.RAPPEL] = new bc.mode.Rappel(this);
@@ -56,9 +62,14 @@ bc.model.Canvas = function(image) {
 
 	bc.Client.pubsub.subscribe(bc.Client.pubsubTopics.MODE, function(mode) {
 		if (me.modes[mode]) {
+			var changed = me.mode != me.modes[mode];
+
+			if (changed && me.mode && me.mode.onDeactivate)
+				me.mode.onDeactivate();
+
 			me.mode = me.modes[mode];
 
-			if (me.mode.onActivate)
+			if (changed && me.mode.onActivate)
 				me.mode.onActivate();
 		}
 	});
@@ -199,7 +210,7 @@ bc.model.Canvas.prototype.undo = function() {
 	var newBatch = [];
 	
 	var me = this;
-	bc.array.map(oldBatch, function(a) {
+	goog.array.forEach(oldBatch, function(a) {
 		a = bc.model.Action.getReverseAction(a);
 		if(a != null) {
 			a.isUndo = true;
@@ -229,7 +240,7 @@ bc.model.Canvas.prototype.redo = function() {
 	var newBatch = [];
 
 	var me = this;
-	bc.array.map(oldBatch, function(a) {
+	goog.array.forEach(oldBatch, function(a) {
 		a = bc.model.Action.getReverseAction(a);
 		if(a != null) {
 			a.isRedo = true;
@@ -290,7 +301,18 @@ bc.model.Canvas.prototype.runAction = function(action) {
 				return false;
 			
 			break;
-		case bc.model.ActionType.EditStamp:
+		case bc.model.ActionType.CreateLine:
+			if (action.params.controlPoints && action.params.controlPoints.length > 1) {
+				item = new bc.model.Line(action.params);
+				action.params.id = item.id;
+				this.addItem(item);
+			}
+			else {
+				return false;
+			}
+			
+			break;
+		case bc.model.ActionType.EditItem:
 			item = this.getItem(action.params.id);
 			
 			if (item) {
@@ -353,13 +375,14 @@ bc.model.Canvas.prototype.isItemSelected = function(item) {
 bc.model.Canvas.prototype.selectItem = function(item) {
 	this.selected = item.id;
 
+	bc.Client.pubsub.publish(bc.Client.pubsubTopics.SELECTION_CHANGE);
 	bc.Client.pubsub.publish(bc.Client.pubsubTopics.CANVAS_RENDER);
 };
 
 /**
  * @return {Array.<bc.model.Item>} items
  */
-bc.model.Canvas.prototype.getSelectItems = function() {
+bc.model.Canvas.prototype.getSelectedItems = function() {
 	if (!this.selected)
 		return [];
 
@@ -376,6 +399,7 @@ bc.model.Canvas.prototype.getSelectItems = function() {
 bc.model.Canvas.prototype.deselectAll = function() {
 	this.selected = null;
 
+	bc.Client.pubsub.publish(bc.Client.pubsubTopics.SELECTION_CHANGE);
 	bc.Client.pubsub.publish(bc.Client.pubsubTopics.CANVAS_RENDER);
 };
 

@@ -1,9 +1,10 @@
 goog.provide('bc.gui.input.Spinner');
 
 goog.require('bc.gui.Input');
-goog.require('bc.array');
 goog.require('bc.math');
+goog.require('bc.array');
 goog.require('bc.ClassSet');
+goog.require('goog.array');
 
 /**
  * Represents a spinner input control
@@ -135,15 +136,19 @@ bc.gui.input.Spinner = function(options, parent, width) {
 
 	/* bind event handlers
 	==================================================================*/
-
-	goog.events.listen(this.input, goog.events.EventType.CHANGE, function(e) {
+	var onChange = function() {
 		if (me._disabled)
 			return;
 
-		var newVal = parseFloat($(this).val());
+		var newVal = parseFloat(me.input.value);
 		if (goog.isNumber(newVal))
 			newVal /= me.displayFactor;
+
 		me._setValue(bc.array.coalesce([newVal, me.defaultVal, me.value]));
+	};
+
+	goog.events.listen(this.input, goog.events.EventType.CHANGE, function(e) {
+		onChange();
 	});
 
 	goog.events.listen(this.input, goog.events.EventType.KEYDOWN, function(e) {
@@ -166,7 +171,7 @@ bc.gui.input.Spinner = function(options, parent, width) {
 		
 		// enter
 		else if (keyCode == 13) {
-			me.input.change();
+			onChange();
 			e.preventDefault();
 		}
 	});
@@ -280,7 +285,7 @@ bc.gui.input.Spinner.prototype.onChange = function(programmatic) {
 	var valid = true,
 		errorMessage = null;
 
-	bc.array.map(this.changeCallbacks, function(f) {
+	goog.array.forEach(this.changeCallbacks, function(f) {
 		f.call(me, me.value, !!programmatic);
 	});
 };
@@ -299,7 +304,7 @@ bc.gui.input.Spinner.prototype.onFocus = function() {
 		me.input.select();
 	}, 10);
 
-	bc.array.map(this.focusCallbacks, function(f) {
+	goog.array.forEach(this.focusCallbacks, function(f) {
 		f.call(me, me.value);
 	});
 };
@@ -312,7 +317,7 @@ bc.gui.input.Spinner.prototype.onFocus = function() {
 bc.gui.input.Spinner.prototype.onBlur = function() {
 	var me = this;
 	
-	bc.array.map(this.blurCallbacks, function(f) {
+	goog.array.forEach(this.blurCallbacks, function(f) {
 		f.call(me);
 	});
 };

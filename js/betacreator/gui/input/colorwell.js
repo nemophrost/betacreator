@@ -16,9 +16,9 @@
 goog.provide('bc.gui.input.ColorWell');
 
 goog.require('bc.gui.Input');
-goog.require('bc.array');
 goog.require('bc.domBuilder');
 goog.require('goog.style');
+goog.require('goog.array');
 
 /**
  * Represents a color well
@@ -184,7 +184,7 @@ bc.gui.input.ColorWell.prototype.onChange = function(programmatic) {
 	var me = this;
 	var valid = true, errorMessage = null;
 
-	bc.array.map(this.changeCallbacks, function(f) {
+	goog.array.forEach(this.changeCallbacks, function(f) {
 		f.call(me, me.value, !!programmatic);
 	});
 };

@@ -76,7 +76,9 @@ bc.GUI = function(client) {
 	
 	// bind all mouse event listeners
 	this.bindEventListeners();
-}
+
+	this.optionBar.init();
+};
 
 /**
  * bind mouse and keyboard event listeners to hitTestDiv and document respectively
@@ -84,6 +86,11 @@ bc.GUI = function(client) {
 bc.GUI.prototype.bindEventListeners = function() {
 	var me = this;
 	
+	// mousedown on everything to hide overlays
+	goog.events.listen(this.wrapper, goog.events.EventType.MOUSEDOWN, function(e) {
+		bc.Client.pubsub.publish(bc.Client.pubsubTopics.HIDE_OVERLAYS);
+	});
+
 	// mouse down
 	goog.events.listen(this.hitTestDiv, goog.events.EventType.MOUSEDOWN, function(e) {
 		me.canvas.model.mouseDown(e);
@@ -111,6 +118,9 @@ bc.GUI.prototype.bindEventListeners = function() {
 			case goog.events.KeyCodes.A:
 				bc.Client.pubsub.publish(bc.Client.pubsubTopics.MODE, bc.Client.modes.ANCHOR);
 				break;
+			case goog.events.KeyCodes.L:
+				bc.Client.pubsub.publish(bc.Client.pubsubTopics.MODE, bc.Client.modes.LINE);
+				break;
 			case goog.events.KeyCodes.V:
 				bc.Client.pubsub.publish(bc.Client.pubsubTopics.MODE, bc.Client.modes.SELECT);
 				break;
@@ -136,4 +146,4 @@ bc.GUI.prototype.bindEventListeners = function() {
 		if (preventDefault)
 			e.preventDefault();
 	});
-}
+};

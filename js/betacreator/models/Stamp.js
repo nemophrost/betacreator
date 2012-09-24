@@ -27,16 +27,28 @@ goog.require('bc.uuid');
 bc.model.Stamp = function(params) {
 	params = params || {};
 
-	this.type = null;
 	this.id = bc.uuid(params.id);
-	this.scale = params.scale || 1;
-	this.color = params.color || '#ffff00';
-	this.alpha = params.alpha || 1;
-	this.lineWidth = params.lineWidth || 3;
-	this.x = params.x || 0;
-	this.y = params.y || 0;
-	this.w = params.w || 20;
-	this.h = params.h || 20;
+
+	this.properties = {};
+	this.properties[bc.properties.ITEM_TYPE] = null;
+	this.properties[bc.properties.ITEM_SCALE] = params.scale || 1;
+	this.properties[bc.properties.ITEM_COLOR] = params.color || '#ffff00';
+	this.properties[bc.properties.ITEM_ALPHA] = params.alpha || 1;
+	this.properties[bc.properties.ITEM_LINEWIDTH] = params.lineWidth || 3;
+	this.properties[bc.properties.ITEM_X] = params.x || 0;
+	this.properties[bc.properties.ITEM_Y] = params.y || 0;
+	this.properties[bc.properties.ITEM_W] = params.w || 20;
+	this.properties[bc.properties.ITEM_H] = params.h || 20;
+	
+	this.type = /** @type {function(string=):string} */(bc.property.getterSetter(this.properties, bc.properties.ITEM_TYPE));
+	this.scale = /** @type {function(number=):number} */(bc.property.getterSetter(this.properties, bc.properties.ITEM_SCALE));
+	this.color = /** @type {function(string=):string} */(bc.property.getterSetter(this.properties, bc.properties.ITEM_COLOR));
+	this.alpha = /** @type {function(number=):number} */(bc.property.getterSetter(this.properties, bc.properties.ITEM_ALPHA));
+	this.lineWidth = /** @type {function(number=):number} */(bc.property.getterSetter(this.properties, bc.properties.ITEM_LINEWIDTH));
+	this.x = /** @type {function(number=):number} */(bc.property.getterSetter(this.properties, bc.properties.ITEM_X));
+	this.y = /** @type {function(number=):number} */(bc.property.getterSetter(this.properties, bc.properties.ITEM_Y));
+	this.w = /** @type {function(number=):number} */(bc.property.getterSetter(this.properties, bc.properties.ITEM_W));
+	this.h = /** @type {function(number=):number} */(bc.property.getterSetter(this.properties, bc.properties.ITEM_H));
 	
 	this.offset = new bc.math.Point(0,0);
 };
@@ -48,8 +60,8 @@ bc.model.Stamp = function(params) {
  */
 bc.model.Stamp.prototype.applyOffset = function() {
 	var ret = {
-		x: this.x + this.offset.x,
-		y: this.y + this.offset.y
+		x: this.x() + this.offset.x,
+		y: this.y() + this.offset.y
 	};
 	
 	this.offset.x = 0;
@@ -66,14 +78,15 @@ bc.model.Stamp.parseParams = function(params) {
 	params = params || {};
 	
 	return {
-		type:	params['t'],
-		scale:	params['s'],
-		color:	params['c'],
-		alpha:	params['a'],
-		x:		params['x'],
-		y:		params['y'],
-		w:		params['w'],
-		h:		params['h']
+		type:		params[bc.properties.ITEM_TYPE],
+		scale:		params[bc.properties.ITEM_SCALE],
+		color:		params[bc.properties.ITEM_COLOR],
+		alpha:		params[bc.properties.ITEM_ALPHA],
+		lineWidth: 	params[bc.properties.ITEM_LINEWIDTH],
+		x:			params[bc.properties.ITEM_X],
+		y:			params[bc.properties.ITEM_Y],
+		w:			params[bc.properties.ITEM_W],
+		h:			params[bc.properties.ITEM_H]
 	};
 };
 
@@ -82,23 +95,21 @@ bc.model.Stamp.parseParams = function(params) {
  * @param {bc.math.Point} p
  */
 bc.model.Stamp.prototype.setOffset = function(p) {
-	this.offset = p;
+	this.offset.x = p.x;
+	this.offset.y = p.y;
 };
 
 /**
  * @return {Object}
  */
 bc.model.Stamp.prototype.serializeParams = function() {
-	return {
-		't': this.type,
-		's': this.scale,
-		'c': this.color,
-		'a': this.alpha,
-		'x': this.x,
-		'y': this.y,
-		'w': this.w,
-		'h': this.h
-	};
+	var ret = {};
+
+	for (var key in this.properties) {
+		ret[key] = this.properties[key];
+	}
+
+	return ret;
 };
 
 /**
@@ -106,13 +117,13 @@ bc.model.Stamp.prototype.serializeParams = function() {
  */
 bc.model.Stamp.prototype.getActionParams = function() {
 	return {
-		scale: this.scale,
-		color: this.color,
-		alpha: this.alpha,
-		x: this.x,
-		y: this.y,
-		w: this.w,
-		h: this.h
+		scale: this.scale(),
+		color: this.color(),
+		alpha: this.alpha(),
+		x: this.x(),
+		y: this.y(),
+		w: this.w(),
+		h: this.h()
 	};
 };
 
@@ -121,17 +132,17 @@ bc.model.Stamp.prototype.getActionParams = function() {
  */
 bc.model.Stamp.prototype.setActionParams = function(params) {
 	if (params.scale !== undefined)
-		this.scale = params.scale;
+		this.scale(params.scale);
 	if (params.color !== undefined)
-		this.color = params.color;
+		this.color(params.color);
 	if (params.alpha !== undefined)
-		this.alpha = params.alpha;
+		this.alpha(params.alpha);
 	if (params.x !== undefined)
-		this.x = params.x;
+		this.x(params.x);
 	if (params.y !== undefined)
-		this.y = params.y;
+		this.y(params.y);
 	if (params.w !== undefined)
-		this.w = params.w;
+		this.w(params.w);
 	if (params.h !== undefined)
-		this.h = params.h;
+		this.h(params.h);
 };

@@ -64,7 +64,7 @@ bc.mode.Select.prototype.mouseDown = function(point) {
 bc.mode.Select.prototype.mouseMove = function(point) {
 	var me = this;
 	if (this.mouseDownPoint) {
-		goog.array.forEach(this.canvas.getSelectItems(), function(item, i) {
+		goog.array.forEach(this.canvas.getSelectedItems(), function(item, i) {
 			item.setOffset(new bc.math.Point(point.x - me.mouseDownPoint.x, point.y - me.mouseDownPoint.y));
 		});
 		bc.Client.pubsub.publish(bc.Client.pubsubTopics.CANVAS_RENDER);
@@ -77,10 +77,10 @@ bc.mode.Select.prototype.mouseMove = function(point) {
 bc.mode.Select.prototype.mouseUp = function(point) {
 	var me = this;
 	if (this.mouseDownPoint) {
-		goog.array.forEach(this.canvas.getSelectItems(), function(item, i) {
+		goog.array.forEach(this.canvas.getSelectedItems(), function(item, i) {
 			var changed = item.applyOffset(new bc.math.Point(point.x - me.mouseDownPoint.x, point.y - me.mouseDownPoint.y));
 			changed.id = item.id;
-			me.canvas.runAction(new bc.model.Action(bc.model.ActionType.EditStamp, changed));
+			me.canvas.runAction(new bc.model.Action(bc.model.ActionType.EditItem, changed));
 		});
 		bc.Client.pubsub.publish(bc.Client.pubsubTopics.CANVAS_RENDER);
 	}

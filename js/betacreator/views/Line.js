@@ -19,11 +19,11 @@ goog.provide('bc.view.Line');
 goog.require('bc.view.Item');
 goog.require('bc.model.Line');
 goog.require('bc.math');
-goog.require('bc.array');
 goog.require('bc.object');
 goog.require('bc.color');
 goog.require('bc.render.DashedLine');
 goog.require('goog.dom');
+goog.require('goog.array');
 
 /**
  * @param {bc.model.Line} model
@@ -43,7 +43,7 @@ bc.view.Line = function(model) {
 	this.canvas.width = 2*this.padding;
 	this.canvas.height = 2*this.padding;
 	this.canvas.style.position = 'absolute';
-}
+};
 
 
 
@@ -55,25 +55,28 @@ bc.view.Line = function(model) {
  * @private
  */
 bc.view.Line.prototype._draw = function(context, color, lineWidth) {
-	var me = this;
+	var me = this,
+		scale = this.model.scale(),
+		isDashed = this.model.offLength() > 0;
 	
-	context.strokeStyle = color || this.model.color;
-	context.lineWidth = lineWidth || this.model.lineWidth;
+	context.strokeStyle = color || this.model.color();
+	context.lineWidth = lineWidth || this.model.lineWidth()*scale;
 	
 	/** @type {CanvasRenderingContext2D|bc.render.DashedLine} */
-	var ctx = this.model.isDashed ? new bc.render.DashedLine(context, this.model.onLength, this.model.offLength) : context;
+	var ctx = isDashed ? new bc.render.DashedLine(context, this.model.onLength()*scale, this.model.offLength()*scale) : context;
 	
 	ctx.beginPath();
 	
-	if (this.model.curved) {
-		var cpLength = this.model.controlPoints.length;
-		bc.array.map(this.model.controlPoints, function(cp, i) {
+	if (this.model.curved()) {
+		var cps = this.model.controlPoints();
+		var cpLength = cps.length;
+		goog.array.forEach(cps, function(cp, i) {
 			// for first point, just move to it
 			if (i == 0) {
 				ctx.moveTo(cp.x, cp.y);
 			}
 			else {
-				var prevCP = me.model.controlPoints[i - 1];
+				var prevCP = cps[i - 1];
 				
 				// for second point just draw a line to half way between it and 
 				// the first
@@ -91,7 +94,7 @@ bc.view.Line.prototype._draw = function(context, color, lineWidth) {
 		});
 	}
 	else {
-		bc.array.map(this.model.controlPoints, function(cp, i) {
+		goog.array.forEach(this.model.controlPoints(), function(cp, i) {
 			// for first point, just move to it
 			if (i == 0)
 				ctx.moveTo(cp.x, cp.y);
@@ -103,9 +106,9 @@ bc.view.Line.prototype._draw = function(context, color, lineWidth) {
 	
 	ctx.stroke();
 
-	if (this.model.isDashed)
+	if (isDashed)
 		ctx.destroy();
-}
+};
 
 /**
  * @param {CanvasRenderingContext2D} ctx
@@ -119,18 +122,18 @@ bc.view.Line.prototype.draw = function(ctx, selected) {
 	
 	if (selected) {
 		ctx.save();
-		this._draw(ctx, '#00bbee', this.model.lineWidth + 4);
+		this._draw(ctx, 'rgba(255,0,0,0.75)', this.model.lineWidth()*this.model.scale() + 4);
 		ctx.restore();
 	}
 	else {
 		ctx.save();
-		this._draw(ctx, bc.color.highContrastWhiteOrBlack(this.model.color, .5), this.model.lineWidth + 2);
+		this._draw(ctx, bc.color.highContrastWhiteOrBlack(this.model.color(), .5), this.model.lineWidth()*this.model.scale() + 2);
 		ctx.restore();
 	}
 
 	this._draw(ctx);
 	ctx.restore();
-}
+};
 
 /**
  * @param {number=} scale
@@ -141,7 +144,7 @@ bc.view.Line.prototype.updateLocation = function(scale) {
 	
 	this.canvas.style.left = Math.round(scale*(this.model.offset.x + this.model.bb.x) - this.padding) + 'px';
 	this.canvas.style.top = Math.round(scale*(this.model.offset.y + this.model.bb.y) - this.padding) + 'px';
-}
+};
 
 
 
@@ -202,7 +205,7 @@ bc.view.Line.prototype.render = function(scale, selected) {
 
 		this.updateLocation(scale);
 	}
-}
+};
 
 bc.view.Line.prototype.destroy = function() {
 	this.model = null;
@@ -211,4 +214,4 @@ bc.view.Line.prototype.destroy = function() {
 	
 	goog.dom.removeNode(this.canvas);
 	this.canvas = null;
-}
+};

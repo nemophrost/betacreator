@@ -40,6 +40,9 @@ bc.gui.ColorPicker = function() {
 		children: [
 			{
 				classes: 'callout-bubble',
+				create: function(dom) {
+					me.bubble = dom;
+				},
 				children: [{
 					classes: 'simple-color-picker',
 					children: [
@@ -83,15 +86,6 @@ bc.gui.ColorPicker = function() {
 							classes: 'swatch-container',
 							create: function(dom) {
 								me.swatchContainer = dom;
-
-								// dom.mouseleave(function() {
-								// 	dom.find('.selected').removeClass('selected');
-
-								// 	if (me.selectedSwatch)
-								// 		me.selectedSwatch.addClass('selected');
-
-								// 	me.resetPreview();
-								// });
 							}
 						}
 					]
@@ -104,8 +98,15 @@ bc.gui.ColorPicker = function() {
 		]
 	});
 
-	goog.events.listen(this.container, goog.events.EventType.MOUSEDOWN, function(e) {
+	// prevent hide overlays when mousing down on bubble
+	goog.events.listen(this.bubble, goog.events.EventType.MOUSEDOWN, function(e) {
 		e.stopPropagation();
+	});
+
+	// on mouse out on bubble, reset the selected swatch
+	goog.events.listen(this.bubble, goog.events.EventType.MOUSEOUT, function(e) {
+		me.highlightSwatch(me.selectedSwatch);
+		me.resetPreview();
 	});
 
 	/**
@@ -164,6 +165,20 @@ bc.gui.ColorPicker.prototype.resetPreview = function() {
 
 
 /**
+ * @param {?Element=} swatch
+ * @private
+ */
+bc.gui.ColorPicker.prototype.highlightSwatch = function(swatch) {
+	goog.array.forEach(/** @type {Array} */(goog.dom.query('.selected', this.swatchContainer)), function(element) {
+		goog.dom.classes.remove(element, 'selected');
+	});
+
+	if (swatch)
+		goog.dom.classes.add(swatch, 'selected');
+};
+
+
+/**
  * @param {?bc.Color=} color
  * @private
  */
@@ -173,10 +188,7 @@ bc.gui.ColorPicker.prototype.setSelectedColor = function(color) {
 		this.selectedColor = new bc.Color(color.hex());
 
 		if (this.selectedSwatch) {
-			bc.array.map(/** @type {Array} */(goog.dom.query('>.selected', goog.dom.getParentElement(this.selectedSwatch))), function(elem) {
-				goog.dom.classes.remove(this.selectedSwatch, 'selected');
-			});
-			goog.dom.classes.add(this.selectedSwatch, 'selected');
+			this.highlightSwatch(this.selectedSwatch);
 		}
 
 		this.previewColor(color);
@@ -244,16 +256,15 @@ bc.gui.ColorPicker.prototype.addElem = function(rgb) {
 				me.swatches[color.hex().toLowerCase()] = dom;
 			}
 
-			// dom.mouseover(function() {
-			// 	dom.addClass('selected').siblings('.selected').removeClass('selected');
-			// 	me.previewColor(color);
-			// }).click(function() {
-			// 	if (!me.callback || me.callback(color) != false)
-			// 		me.hide();
-			// }).mousedown(function(e) {
-			// 	// prevent CLOSE_OVERLAYS
-			// 	e.stopPropagation();
-			// });
+			goog.events.listen(dom, goog.events.EventType.MOUSEOVER, function(e) {
+				me.highlightSwatch(dom);
+				me.previewColor(color);
+			});
+
+			goog.events.listen(dom, goog.events.EventType.CLICK, function(e) {
+				if (!me.callback || me.callback(color) !== false)
+					me.hide();
+			});
 		}
 	}));
 };

@@ -16,8 +16,8 @@
 goog.provide('bc.gui.input.ButtonBar');
 
 goog.require('bc.gui.Input');
-goog.require('bc.array');
 goog.require('bc.ClassSet');
+goog.require('goog.array');
 
 
 /**
@@ -93,7 +93,7 @@ bc.gui.input.ButtonBar.prototype._setValue = function(newValue) {
 bc.gui.input.ButtonBar.prototype.onChange = function(programmatic) {
 	var me = this;
 
-	bc.array.map(this.changeCallbacks, function(f) {
+	goog.array.forEach(this.changeCallbacks, function(f) {
 		f.call(me, me.value, !!programmatic);
 	});
 };
@@ -132,7 +132,7 @@ bc.gui.input.ButtonBar.prototype.build = function() {
 	
 	this.value = [];
 	
-	bc.array.map(this.buttonsAr, function(button) {
+	goog.array.forEach(this.buttonsAr, function(button) {
 		var selected = button.selected && button.selected(),
 			disabled = me._disabled || (button.disabled && button.disabled());
 		
@@ -170,7 +170,7 @@ bc.gui.input.ButtonBar.prototype.refresh = function(resultOfClick) {
 	
 	this.value = [];
 	
-	bc.array.map(this.buttonsAr, function(button, idx) {
+	goog.array.forEach(this.buttonsAr, function(button, idx) {
 		var selected = button.selected && button.selected(),
 			disabled = me._disabled || (button.disabled && button.disabled());
 		

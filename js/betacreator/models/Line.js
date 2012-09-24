@@ -18,10 +18,10 @@ goog.provide('bc.model.Line');
 
 goog.require('bc.model.Item');
 goog.require('bc.math');
-goog.require('bc.array');
 goog.require('bc.object');
 goog.require('bc.render.DashedLine');
 goog.require('bc.uuid');
+goog.require('goog.array');
 
 /**
  * @param {Object=} params
@@ -33,14 +33,29 @@ bc.model.Line = function(params) {
 	
 	this.type = 'line';
 	this.id = bc.uuid(params.id);
-	this.color = params.color || '#ffff00';
-	this.alpha = params.alpha || 1;
-	this.lineWidth = params.lineWidth || 3;
-	this.controlPoints = params.controlPoints || [];
-	this.isDashed = params.isDashed || false;
-	this.onLength = params.onLength || 10;
-	this.offLength = params.offLength || 10;
-	this.curved = params.curved || false;
+
+
+	this.properties = {};
+	this.properties[bc.properties.ITEM_TYPE] = 'line';
+	this.properties[bc.properties.ITEM_SCALE] = params.scale || 1;
+	this.properties[bc.properties.ITEM_COLOR] = params.color || '#ffff00';
+	this.properties[bc.properties.ITEM_ALPHA] = params.alpha || 1;
+	this.properties[bc.properties.ITEM_LINEWIDTH] = params.lineWidth || 3;
+	this.properties[bc.properties.LINE_CONTROLPOINTS] = params.controlPoints || [];
+	this.properties[bc.properties.LINE_ONLENGTH] = params.onLength || 10;
+	this.properties[bc.properties.LINE_OFFLENGTH] = goog.isNumber(params.offLength) ? params.offLength : 10;
+	this.properties[bc.properties.LINE_CURVED] = params.curved || false;
+
+
+	this.type = /** @type {function(string=):string} */(bc.property.getterSetter(this.properties, bc.properties.ITEM_TYPE));
+	this.scale = /** @type {function(number=):number} */(bc.property.getterSetter(this.properties, bc.properties.ITEM_SCALE));
+	this.color = /** @type {function(string=):string} */(bc.property.getterSetter(this.properties, bc.properties.ITEM_COLOR));
+	this.alpha = /** @type {function(number=):number} */(bc.property.getterSetter(this.properties, bc.properties.ITEM_ALPHA));
+	this.lineWidth = /** @type {function(number=):number} */(bc.property.getterSetter(this.properties, bc.properties.ITEM_LINEWIDTH));
+	this.controlPoints = /** @type {function(Array.<bc.math.Point>=):Array.<bc.math.Point>} */(bc.property.getterSetter(this.properties, bc.properties.LINE_CONTROLPOINTS));
+	this.onLength = /** @type {function(number=):number} */(bc.property.getterSetter(this.properties, bc.properties.LINE_ONLENGTH));
+	this.offLength = /** @type {function(number=):number} */(bc.property.getterSetter(this.properties, bc.properties.LINE_OFFLENGTH));
+	this.curved = /** @type {function(boolean=):boolean} */(bc.property.getterSetter(this.properties, bc.properties.LINE_CURVED));
 	
 	this.offset = new bc.math.Point(0,0);
 	
@@ -112,10 +127,11 @@ bc.model.Line.prototype.applyOffset = function() {
 	// if (this.offset.x == 0 && this.offset.y == 0)
 	// 	return;
 	
-	var cp = [];
+	var me = this,
+		cp = [];
 	
-	bc.array.map(this.controlPoints, function(point) {
-		cp.push(new bc.math.Point(point.x + this.offset.x, point.y + this.offset.y));
+	goog.array.forEach(this.controlPoints(), function(point) {
+		cp.push(new bc.math.Point(point.x + me.offset.x, point.y + me.offset.y));
 	});
 	
 	// this.controlPoints = cp;
@@ -136,17 +152,19 @@ bc.model.Line.parseParams = function(params) {
 	params = params || {};
 	
 	var ret = {
-		color:			params['c'],
-		alpha:			params['a'],
-		lineWidth:		params['lw'],
-		isDashed:		params['d'],
-		onLength:		params['n'],
-		offLength:		params['f']
+		type:		params[bc.properties.ITEM_TYPE],
+		scale:		params[bc.properties.ITEM_SCALE],
+		color:		params[bc.properties.ITEM_COLOR],
+		alpha:		params[bc.properties.ITEM_ALPHA],
+		lineWidth: 	params[bc.properties.ITEM_LINEWIDTH],
+		onLength:	params[bc.properties.LINE_ONLENGTH],
+		offLength:	params[bc.properties.LINE_OFFLENGTH],
+		curved:		params[bc.properties.LINE_CURVED]
 	};
 	
-	if (params['cp'] && goog.isArray(params['cp'])) {
+	if (params[bc.properties.LINE_CONTROLPOINTS] && goog.isArray(params[bc.properties.LINE_CONTROLPOINTS])) {
 		var cp = [];
-		bc.array.map(params['cp'], function(point) {
+		goog.array.forEach(params[bc.properties.LINE_CONTROLPOINTS], function(point) {
 			cp.push(new bc.math.Point(point['x'], point['y']));
 		});
 		ret.controlPoints = cp;
@@ -167,28 +185,62 @@ bc.model.Line.prototype.setOffset = function(p) {
  * @return {Object}
  */
 bc.model.Line.prototype.serializeParams = function() {
-	var ret = {
-		'c':	this.color,
-		'a':	this.alpha,
-		'lw':	this.lineWidth,
-		'd':	this.isDashed
-	};
-	
-	if (this.isDashed) {
-		ret['n'] = this.onLength;
-		ret['f'] = this.offLength;
+	var ret = {};
+
+	for (var key in this.properties) {
+		ret[key] = this.properties[key];
 	}
-	
-	var cp = [];
-	bc.array.map(this.controlPoints, function(point) {
-		cp.push({
-			'x': point.x,
-			'y': point.y
+
+	var cps = [];
+	if (ret[bc.properties.LINE_CONTROLPOINTS] && goog.isArray(ret[bc.properties.LINE_CONTROLPOINTS])) {
+		goog.array.forEach(ret[bc.properties.LINE_CONTROLPOINTS], function(p) {
+			cps.push({
+				'x': p.x,
+				'y': p.y
+			});
 		});
-	});
-	ret['cp'] = cp;
-	
+		ret[bc.properties.LINE_CONTROLPOINTS] = cps;
+	}
+
 	return ret;
+};
+
+/**
+ * @return {Object}
+ */
+bc.model.Line.prototype.getActionParams = function() {
+	return {
+		scale: this.scale(),
+		color: this.color(),
+		alpha: this.alpha(),
+		lineWidth: this.lineWidth(),
+		controlPoints: this.controlPoints(),
+		onLength: this.onLength(),
+		offLength: this.offLength(),
+		curved: this.curved()
+	};
+};
+
+/**
+ * @param {Object} params
+ */
+bc.model.Line.prototype.setActionParams = function(params) {
+	if (params.scale !== undefined)
+		this.scale(params.scale);
+	if (params.color !== undefined)
+		this.color(params.color);
+	if (params.alpha !== undefined)
+		this.alpha(params.alpha);
+	if (params.lineWidth !== undefined)
+		this.lineWidth(params.lineWidth);
+	if (params.controlPoints !== undefined)
+		this.controlPoints(params.controlPoints);
+	if (params.onLength !== undefined)
+		this.onLength(params.onLength);
+	if (params.offLength !== undefined)
+		this.offLength(params.offLength);
+	if (params.curved !== undefined)
+		this.curved(params.curved);
 };
 
 /**
@@ -210,7 +262,7 @@ bc.model.Line.prototype.hitTest = function(x,y) {
  * Calculate the bounding box based on the control points and set the 'bb' property.
  */
 bc.model.Line.prototype.updateBoundingBox = function() {
-	if (this.controlPoints.length == 0) {
+	if (this.controlPoints().length == 0) {
 		this.bb = null;
 		return;
 	}
@@ -220,7 +272,7 @@ bc.model.Line.prototype.updateBoundingBox = function() {
 		minY = Number.MAX_VALUE,
 		maxY = Number.MIN_VALUE;
 	
-	bc.array.map(this.controlPoints, function(point) {
+	goog.array.forEach(this.controlPoints(), function(point) {
 		minX = Math.min(minX, point.x);
 		maxX = Math.max(maxX, point.x);
 		minY = Math.min(minY, point.y);
@@ -243,14 +295,15 @@ bc.model.Line.prototype.updatePoints = function() {
 	var pointDistance = 10;
 	
 	if (this.curved) {
-		var cpLength = this.controlPoints.length;
-		bc.array.map(this.controlPoints, function(cp, i) {
+		var cps = this.controlPoints(),
+			cpLength = cps.length;
+		goog.array.forEach(cps, function(cp, i) {
 			// for first point, just move to it
 			if (i == 0) {
 				ret.push(new bc.math.Point(cp.x, cp.y));
 			}
 			else {
-				var prevCP = me.controlPoints[i - 1];
+				var prevCP = cps[i - 1];
 				
 				// for second point just add a point at half way between it and 
 				// the first
@@ -276,7 +329,7 @@ bc.model.Line.prototype.updatePoints = function() {
 		});
 	}
 	else {
-		bc.array.map(this.controlPoints, function(cp, i) {
+		goog.array.forEach(this.controlPoints(), function(cp, i) {
 			ret.push(new bc.math.Point(cp.x, cp.y));
 		});
 	}

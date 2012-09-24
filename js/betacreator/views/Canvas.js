@@ -95,7 +95,7 @@ bc.view.Canvas.prototype.renderItem = function(item, pageScale) {
 	var view = this.views[item.id];
 	// if no view exists for the item, create it
 	if (!view) {
-		switch (item.type) {
+		switch (item.type()) {
 			case 'line':
 				view = new bc.view.Line(/** @type {bc.model.Line} */(item));
 				break;

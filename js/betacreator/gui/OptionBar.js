@@ -5,6 +5,7 @@ goog.require('bc.gui.input.ButtonBar');
 goog.require('bc.gui.input.Spinner');
 goog.require('bc.property');
 goog.require('bc.i18n');
+goog.require('goog.array');
 
 /**
  * @constructor
@@ -107,7 +108,7 @@ bc.gui.OptionBar.prototype.createControls = function(container) {
 
 	var createButtons = function(control) {
 		var buttons = [];
-		bc.array.map(control.buttons, function(button) {
+		goog.array.forEach(control.buttons, function(button) {
 			// this button set changes a property and acts like a radio button set
 			if (control.property) {
 				button.action = function() {
@@ -185,12 +186,13 @@ bc.gui.OptionBar.prototype.createControls = function(container) {
 
 	var scaleSpinner = new bc.gui.input.Spinner(
 		{
-			min:1,
-			max:400,
+			min:0.5,
+			max:4,
 			step:10,
-			round:0,
+			round:2,
 			width:60,
-			value:100,
+			value:1,
+			displayFactor: 100,
 			suffix:'%',
 			change: function(val, programmatic) {
 				if (programmatic)
@@ -298,7 +300,7 @@ bc.gui.OptionBar.prototype.createControls = function(container) {
 	];
 
 	this.refreshFunctions.push(function() {
-		bc.array.map(inputs, function(input) {
+		goog.array.forEach(inputs, function(input) {
 			if(input.refresh) {
 				input.refresh();
 			}
@@ -311,7 +313,7 @@ bc.gui.OptionBar.prototype.createControls = function(container) {
  * @private
  */
 bc.gui.OptionBar.prototype.refresh = function() {
-	bc.array.map(this.refreshFunctions, function(f) {
+	goog.array.forEach(this.refreshFunctions, function(f) {
 		f();
 	});
 };

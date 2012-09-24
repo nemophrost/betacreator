@@ -39,18 +39,18 @@ goog.inherits(bc.view.stamp.Anchor, bc.view.Stamp);
  */
 bc.view.stamp.Anchor.prototype.draw = function(ctx, color, lineWidth) {
 //	ctx.fillStyle = '#ffffff';
-	ctx.strokeStyle = color || this.model.color;
-	ctx.lineWidth = lineWidth || this.model.lineWidth;
+	ctx.strokeStyle = color || this.model.color();
+	ctx.lineWidth = lineWidth || this.model.lineWidth();
 	ctx.beginPath();
 	ctx.moveTo(0,0);
-	ctx.lineTo(this.model.w,this.model.h);
-	ctx.moveTo(this.model.w,0);
-	ctx.lineTo(0,this.model.h);
+	ctx.lineTo(this.model.w(),this.model.h());
+	ctx.moveTo(this.model.w(),0);
+	ctx.lineTo(0,this.model.h());
 	
 	var startAngle = 0,
-		r = Math.min(this.model.w,this.model.h)/2;
-	ctx.moveTo(this.model.w/2 + r*Math.cos(startAngle), this.model.h/2 + r*Math.sin(startAngle));
-	ctx.arc(this.model.w/2,this.model.h/2,r,startAngle,Math.PI*2,false);
+		r = Math.min(this.model.w(),this.model.h())/2;
+	ctx.moveTo(this.model.w()/2 + r*Math.cos(startAngle), this.model.h()/2 + r*Math.sin(startAngle));
+	ctx.arc(this.model.w()/2,this.model.h()/2,r,startAngle,Math.PI*2,false);
 
 	ctx.stroke();
 };
