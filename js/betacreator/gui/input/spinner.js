@@ -70,7 +70,7 @@ bc.gui.input.Spinner = function(options, parent, width) {
 	});
 	this.containerClasses = new bc.ClassSet(this.container);
 
-	/** 
+	/**
 	 * @type {boolean}
 	 * @private
 	 */
@@ -109,10 +109,10 @@ bc.gui.input.Spinner = function(options, parent, width) {
 	 */
 	this.value = 0;
 
-	/** @type {Array.<function(number=, boolean=)>} */
+	/** @type {Array.<function((number|string)=, boolean=)>} */
 	this.changeCallbacks = [];
 	
-	/** @type {Array.<function(number=)>} */
+	/** @type {Array.<function((number|string)=)>} */
 	this.focusCallbacks = [];
 	
 	/** @type {Array.<function()>} */
@@ -144,7 +144,7 @@ bc.gui.input.Spinner = function(options, parent, width) {
 		if (goog.isNumber(newVal))
 			newVal /= me.displayFactor;
 
-		me._setValue(bc.array.coalesce([newVal, me.defaultVal, me.value]));
+		me._setValue(/** @type {number|string} */(bc.array.coalesce([newVal, me.defaultVal, me.value])));
 	};
 
 	goog.events.listen(this.input, goog.events.EventType.CHANGE, function(e) {

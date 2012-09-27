@@ -16,7 +16,7 @@
 goog.provide('bc.mode.Line');
 
 goog.require('bc.Mode');
-goog.require('bc.model.stamp.Anchor');
+goog.require('bc.model.Line');
 goog.require('bc.math.Point');
 
 /**
