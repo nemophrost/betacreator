@@ -24,11 +24,14 @@ goog.require('bc.property');
 goog.require('goog.array');
 
 /**
+ * @param {bc.Client} client
+ * @param {Image} image
  * @constructor
  */
-bc.model.Canvas = function(image) {
+bc.model.Canvas = function(client, image) {
 	var me = this;
 	
+	this.client = client;
 	this.image = image;
 	
 	this.h = image.height;
@@ -139,9 +142,10 @@ bc.model.Canvas.prototype.removeItem = function(item) {
  */
 bc.model.Canvas.prototype.eventToCoord = function(e) {
 	var x = e.clientX,
-		y = e.clientY;
+		y = e.clientY,
+		offset = goog.style.getPageOffset(this.client.gui.viewport);
 	
-	return new bc.math.Point(x, y);
+	return new bc.math.Point(x - offset.x, y - offset.y);
 };
 
 /**

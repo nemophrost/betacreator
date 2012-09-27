@@ -234,25 +234,40 @@ bc.gui.OptionBar.prototype.createControls = function(container) {
 
 	this.addDivider(container);
 
+	var lineStyleDisabled = function() {
+		return !goog.isNumber(bc.property.get(bc.properties.LINE_OFFLENGTH));
+	};
+
 	var lineStyleButtonBar = new bc.gui.input.ButtonBar(
-		createButtons({
-			buttons: [
-				{
-					icon:'line-solid',
-					val: 'left',
-					tooltip:bc.i18n('Solid Line')
-				},{
-					icon:'line-dashed',
-					val: 'center',
-					tooltip:bc.i18n('Dashed Line')
-				},{
-					icon:'line-dotted',
-					val:'right',
-					tooltip:bc.i18n('Dotted Line')
-				}
-			],
-			property: bc.properties.TEXT_ALIGN
-		}),
+		[
+			{
+				icon:'line-solid',
+				action: function() {
+					bc.property.set(bc.properties.LINE_OFFLENGTH, 0);
+				},
+				tooltip:bc.i18n('Solid Line'),
+				selected: function() { return /** @type {number} */(bc.property.get(bc.properties.LINE_OFFLENGTH)) === 0; },
+				disabled: lineStyleDisabled
+			},{
+				icon:'line-dashed',
+				action: function() {
+					bc.property.set(bc.properties.LINE_OFFLENGTH, 10);
+					bc.property.set(bc.properties.LINE_ONLENGTH, 10);
+				},
+				tooltip:bc.i18n('Dashed Line'),
+				selected: function() { return /** @type {number} */(bc.property.get(bc.properties.LINE_ONLENGTH)) > 2; },
+				disabled: lineStyleDisabled
+			},{
+				icon:'line-dotted',
+				action: function() {
+					bc.property.set(bc.properties.LINE_OFFLENGTH, 8);
+					bc.property.set(bc.properties.LINE_ONLENGTH, 0.01);
+				},
+				tooltip:bc.i18n('Dotted Line'),
+				selected: function() { return /** @type {number} */(bc.property.get(bc.properties.LINE_ONLENGTH)) > 0 && /** @type {number} */(bc.property.get(bc.properties.LINE_ONLENGTH)) <= 2; },
+				disabled: lineStyleDisabled
+			}
+		],
 		null,
 		this.getInputWrapper(container)
 	);

@@ -56,7 +56,7 @@ bc.Client = function(sourceImg, params) {
 bc.Client.prototype.init = function(image) {
 	goog.events.unlistenByKey(this.imageLoadHandle);
 	
-	this.canvas = new bc.model.Canvas(image);
+	this.canvas = new bc.model.Canvas(this, image);
 	this.gui = new bc.GUI(this);
 	
 	goog.style.setStyle(this.gui.wrapper, {

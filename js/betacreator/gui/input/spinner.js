@@ -108,8 +108,6 @@ bc.gui.input.Spinner = function(options, parent, width) {
 	 * @private 
 	 */
 	this.value = 0;
-	this._setValue(options.value || this.defaultVal || 0, true);
-
 
 	/** @type {Array.<function(number=, boolean=)>} */
 	this.changeCallbacks = [];
@@ -119,6 +117,8 @@ bc.gui.input.Spinner = function(options, parent, width) {
 	
 	/** @type {Array.<function()>} */
 	this.blurCallbacks = [];
+
+	this._setValue(options.value || this.defaultVal || 0, true);
 
 	if (options.change)
 		this.changeCallbacks.push(options.change);
