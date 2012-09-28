@@ -17,20 +17,22 @@ goog.provide('bc.mode.Line');
 
 goog.require('bc.Mode');
 goog.require('bc.model.Line');
-goog.require('bc.math.Point');
+goog.require('goog.math.Coordinate');
 
 /**
  * @param {bc.model.Canvas} canvas
+ * @param {number} id
+ *
  * @constructor
  * @extends {bc.Mode}
  */
-bc.mode.Line = function(canvas) {
-	bc.Mode.call(this, canvas);
+bc.mode.Line = function(canvas, id) {
+	bc.Mode.call(this, canvas, id);
 
-	/** @type {Array.<bc.math.Point>} */
+	/** @type {Array.<goog.math.Coordinate>} */
 	this.points = [];
 
-	/** @type {bc.math.Point|null} */
+	/** @type {goog.math.Coordinate|null} */
 	this.movingPoint = null;
 
 	/** @type {bc.model.Line|null} */
@@ -46,7 +48,7 @@ bc.mode.Line.prototype.mouseDown = function(point) {
 		this.activeLine.controlPoints(this.getPoints());
 	}
 
-	this.points.push(new bc.math.Point(point.x, point.y));
+	this.points.push(new goog.math.Coordinate(point.x, point.y));
 
 	if (this.activeLine) {
 		this.canvas.runAction(new bc.model.Action(bc.model.ActionType.EditItem, {
@@ -55,7 +57,7 @@ bc.mode.Line.prototype.mouseDown = function(point) {
 		}));
 	}
 	else {
-		this.movingPoint = new bc.math.Point(point.x, point.y);
+		this.movingPoint = new goog.math.Coordinate(point.x, point.y);
 
 		var action = new bc.model.Action(bc.model.ActionType.CreateLine, {
 			controlPoints: this.getPoints(this.movingPoint)
@@ -70,7 +72,7 @@ bc.mode.Line.prototype.mouseDown = function(point) {
  */
 bc.mode.Line.prototype.mouseMove = function(point) {
 	if (this.activeLine) {
-		this.movingPoint = new bc.math.Point(point.x, point.y);
+		this.movingPoint = new goog.math.Coordinate(point.x, point.y);
 		this.activeLine.controlPoints(this.getPoints(this.movingPoint));
 		this.activeLine.updatePoints();
 		bc.Client.pubsub.publish(bc.Client.pubsubTopics.CANVAS_RENDER);
@@ -100,8 +102,8 @@ bc.mode.Line.prototype.onDeactivate = function() {
  * Return a clone of the points array. Don't pass around the original points 
  * array because we change it in here.
  * 
- * @param {bc.math.Point=} extraPoint
- * @return {Array.<bc.math.Point>}
+ * @param {goog.math.Coordinate=} extraPoint
+ * @return {Array.<goog.math.Coordinate>}
  */
 bc.mode.Line.prototype.getPoints = function(extraPoint) {
 	if (extraPoint)

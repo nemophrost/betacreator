@@ -40,7 +40,7 @@ bc.model.Stamp = function(params) {
 	this.properties[bc.properties.ITEM_W] = params.w || 20;
 	this.properties[bc.properties.ITEM_H] = params.h || 20;
 	
-	this.type = /** @type {function(string=):string} */(bc.property.getterSetter(this.properties, bc.properties.ITEM_TYPE));
+	this.type = /** @type {function(number=):number} */(bc.property.getterSetter(this.properties, bc.properties.ITEM_TYPE));
 	this.scale = /** @type {function(number=):number} */(bc.property.getterSetter(this.properties, bc.properties.ITEM_SCALE));
 	this.color = /** @type {function(string=):string} */(bc.property.getterSetter(this.properties, bc.properties.ITEM_COLOR));
 	this.alpha = /** @type {function(number=):number} */(bc.property.getterSetter(this.properties, bc.properties.ITEM_ALPHA));
@@ -50,7 +50,7 @@ bc.model.Stamp = function(params) {
 	this.w = /** @type {function(number=):number} */(bc.property.getterSetter(this.properties, bc.properties.ITEM_W));
 	this.h = /** @type {function(number=):number} */(bc.property.getterSetter(this.properties, bc.properties.ITEM_H));
 	
-	this.offset = new bc.math.Point(0,0);
+	this.offset = new goog.math.Coordinate(0,0);
 };
 
 /**
@@ -92,7 +92,7 @@ bc.model.Stamp.parseParams = function(params) {
 
 /**
  * Set an offset for the stamp
- * @param {bc.math.Point} p
+ * @param {goog.math.Coordinate} p
  */
 bc.model.Stamp.prototype.setOffset = function(p) {
 	this.offset.x = p.x;

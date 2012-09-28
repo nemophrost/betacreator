@@ -19,14 +19,15 @@ goog.provide('bc.view.Item');
 /**
  * @interface
  */
-bc.view.Item = function() {}
+bc.view.Item = function() {};
 
 /**
  * @param {number=} pageScale
  * @param {boolean=} selected
+ * @param {number=} mode
  */
-bc.view.Item.prototype.render = function(pageScale, selected) {}
+bc.view.Item.prototype.render = function(pageScale, selected, mode) {};
 
 /**
  */
-bc.view.Item.prototype.destroy = function() {}
+bc.view.Item.prototype.destroy = function() {};

@@ -77,8 +77,9 @@ bc.view.Stamp.prototype.updateLocation = function(pageScale) {
 /**
  * @param {number=} pageScale
  * @param {boolean=} selected
+ * @param {number=} mode
  */
-bc.view.Stamp.prototype.render = function(pageScale, selected) {
+bc.view.Stamp.prototype.render = function(pageScale, selected, mode) {
 	pageScale = pageScale || 1;
 	
 	// get total scale (individual scale of stamp times page scale)

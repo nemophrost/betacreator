@@ -15,6 +15,7 @@
  */
 
 goog.provide('bc.model.Item');
+goog.provide('bc.model.ItemTypes');
 
 /**
  * @interface
@@ -27,6 +28,14 @@ bc.model.Item = function() {};
 bc.model.Item.prototype.serializeParams = function() {};
 
 /**
- * @param {bc.math.Point} p
+ * @param {goog.math.Coordinate} p
  */
 bc.model.Item.prototype.setOffset = function(p) {};
+
+/**
+ * @enum {number}
+ */
+bc.model.ItemTypes = {
+	LINE: 0,
+	ANCHOR: 1
+};

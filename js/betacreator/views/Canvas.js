@@ -96,10 +96,10 @@ bc.view.Canvas.prototype.renderItem = function(item, pageScale) {
 	// if no view exists for the item, create it
 	if (!view) {
 		switch (item.type()) {
-			case 'line':
+			case bc.model.ItemTypes.LINE:
 				view = new bc.view.Line(/** @type {bc.model.Line} */(item));
 				break;
-			case 'anchor':
+			case bc.model.ItemTypes.ANCHOR:
 				view = new bc.view.stamp.Anchor(/** @type {bc.model.stamp.Anchor} */(item));
 				break;
 			default:
@@ -114,7 +114,7 @@ bc.view.Canvas.prototype.renderItem = function(item, pageScale) {
 		goog.dom.appendChild(this.container, view.canvas);
 	}
 	
-	view.render(pageScale, this.model.isItemSelected(item));
+	view.render(pageScale, this.model.isItemSelected(item), this.model.mode.id);
 };
 
 /********************************************************************

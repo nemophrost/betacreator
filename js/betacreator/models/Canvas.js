@@ -53,14 +53,14 @@ bc.model.Canvas = function(client, image) {
 	
 	this.modes = {};
 
-	this.modes[bc.Client.modes.SELECT] = new bc.mode.Select(this);
-	this.modes[bc.Client.modes.LINE] = new bc.mode.Line(this);
-	this.modes[bc.Client.modes.ANCHOR] = new bc.mode.Anchor(this);
-	// this.modes[bc.Client.modes.PITON] = new bc.mode.Piton(this);
-	// this.modes[bc.Client.modes.RAPPEL] = new bc.mode.Rappel(this);
-	// this.modes[bc.Client.modes.BELAY] = new bc.mode.Belay(this);
-	// this.modes[bc.Client.modes.TEXT] = new bc.mode.Text(this);
-	// this.modes[bc.Client.modes.LINE_EDIT] = new bc.mode.LineEdit(this);
+	this.modes[bc.Client.modes.SELECT] = new bc.mode.Select(this, bc.Client.modes.SELECT);
+	this.modes[bc.Client.modes.LINE] = new bc.mode.Line(this, bc.Client.modes.LINE);
+	this.modes[bc.Client.modes.ANCHOR] = new bc.mode.Anchor(this, bc.Client.modes.ANCHOR);
+	// this.modes[bc.Client.modes.PITON] = new bc.mode.Piton(this, bc.Client.modes.PITON);
+	// this.modes[bc.Client.modes.RAPPEL] = new bc.mode.Rappel(this, bc.Client.modes.RAPPEL);
+	// this.modes[bc.Client.modes.BELAY] = new bc.mode.Belay(this, bc.Client.modes.BELAY);
+	// this.modes[bc.Client.modes.TEXT] = new bc.mode.Text(this, bc.Client.modes.TEXT);
+	// this.modes[bc.Client.modes.LINE_EDIT] = new bc.mode.LineEdit(this, bc.Client.modes.LINE_EDIT);
 
 
 	bc.Client.pubsub.subscribe(bc.Client.pubsubTopics.MODE, function(mode) {
@@ -137,7 +137,7 @@ bc.model.Canvas.prototype.removeItem = function(item) {
 
 /**
  * @param {Event} e
- * @return {bc.math.Point}
+ * @return {goog.math.Coordinate}
  * @private
  */
 bc.model.Canvas.prototype.eventToCoord = function(e) {
@@ -145,7 +145,7 @@ bc.model.Canvas.prototype.eventToCoord = function(e) {
 		y = e.clientY,
 		offset = goog.style.getPageOffset(this.client.gui.viewport);
 	
-	return new bc.math.Point(x - offset.x, y - offset.y);
+	return new goog.math.Coordinate(x - offset.x, y - offset.y);
 };
 
 /**
@@ -290,7 +290,7 @@ bc.model.Canvas.prototype.runAction = function(action) {
 	switch (action.type) {
 		case bc.model.ActionType.CreateStamp:
 			switch (action.params.type) {
-				case 'anchor':
+				case bc.model.ItemTypes.ANCHOR:
 					item = new bc.model.stamp.Anchor(action.params);
 					break;
 				default:

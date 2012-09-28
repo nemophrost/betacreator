@@ -160,8 +160,9 @@ bc.view.Line.prototype.updateLocation = function(scale) {
 /**
  * @param {number=} scale
  * @param {boolean=} selected
+ * @param {number=} mode
  */
-bc.view.Line.prototype.render = function(scale, selected) {
+bc.view.Line.prototype.render = function(scale, selected, mode) {
 	scale = scale || 1;
 
 	var drawProperties = this.model.serializeParams();

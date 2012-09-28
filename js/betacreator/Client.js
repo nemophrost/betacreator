@@ -82,11 +82,11 @@ bc.Client.prototype.init = function(image) {
 //		color: '#003399'
 //	});
 //	lineModel.controlPoints = [
-//		new bc.math.Point(10,10),
-//		new bc.math.Point(100,100),
-//		new bc.math.Point(50,200),
-//		new bc.math.Point(200,300),
-//		new bc.math.Point(100,350)
+//		new goog.math.Coordinate(10,10),
+//		new goog.math.Coordinate(100,100),
+//		new goog.math.Coordinate(50,200),
+//		new goog.math.Coordinate(200,300),
+//		new goog.math.Coordinate(100,350)
 //	];
 //	var lineView = new bc.view.Line(lineModel);
 //	lineView.canvas.appendTo('body');
@@ -116,17 +116,17 @@ bc.Client.pubsubTopics = {
 };
 
 /**
- * @enum {string}
+ * @enum {number}
  */
 bc.Client.modes = {
-	SELECT: 's',
-	LINE: 'l',
-	ANCHOR: 'a',
-	PITON: 'p',
-	RAPPEL: 'r',
-	BELAY: 'b',
-	TEXT: 't',
-	LINE_EDIT: 'le'
+	SELECT: 0,
+	LINE: 1,
+	ANCHOR: 2,
+	PITON: 3,
+	RAPPEL: 4,
+	BELAY: 5,
+	TEXT: 6,
+	LINE_EDIT: 7
 };
 
 goog.exportSymbol('bc.Client', bc.Client);

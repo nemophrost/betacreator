@@ -19,24 +19,27 @@ goog.provide('bc.Mode');
 
 /**
  * @param {bc.model.Canvas} canvas
+ * @param {number} id
+ *
  * @constructor
  */
-bc.Mode = function(canvas) {
+bc.Mode = function(canvas, id) {
 	this.canvas = canvas;
+	this.id = id;
 };
 
 /**
- * @param {bc.math.Point} point
+ * @param {goog.math.Coordinate} point
  */
 bc.Mode.prototype.mouseDown = function(point) {};
 
 /**
- * @param {bc.math.Point} point
+ * @param {goog.math.Coordinate} point
  */
 bc.Mode.prototype.mouseMove = function(point) {};
 
 /**
- * @param {bc.math.Point} point
+ * @param {goog.math.Coordinate} point
  */
 bc.Mode.prototype.mouseUp = function(point) {};
 

@@ -16,25 +16,27 @@
 goog.provide('bc.mode.Select');
 
 goog.require('bc.Mode');
-goog.require('bc.math.Point');
+goog.require('goog.math.Coordinate');
 
 /**
  * @param {bc.model.Canvas} canvas
+ * @param {number} id
+ *
  * @constructor
  * @extends {bc.Mode}
  */
-bc.mode.Select = function(canvas) {
-	bc.Mode.call(this, canvas);
+bc.mode.Select = function(canvas, id) {
+	bc.Mode.call(this, canvas, id);
 
-	/** @type {bc.math.Point|null} */
+	/** @type {goog.math.Coordinate|null} */
 	this.mouseDownPoint = null;
 };
 goog.inherits(bc.mode.Select, bc.Mode);
 
 /**
- * Called each time the mode is activated
+ * Called each time the mode is deactivated
  */
-bc.mode.Select.prototype.onActivate = function() {
+bc.mode.Select.prototype.onDeactivate = function() {
 	this.mouseDownPoint = null;
 };
 
@@ -65,7 +67,7 @@ bc.mode.Select.prototype.mouseMove = function(point) {
 	var me = this;
 	if (this.mouseDownPoint) {
 		goog.array.forEach(this.canvas.getSelectedItems(), function(item, i) {
-			item.setOffset(new bc.math.Point(point.x - me.mouseDownPoint.x, point.y - me.mouseDownPoint.y));
+			item.setOffset(new goog.math.Coordinate(point.x - me.mouseDownPoint.x, point.y - me.mouseDownPoint.y));
 		});
 		bc.Client.pubsub.publish(bc.Client.pubsubTopics.CANVAS_RENDER);
 	}
@@ -78,11 +80,10 @@ bc.mode.Select.prototype.mouseUp = function(point) {
 	var me = this;
 	if (this.mouseDownPoint) {
 		goog.array.forEach(this.canvas.getSelectedItems(), function(item, i) {
-			var changed = item.applyOffset(new bc.math.Point(point.x - me.mouseDownPoint.x, point.y - me.mouseDownPoint.y));
+			var changed = item.applyOffset(new goog.math.Coordinate(point.x - me.mouseDownPoint.x, point.y - me.mouseDownPoint.y));
 			changed.id = item.id;
 			me.canvas.runAction(new bc.model.Action(bc.model.ActionType.EditItem, changed));
 		});
-		bc.Client.pubsub.publish(bc.Client.pubsubTopics.CANVAS_RENDER);
 	}
 
 	this.mouseDownPoint = null;

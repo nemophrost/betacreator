@@ -31,12 +31,10 @@ goog.require('goog.array');
 bc.model.Line = function(params) {
 	params = params || {};
 	
-	this.type = 'line';
 	this.id = bc.uuid(params.id);
 
-
 	this.properties = {};
-	this.properties[bc.properties.ITEM_TYPE] = 'line';
+	this.properties[bc.properties.ITEM_TYPE] = bc.model.ItemTypes.LINE;
 	this.properties[bc.properties.ITEM_SCALE] = params.scale || 1;
 	this.properties[bc.properties.ITEM_COLOR] = params.color || '#ffff00';
 	this.properties[bc.properties.ITEM_ALPHA] = params.alpha || 1;
@@ -47,19 +45,19 @@ bc.model.Line = function(params) {
 	this.properties[bc.properties.LINE_CURVED] = params.curved || false;
 
 
-	this.type = /** @type {function(string=):string} */(bc.property.getterSetter(this.properties, bc.properties.ITEM_TYPE));
+	this.type = /** @type {function(number=):number} */(bc.property.getterSetter(this.properties, bc.properties.ITEM_TYPE));
 	this.scale = /** @type {function(number=):number} */(bc.property.getterSetter(this.properties, bc.properties.ITEM_SCALE));
 	this.color = /** @type {function(string=):string} */(bc.property.getterSetter(this.properties, bc.properties.ITEM_COLOR));
 	this.alpha = /** @type {function(number=):number} */(bc.property.getterSetter(this.properties, bc.properties.ITEM_ALPHA));
 	this.lineWidth = /** @type {function(number=):number} */(bc.property.getterSetter(this.properties, bc.properties.ITEM_LINEWIDTH));
-	this.controlPoints = /** @type {function(Array.<bc.math.Point>=):Array.<bc.math.Point>} */(bc.property.getterSetter(this.properties, bc.properties.LINE_CONTROLPOINTS));
+	this.controlPoints = /** @type {function(Array.<goog.math.Coordinate>=):Array.<goog.math.Coordinate>} */(bc.property.getterSetter(this.properties, bc.properties.LINE_CONTROLPOINTS));
 	this.onLength = /** @type {function(number=):number} */(bc.property.getterSetter(this.properties, bc.properties.LINE_ONLENGTH));
 	this.offLength = /** @type {function(number=):number} */(bc.property.getterSetter(this.properties, bc.properties.LINE_OFFLENGTH));
 	this.curved = /** @type {function(boolean=):boolean} */(bc.property.getterSetter(this.properties, bc.properties.LINE_CURVED));
 	
-	this.offset = new bc.math.Point(0,0);
+	this.offset = new goog.math.Coordinate(0,0);
 	
-	/** @type {Array.<bc.math.Point>} */
+	/** @type {Array.<goog.math.Coordinate>} */
 	this.points = [];
 	
 	this.updatePoints();
@@ -76,10 +74,10 @@ bc.model.Line = function(params) {
 * @param {number} y
 * @param {number} pointDistance
 * 
-* @return {Array.<bc.math.Point>}
+* @return {Array.<goog.math.Coordinate>}
 */
 bc.model.Line.prototype.getCurvePoints = function(sx, sy, cx, cy, x, y, pointDistance) {
-	/** @type {Array.<bc.math.Point>} */
+	/** @type {Array.<goog.math.Coordinate>} */
 	var ret = [];
 	
 	/** @type {number} */
@@ -99,11 +97,11 @@ bc.model.Line.prototype.getCurvePoints = function(sx, sy, cx, cy, x, y, pointDis
 		for (var i=0; i<fullDashCount; i++){
 			t2 = t + ont;
 			c = bc.math.Line.curveSlice(sx, sy, cx, cy, x, y, t, t2);
-			ret.push(new bc.math.Point(c[4], c[5]));
+			ret.push(new goog.math.Coordinate(c[4], c[5]));
 			t = t2;
 		}
 		
-		ret.push(new bc.math.Point(x, y));
+		ret.push(new goog.math.Coordinate(x, y));
 	}
 	
 	return ret;
@@ -131,7 +129,7 @@ bc.model.Line.prototype.applyOffset = function() {
 		cp = [];
 	
 	goog.array.forEach(this.controlPoints(), function(point) {
-		cp.push(new bc.math.Point(point.x + me.offset.x, point.y + me.offset.y));
+		cp.push(new goog.math.Coordinate(point.x + me.offset.x, point.y + me.offset.y));
 	});
 	
 	// this.controlPoints = cp;
@@ -165,7 +163,7 @@ bc.model.Line.parseParams = function(params) {
 	if (params[bc.properties.LINE_CONTROLPOINTS] && goog.isArray(params[bc.properties.LINE_CONTROLPOINTS])) {
 		var cp = [];
 		goog.array.forEach(params[bc.properties.LINE_CONTROLPOINTS], function(point) {
-			cp.push(new bc.math.Point(point['x'], point['y']));
+			cp.push(new goog.math.Coordinate(point['x'], point['y']));
 		});
 		ret.controlPoints = cp;
 	}
@@ -175,7 +173,7 @@ bc.model.Line.parseParams = function(params) {
 
 /**
  * Set an offset for the stamp
- * @param {bc.math.Point} p
+ * @param {goog.math.Coordinate} p
  */
 bc.model.Line.prototype.setOffset = function(p) {
 	this.offset = p;
@@ -251,7 +249,7 @@ bc.model.Line.prototype.setActionParams = function(params) {
 bc.model.Line.prototype.hitTest = function(x,y) {
 	var p = this.points;
 	for(var i = 0, l = p.length - 1; i < l; i++) {
-		if(bc.math.distanceFromLineSegment(new bc.math.Point(x,y),p[i],p[i+1]) < 10) {
+		if(bc.math.distanceFromLineSegment(new goog.math.Coordinate(x,y),p[i],p[i+1]) < 10) {
 			return true;
 		}
 	}
@@ -289,7 +287,7 @@ bc.model.Line.prototype.updateBoundingBox = function() {
 bc.model.Line.prototype.updatePoints = function() {
 	var me = this;
 	
-	/** @type {Array.<bc.math.Point>} */
+	/** @type {Array.<goog.math.Coordinate>} */
 	var ret = [];
 	
 	var pointDistance = 10;
@@ -300,7 +298,7 @@ bc.model.Line.prototype.updatePoints = function() {
 		goog.array.forEach(cps, function(cp, i) {
 			// for first point, just move to it
 			if (i == 0) {
-				ret.push(new bc.math.Point(cp.x, cp.y));
+				ret.push(new goog.math.Coordinate(cp.x, cp.y));
 			}
 			else {
 				var prevCP = cps[i - 1];
@@ -308,7 +306,7 @@ bc.model.Line.prototype.updatePoints = function() {
 				// for second point just add a point at half way between it and 
 				// the first
 				if (i == 1)
-					ret.push(new bc.math.Point((cp.x + prevCP.x)/2, (cp.y + prevCP.y)/2));
+					ret.push(new goog.math.Coordinate((cp.x + prevCP.x)/2, (cp.y + prevCP.y)/2));
 				// for every other points, get the points for the curve from the 
 				// previous half-way pointto the current half-way point
 				else
@@ -324,13 +322,13 @@ bc.model.Line.prototype.updatePoints = function() {
 				
 				// if it's the last point, add it
 				if (i == cpLength - 1)
-					ret.push(new bc.math.Point(cp.x, cp.y));
+					ret.push(new goog.math.Coordinate(cp.x, cp.y));
 			}
 		});
 	}
 	else {
 		goog.array.forEach(this.controlPoints(), function(cp, i) {
-			ret.push(new bc.math.Point(cp.x, cp.y));
+			ret.push(new goog.math.Coordinate(cp.x, cp.y));
 		});
 	}
 	

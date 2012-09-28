@@ -15,20 +15,9 @@
  */
 
 goog.provide('bc.math');
-goog.provide('bc.math.Point');
 goog.provide('bc.math.Box');
 goog.provide('bc.math.Line');
 
-/**
- * @param {number} x
- * @param {number} y
- * 
- * @constructor
- */
-bc.math.Point = function(x,y) {
-	this.x = x;
-	this.y = y;
-}
 
 /**
  * @param {number} x
@@ -41,7 +30,7 @@ bc.math.Box = function(x,y,w,h) {
 	this.y = y;
 	this.w = w;
 	this.h = h;
-}
+};
 
 /**
  * Return a string with set precision (number of decimal places) and trailing zeroes removed
@@ -51,7 +40,7 @@ bc.math.Box = function(x,y,w,h) {
  */
 bc.math.toFixed = function(value, precision) {
 	return value.toFixed(precision || 0).replace(/^([^\.]*)$/, '$1.').replace(/\.?0*$/, '');
-}
+};
 
 /**
  * @param {number} sx
@@ -68,7 +57,7 @@ bc.math.Line.lineLength = function(sx, sy, ex, ey) {
 	var dx = ex - sx;
 	var dy = ey - sy;
 	return Math.sqrt(dx*dx + dy*dy);
-}
+};
 
 /**
  * @param {number} sx
@@ -119,7 +108,8 @@ bc.math.Line.curveLength = function(sx, sy, cx, cy, ex, ey, accuracy) {
 		ty = py;
 	}
 	return total;
-}
+};
+
 /**
  * @param {number} sx
  * @param {number} sy
@@ -142,7 +132,8 @@ bc.math.Line.curveSlice = function(sx, sy, cx, cy, ex, ey, t1, t2) {
 	c.push(t1/t2);
 	
 	return bc.math.Line.curveSliceFrom.apply(null, c);
-}
+};
+
 /**
  * @param {number} sx
  * @param {number} sy
@@ -166,7 +157,8 @@ bc.math.Line.curveSliceUpTo = function(sx, sy, cx, cy, ex, ey, t) {
 		ey = cy + (midy-cy)*t;
 	}
 	return [sx, sy, cx, cy, ex, ey];
-}
+};
+
 /**
  * @param {number} sx
  * @param {number} sy
@@ -190,13 +182,13 @@ bc.math.Line.curveSliceFrom = function(sx, sy, cx, cy, ex, ey, t) {
 		sy = midy + (cy-midy)*t;
 	}
 	return [sx, sy, cx, cy, ex, ey];
-}
+};
 
 
 /**
- * @param {bc.math.Point} c The point to measure from
- * @param {bc.math.Point} a First endpoint of the line segment
- * @param {bc.math.Point} b Second endpoint of the line segment
+ * @param {goog.math.Coordinate} c The point to measure from
+ * @param {goog.math.Coordinate} a First endpoint of the line segment
+ * @param {goog.math.Coordinate} b Second endpoint of the line segment
  * 
  * @return {number} Distance from c to the line segment
  */
@@ -224,4 +216,4 @@ bc.math.distanceFromLineSegment = function(c, a, b) {
 	}
 
 	return distanceSegment;
-}
+};

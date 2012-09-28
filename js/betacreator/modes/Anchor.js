@@ -17,15 +17,17 @@ goog.provide('bc.mode.Anchor');
 
 goog.require('bc.Mode');
 goog.require('bc.model.stamp.Anchor');
-goog.require('bc.math.Point');
+goog.require('goog.math.Coordinate');
 
 /**
  * @param {bc.model.Canvas} canvas
+ * @param {number} id
+ *
  * @constructor
  * @extends {bc.Mode}
  */
-bc.mode.Anchor = function(canvas) {
-	bc.Mode.call(this, canvas);
+bc.mode.Anchor = function(canvas, id) {
+	bc.Mode.call(this, canvas, id);
 };
 goog.inherits(bc.mode.Anchor, bc.Mode);
 
@@ -34,7 +36,7 @@ goog.inherits(bc.mode.Anchor, bc.Mode);
  */
 bc.mode.Anchor.prototype.mouseDown = function(point) {
 	this.canvas.runAction(new bc.model.Action(bc.model.ActionType.CreateStamp, {
-		type: 'anchor',
+		type: bc.model.ItemTypes.ANCHOR,
 		x: point.x,
 		y: point.y
 	}));
