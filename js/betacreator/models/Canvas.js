@@ -19,6 +19,7 @@ goog.provide('bc.model.Canvas');
 goog.require('bc.mode.Select');
 goog.require('bc.mode.Line');
 goog.require('bc.mode.Anchor');
+goog.require('bc.mode.LineEdit');
 goog.require('bc.model.Action');
 goog.require('bc.property');
 goog.require('goog.array');
@@ -47,6 +48,12 @@ bc.model.Canvas = function(client, image) {
 	this.selected = null;
 
 	bc.property.canvas = this;
+
+	this.tempLine = new bc.model.Line({
+		controlPoints: [ new goog.math.Coordinate(0,0) ]
+	});
+
+	this.addItem(this.tempLine);
 	
 	/* Modes
 	 ======================================================================== */
@@ -54,13 +61,13 @@ bc.model.Canvas = function(client, image) {
 	this.modes = {};
 
 	this.modes[bc.Client.modes.SELECT] = new bc.mode.Select(this, bc.Client.modes.SELECT);
-	this.modes[bc.Client.modes.LINE] = new bc.mode.Line(this, bc.Client.modes.LINE);
+	this.modes[bc.Client.modes.LINE] = new bc.mode.Line(this, bc.Client.modes.LINE, this.tempLine);
 	this.modes[bc.Client.modes.ANCHOR] = new bc.mode.Anchor(this, bc.Client.modes.ANCHOR);
 	// this.modes[bc.Client.modes.PITON] = new bc.mode.Piton(this, bc.Client.modes.PITON);
 	// this.modes[bc.Client.modes.RAPPEL] = new bc.mode.Rappel(this, bc.Client.modes.RAPPEL);
 	// this.modes[bc.Client.modes.BELAY] = new bc.mode.Belay(this, bc.Client.modes.BELAY);
 	// this.modes[bc.Client.modes.TEXT] = new bc.mode.Text(this, bc.Client.modes.TEXT);
-	// this.modes[bc.Client.modes.LINE_EDIT] = new bc.mode.LineEdit(this, bc.Client.modes.LINE_EDIT);
+	this.modes[bc.Client.modes.LINE_EDIT] = new bc.mode.LineEdit(this, bc.Client.modes.LINE_EDIT);
 
 
 	bc.Client.pubsub.subscribe(bc.Client.pubsubTopics.MODE, function(mode) {
@@ -207,7 +214,7 @@ bc.model.Canvas.prototype.canRedo = function() {
  * @private
  */
 bc.model.Canvas.prototype.undo = function() {
-	if(this.undoHistory.length == 0)
+	if(this.undoHistory.length === 0)
 		return;
 	
 	var oldBatch = this.undoHistory[0];
@@ -237,7 +244,7 @@ bc.model.Canvas.prototype.undo = function() {
  * @private
  */
 bc.model.Canvas.prototype.redo = function() {
-	if(this.redoHistory.length == 0)
+	if(this.redoHistory.length === 0)
 		return;
 	
 	var oldBatch = this.redoHistory[0];
@@ -253,7 +260,7 @@ bc.model.Canvas.prototype.redo = function() {
 			
 			me.runAction(a);
 		}
-	})
+	});
 	
 	//Remove the old actionset from the start of the redo history.
 	this.redoHistory.shift();
@@ -340,6 +347,7 @@ bc.model.Canvas.prototype.runAction = function(action) {
 			
 			break;
 		case bc.model.ActionType.DeleteStamp:
+		case bc.model.ActionType.DeleteLine:
 			item = this.getItem(action.params.id);
 			
 			if (item)
@@ -350,7 +358,6 @@ bc.model.Canvas.prototype.runAction = function(action) {
 			break;
 		default:
 			return false;
-			break;
 	}
 	
 	this.startUndoBatch();
@@ -436,6 +443,13 @@ bc.model.Canvas.prototype.mouseMove = function(e) {
  */
 bc.model.Canvas.prototype.mouseUp = function(e) {
 	this.mode.mouseUp(this.eventToCoord(e));
+};
+
+/**
+ * @param {Event} e
+ */
+bc.model.Canvas.prototype.dblClick = function(e) {
+	this.mode.dblClick(this.eventToCoord(e));
 };
 
 /**

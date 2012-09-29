@@ -26,7 +26,7 @@ goog.require('goog.math.Coordinate');
  * @constructor
  * @extends {bc.Mode}
  */
-bc.mode.Line = function(canvas, id) {
+bc.mode.Line = function(canvas, id, tempLine) {
 	bc.Mode.call(this, canvas, id);
 
 	/** @type {Array.<goog.math.Coordinate>} */
@@ -37,6 +37,9 @@ bc.mode.Line = function(canvas, id) {
 
 	/** @type {bc.model.Line|null} */
 	this.activeLine = null;
+
+	/** @type {bc.model.Line} */
+	this.tempLine = tempLine;
 };
 goog.inherits(bc.mode.Line, bc.Mode);
 
@@ -56,14 +59,18 @@ bc.mode.Line.prototype.mouseDown = function(point) {
 			controlPoints: this.getPoints()
 		}));
 	}
-	else {
-		this.movingPoint = new goog.math.Coordinate(point.x, point.y);
-
+	else if (this.points.length > 1) {
+		this.resetTempLine();
 		var action = new bc.model.Action(bc.model.ActionType.CreateLine, {
-			controlPoints: this.getPoints(this.movingPoint)
+			controlPoints: this.getPoints()
 		});
 		this.canvas.runAction(action);
 		this.activeLine = /** @type {bc.model.Line|null} */(this.canvas.getItem(action.params.id));
+	}
+	else {
+		this.movingPoint = new goog.math.Coordinate(point.x, point.y);
+		this.tempLine.controlPoints(this.getPoints(this.movingPoint));
+		bc.Client.pubsub.publish(bc.Client.pubsubTopics.CANVAS_RENDER);
 	}
 };
 
@@ -71,10 +78,11 @@ bc.mode.Line.prototype.mouseDown = function(point) {
  * @inheritDoc
  */
 bc.mode.Line.prototype.mouseMove = function(point) {
-	if (this.activeLine) {
+	var affectedLine = this.activeLine || this.tempLine;
+	if (affectedLine) {
 		this.movingPoint = new goog.math.Coordinate(point.x, point.y);
-		this.activeLine.controlPoints(this.getPoints(this.movingPoint));
-		this.activeLine.updatePoints();
+		affectedLine.controlPoints(this.getPoints(this.movingPoint));
+		affectedLine.updatePoints();
 		bc.Client.pubsub.publish(bc.Client.pubsubTopics.CANVAS_RENDER);
 	}
 };
@@ -84,18 +92,21 @@ bc.mode.Line.prototype.mouseMove = function(point) {
  */
 bc.mode.Line.prototype.keyDown = function(e) {
 	if(e.keyCode == goog.events.KeyCodes.ENTER && this.activeLine) {
-		this.activeLine.controlPoints(this.points);
-		this.activeLine.updatePoints();
-		bc.Client.pubsub.publish(bc.Client.pubsubTopics.CANVAS_RENDER);
 		this.onDeactivate();
 		return true;
 	}
 };
 
 bc.mode.Line.prototype.onDeactivate = function() {
+	if (this.activeLine) {
+		this.activeLine.controlPoints(this.getPoints());
+		this.activeLine.updatePoints();
+		bc.Client.pubsub.publish(bc.Client.pubsubTopics.CANVAS_RENDER);
+	}
 	this.points = [];
 	this.movingPoint = null;
 	this.activeLine = null;
+	this.resetTempLine();
 };
 
 /**
@@ -104,10 +115,18 @@ bc.mode.Line.prototype.onDeactivate = function() {
  * 
  * @param {goog.math.Coordinate=} extraPoint
  * @return {Array.<goog.math.Coordinate>}
+ * @private
  */
 bc.mode.Line.prototype.getPoints = function(extraPoint) {
 	if (extraPoint)
 		return this.points.concat([extraPoint]);
 	else
 		return this.points.concat([]);
+};
+
+/**
+ * @private
+ */
+bc.mode.Line.prototype.resetTempLine = function() {
+	this.tempLine.controlPoints([new goog.math.Coordinate(0,0)]);
 };

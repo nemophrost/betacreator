@@ -105,6 +105,11 @@ bc.GUI.prototype.bindEventListeners = function() {
 	goog.events.listen(this.hitTestDiv, goog.events.EventType.MOUSEUP, function(e) {
 		me.canvas.model.mouseUp(e);
 	});
+
+	// double click
+	goog.events.listen(this.hitTestDiv, goog.events.EventType.DBLCLICK, function(e) {
+		me.canvas.model.dblClick(e);
+	});
 	
 	// key down
 	goog.events.listen(document, goog.events.EventType.KEYDOWN, function(e) {
@@ -122,6 +127,7 @@ bc.GUI.prototype.bindEventListeners = function() {
 				bc.Client.pubsub.publish(bc.Client.pubsubTopics.MODE, bc.Client.modes.LINE);
 				break;
 			case goog.events.KeyCodes.V:
+			case goog.events.KeyCodes.ESC:
 				bc.Client.pubsub.publish(bc.Client.pubsubTopics.MODE, bc.Client.modes.SELECT);
 				break;
 			case goog.events.KeyCodes.Y:

@@ -289,13 +289,15 @@ bc.gui.OptionBar.prototype.createControls = function(container) {
 	var lineEditButton = new bc.gui.input.ButtonBar(
 		[{
 			icon:'line-edit',
-			action: function() {alert("edit the line");},
+			action: function() {
+				bc.Client.pubsub.publish(bc.Client.pubsubTopics.MODE, bc.Client.modes.LINE_EDIT);
+			},
 			tooltip:bc.i18n('Edit Line Shape'),
-			selected: function() { return false; },
+			selected: function() { return me.mode == bc.Client.modes.LINE_EDIT; },
 			disabled: function() { return false; }
 		}],
 		null,
-		this.getInputWrapper(container)
+		me.getInputWrapper(container)
 	);
 
 	var inputs = [

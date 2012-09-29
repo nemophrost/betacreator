@@ -44,6 +44,11 @@ bc.Mode.prototype.mouseMove = function(point) {};
 bc.Mode.prototype.mouseUp = function(point) {};
 
 /**
+ * @param {goog.math.Coordinate} point
+ */
+bc.Mode.prototype.dblClick = function(point) {};
+
+/**
  * @param {Event} e
  * @return {boolean|undefined}
  */

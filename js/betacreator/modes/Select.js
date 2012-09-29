@@ -79,14 +79,30 @@ bc.mode.Select.prototype.mouseMove = function(point) {
 bc.mode.Select.prototype.mouseUp = function(point) {
 	var me = this;
 	if (this.mouseDownPoint) {
-		goog.array.forEach(this.canvas.getSelectedItems(), function(item, i) {
-			var changed = item.applyOffset(new goog.math.Coordinate(point.x - me.mouseDownPoint.x, point.y - me.mouseDownPoint.y));
-			changed.id = item.id;
-			me.canvas.runAction(new bc.model.Action(bc.model.ActionType.EditItem, changed));
-		});
+		var dx = point.x - this.mouseDownPoint.x,
+			dy = point.y - this.mouseDownPoint.y;
+
+		if (Math.abs(dx) > 2 || Math.abs(dy) > 2) {
+			goog.array.forEach(this.canvas.getSelectedItems(), function(item, i) {
+				var changed = item.applyOffset(new goog.math.Coordinate(dx, dy));
+				changed.id = item.id;
+				me.canvas.runAction(new bc.model.Action(bc.model.ActionType.EditItem, changed));
+			});
+		}
 	}
 
 	this.mouseDownPoint = null;
 };
 
+/**
+ * @inheritDoc
+ */
+bc.mode.Select.prototype.dblClick = function(point) {
+	for (var i = 0, l = this.canvas.items.length; i < l; i++) {
+		if (this.canvas.items[i].type() == bc.model.ItemTypes.LINE && this.canvas.items[i].hitTest(point.x, point.y)) {
+			bc.Client.pubsub.publish(bc.Client.pubsubTopics.MODE, bc.Client.modes.LINE_EDIT);
+			return;
+		}
+	}
+};
 

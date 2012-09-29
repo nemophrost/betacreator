@@ -136,6 +136,34 @@ bc.view.Line.prototype.draw = function(ctx, selected) {
 };
 
 /**
+ * @param {CanvasRenderingContext2D} ctx
+ * 
+ * @private
+ */
+bc.view.Line.prototype.drawControlPoints = function(ctx) {
+	var me = this,
+		strokeColor = this.model.color(),
+		shadowColor = bc.color.highContrastWhiteOrBlack(strokeColor, .5),
+		r = 7;
+	
+	ctx.save();
+	
+	goog.array.forEach(this.model.controlPoints(), function(cp, i) {
+		ctx.beginPath();
+		ctx.moveTo(cp.x + r, cp.y);
+		ctx.arc(cp.x,cp.y,r,0,2*Math.PI,false);
+		ctx.strokeStyle = shadowColor;
+		ctx.lineWidth = 6;
+		ctx.stroke();
+		ctx.strokeStyle = strokeColor;
+		ctx.lineWidth = 4;
+		ctx.stroke();
+	});
+	
+	ctx.restore();
+};
+
+/**
  * @param {number=} scale
  * @private
  */
@@ -168,11 +196,7 @@ bc.view.Line.prototype.render = function(scale, selected, mode) {
 	var drawProperties = this.model.serializeParams();
 	drawProperties.scale = scale;
 	drawProperties.selected = !!selected;
-	
-	var locationProperties = {
-		dx: this.model.offset.x,
-		dy: this.model.offset.y
-	};
+	drawProperties.mode = mode || null;
 	
 	// if something has changed since last rendering that will affect rendering, 
 	// redraw the stamp
@@ -196,9 +220,21 @@ bc.view.Line.prototype.render = function(scale, selected, mode) {
 		ctx.scale(scale, scale);
 		
 		this.draw(ctx, selected);
+
+		if (selected && mode == bc.Client.modes.LINE_EDIT)
+			this.drawControlPoints(ctx);
 		
 		ctx.restore();
 	}
+
+	var locationProperties = {
+		dx: this.model.offset.x,
+		dy: this.model.offset.y,
+		x: this.model.bb.x,
+		y: this.model.bb.y,
+		w: this.model.bb.w,
+		h: this.model.bb.h
+	};
 	
 	// if the location or size has changed, update the location
 	if (!bc.object.areEqual(locationProperties, this.locationProperties)) {

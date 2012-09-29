@@ -50,8 +50,11 @@ bc.mode.LineEdit.prototype.onActivate = function() {
 	goog.array.some(this.canvas.getSelectedItems(), function(item) {
 		if (item.type() == bc.model.ItemTypes.LINE) {
 			me.activeLine = /** @type {bc.model.Line} */(item);
+			bc.Client.pubsub.publish(bc.Client.pubsubTopics.CANVAS_RENDER);
 			return true;
 		}
+
+		return false;
 	});
 };
 
@@ -63,6 +66,7 @@ bc.mode.LineEdit.prototype.onDeactivate = function() {
 	this.activeLine = null;
 	this.controlPoint = null;
 	this.originalControlPoint = null;
+	bc.Client.pubsub.publish(bc.Client.pubsubTopics.CANVAS_RENDER);
 };
 
 /**
@@ -76,17 +80,23 @@ bc.mode.LineEdit.prototype.mouseDown = function(point) {
 	if (!this.activeLine)
 		return;
 
+	var me = this;
+
 	// check if we are near a control point, if so store it and a clone
 	goog.array.some(this.activeLine.controlPoints(), function(cp, i) {
-		if (goog.math.Coordinate.squaredDistance(point, cp) < 10) {
+		if (goog.math.Coordinate.squaredDistance(/** @type {goog.math.Coordinate} */(point), /** @type {goog.math.Coordinate} */(cp)) < 100) {
 			me.controlPoint = cp;
 			me.originalControlPoint = cp.clone();
 			return true;
 		}
+
+		return false;
 	});
 
-	if (this.controlPoint > -1)
+	if (this.controlPoint)
 		this.mouseDownPoint = point;
+	else
+		bc.Client.pubsub.publish(bc.Client.pubsubTopics.MODE, bc.Client.modes.SELECT);
 };
 
 /**
@@ -95,8 +105,8 @@ bc.mode.LineEdit.prototype.mouseDown = function(point) {
 bc.mode.LineEdit.prototype.mouseMove = function(point) {
 	// if we have an active control point we are moving, just change it's x and y values directly
 	if (this.mouseDownPoint && this.activeLine && this.controlPoint) {
-		this.controlPoint.x = this.originalControlPoint.x + point.x - me.mouseDownPoint.x;
-		this.controlPoint.y = this.originalControlPoint.y + point.y - me.mouseDownPoint.y;
+		this.controlPoint.x = this.originalControlPoint.x + point.x - this.mouseDownPoint.x;
+		this.controlPoint.y = this.originalControlPoint.y + point.y - this.mouseDownPoint.y;
 		this.activeLine.updatePoints();
 		bc.Client.pubsub.publish(bc.Client.pubsubTopics.CANVAS_RENDER);
 	}
@@ -108,7 +118,6 @@ bc.mode.LineEdit.prototype.mouseMove = function(point) {
 bc.mode.LineEdit.prototype.mouseUp = function(point) {
 	this.mouseMove(point);
 
-	var me = this;
 	if (this.mouseDownPoint && this.activeLine && this.controlPoint) {
 		// copy the control points in a new array
 		var newCPs = [];
@@ -121,7 +130,7 @@ bc.mode.LineEdit.prototype.mouseUp = function(point) {
 		this.controlPoint.x = this.originalControlPoint.x;
 		this.controlPoint.y = this.originalControlPoint.y;
 
-		me.canvas.runAction(new bc.model.Action(bc.model.ActionType.EditItem, {
+		this.canvas.runAction(new bc.model.Action(bc.model.ActionType.EditItem, {
 			id: this.activeLine.id,
 			controlPoints: newCPs
 		}));
@@ -132,4 +141,12 @@ bc.mode.LineEdit.prototype.mouseUp = function(point) {
 	this.originalControlPoint = null;
 };
 
-
+/**
+ * @inheritDoc
+ */
+bc.mode.LineEdit.prototype.keyDown = function(e) {
+	if(e.keyCode == goog.events.KeyCodes.ENTER) {
+		bc.Client.pubsub.publish(bc.Client.pubsubTopics.MODE, bc.Client.modes.SELECT);
+		return true;
+	}
+};
