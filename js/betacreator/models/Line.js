@@ -121,10 +121,7 @@ bc.model.Line.prototype.getCurvePoints = function(sx, sy, cx, cy, x, y, pointDis
  *
  * @return {Object}
  */
-bc.model.Line.prototype.applyOffset = function() {
-	// if (this.offset.x == 0 && this.offset.y == 0)
-	// 	return;
-	
+bc.model.Line.prototype.applyOffset = function() {	
 	var me = this,
 		cp = [];
 	
@@ -132,8 +129,6 @@ bc.model.Line.prototype.applyOffset = function() {
 		cp.push(new goog.math.Coordinate(point.x + me.offset.x, point.y + me.offset.y));
 	});
 	
-	// this.controlPoints = cp;
-	// this.updatePoints();
 	this.offset.x = 0;
 	this.offset.y = 0;
 
@@ -154,7 +149,7 @@ bc.model.Line.parseParams = function(params) {
 		scale:		params[bc.properties.ITEM_SCALE],
 		color:		params[bc.properties.ITEM_COLOR],
 		alpha:		params[bc.properties.ITEM_ALPHA],
-		lineWidth: 	params[bc.properties.ITEM_LINEWIDTH],
+		lineWidth:	params[bc.properties.ITEM_LINEWIDTH],
 		onLength:	params[bc.properties.LINE_ONLENGTH],
 		offLength:	params[bc.properties.LINE_OFFLENGTH],
 		curved:		params[bc.properties.LINE_CURVED]
@@ -260,7 +255,7 @@ bc.model.Line.prototype.hitTest = function(x,y) {
  * Calculate the bounding box based on the control points and set the 'bb' property.
  */
 bc.model.Line.prototype.updateBoundingBox = function() {
-	if (this.controlPoints().length == 0) {
+	if (this.controlPoints().length === 0) {
 		this.bb = null;
 		return;
 	}
@@ -281,7 +276,7 @@ bc.model.Line.prototype.updateBoundingBox = function() {
 };
 
 /**
- * Get all the points for the line (used in hit test) and set the 'points' 
+ * Get all the points for the line (used in hit test) and set the 'points'
  * property
  */
 bc.model.Line.prototype.updatePoints = function() {
@@ -292,22 +287,22 @@ bc.model.Line.prototype.updatePoints = function() {
 	
 	var pointDistance = 10;
 	
-	if (this.curved) {
+	if (this.curved()) {
 		var cps = this.controlPoints(),
 			cpLength = cps.length;
 		goog.array.forEach(cps, function(cp, i) {
 			// for first point, just move to it
-			if (i == 0) {
+			if (i === 0) {
 				ret.push(new goog.math.Coordinate(cp.x, cp.y));
 			}
 			else {
 				var prevCP = cps[i - 1];
 				
-				// for second point just add a point at half way between it and 
+				// for second point just add a point at half way between it and
 				// the first
 				if (i == 1)
 					ret.push(new goog.math.Coordinate((cp.x + prevCP.x)/2, (cp.y + prevCP.y)/2));
-				// for every other points, get the points for the curve from the 
+				// for every other points, get the points for the curve from the
 				// previous half-way pointto the current half-way point
 				else
 					ret = ret.concat(me.getCurvePoints(
