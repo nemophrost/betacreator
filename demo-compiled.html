@@ -3,20 +3,19 @@
 <head>
 <title>BetaCreator</title>
 
-<link href="css/style.css" rel="stylesheet" type="text/css" />
-
-<script type="text/javascript" src="js/jquery/jquery.min.js"></script>
+<link href="css/betacreator.css" rel="stylesheet" type="text/css" />
 <script type="text/javascript" src="js/bin/betacreator.js"></script>
 
 <script type="text/javascript">
 
 function init() {
-	new bc.Client();
+	new bc.Client(document.getElementById('srcImg'));
 }
 
 </script>
 </head>
 
 <body onLoad="init()">
+	<img id="srcImg" src="http://www.valleyoutdoors.com/Hikes/images/halfdome.jpg" />
 </body>
 </html>
