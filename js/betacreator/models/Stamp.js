@@ -37,8 +37,8 @@ bc.model.Stamp = function(params) {
 	this.properties[bc.properties.ITEM_LINEWIDTH] = params.lineWidth || 3;
 	this.properties[bc.properties.ITEM_X] = params.x || 0;
 	this.properties[bc.properties.ITEM_Y] = params.y || 0;
-	this.properties[bc.properties.ITEM_W] = params.w || 20;
-	this.properties[bc.properties.ITEM_H] = params.h || 20;
+	this.properties[bc.properties.ITEM_W] = params.w || 18;
+	this.properties[bc.properties.ITEM_H] = params.h || 18;
 	
 	this.type = /** @type {function(number=):number} */(bc.property.getterSetter(this.properties, bc.properties.ITEM_TYPE));
 	this.scale = /** @type {function(number=):number} */(bc.property.getterSetter(this.properties, bc.properties.ITEM_SCALE));

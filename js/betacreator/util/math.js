@@ -210,9 +210,9 @@ bc.math.distanceFromLineSegment = function(c, a, b) {
 			dist2 = (c.x-b.x)*(c.x-b.x) + (c.y-b.y)*(c.y-b.y);
 		
 		if (dist1 < dist2)
-			distanceSegment = Math.sqrt(dist1)
+			distanceSegment = Math.sqrt(dist1);
 		else
-			distanceSegment = Math.sqrt(dist2)
+			distanceSegment = Math.sqrt(dist2);
 	}
 
 	return distanceSegment;

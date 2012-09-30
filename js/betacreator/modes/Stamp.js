@@ -13,10 +13,9 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-goog.provide('bc.mode.Anchor');
+goog.provide('bc.mode.Stamp');
 
 goog.require('bc.Mode');
-goog.require('bc.model.stamp.Anchor');
 goog.require('goog.math.Coordinate');
 
 /**
@@ -26,17 +25,30 @@ goog.require('goog.math.Coordinate');
  * @constructor
  * @extends {bc.Mode}
  */
-bc.mode.Anchor = function(canvas, id) {
+bc.mode.Stamp = function(canvas, id) {
 	bc.Mode.call(this, canvas, id);
+
+	this.itemType = null;
 };
-goog.inherits(bc.mode.Anchor, bc.Mode);
+goog.inherits(bc.mode.Stamp, bc.Mode);
+
+/**
+ * Called each time the mode is activated
+ * @param {?number=} itemType
+ */
+bc.mode.Stamp.prototype.onActivate = function(itemType) {
+	this.itemType = goog.isNumber(itemType) ? itemType : null;
+};
 
 /**
  * @inheritDoc
  */
-bc.mode.Anchor.prototype.mouseDown = function(point) {
+bc.mode.Stamp.prototype.mouseDown = function(point) {
+	if (this.itemType === null)
+		return;
+
 	this.canvas.runAction(new bc.model.Action(bc.model.ActionType.CreateStamp, {
-		type: bc.model.ItemTypes.ANCHOR,
+		type: this.itemType,
 		x: point.x,
 		y: point.y
 	}));
@@ -45,6 +57,6 @@ bc.mode.Anchor.prototype.mouseDown = function(point) {
 /**
  * @inheritDoc
  */
-bc.mode.Anchor.prototype.getCursor = function() {
+bc.mode.Stamp.prototype.getCursor = function() {
 	return 'url(http://cdn1.iconfinder.com/data/icons/BRILLIANT/sports/png/24/ballooning.png) 12 12';
 };

@@ -66,37 +66,24 @@ bc.Client.prototype.init = function(image) {
 		'height': ((this.params.h || image.height) + 29) + 'px'
 	});
 	goog.dom.replaceNode(this.gui.wrapper, this.sourceImage);
-	
-//	var anchorModel = new bc.model.stamp.Anchor({
-//		x: 300,
-//		y: 200
-//	});
-//	
-//	var anchorView = new bc.view.stamp.Anchor(anchorModel);
-//	anchorView.canvas.appendTo('body');
-//	anchorView.render();
-//	
-//	var lineModel = new bc.model.Line({
-//		isDashed: true,
-//		curved: true,
-//		color: '#003399'
-//	});
-//	lineModel.controlPoints = [
-//		new goog.math.Coordinate(10,10),
-//		new goog.math.Coordinate(100,100),
-//		new goog.math.Coordinate(50,200),
-//		new goog.math.Coordinate(200,300),
-//		new goog.math.Coordinate(100,350)
-//	];
-//	var lineView = new bc.view.Line(lineModel);
-//	lineView.canvas.appendTo('body');
-//	lineView.render();
-//	
-//	$(document).mousemove(function(e) {
-//		var hit = lineModel.hitTest(e.clientX, e.clientY);
-//		$('body').css('background-color', hit ? 'palegoldenrod' : '#556688');
-////		console.log(hit ? 'HIT' : 'NO HIT');
-//	});
+		
+	// var lineModel = new bc.model.Line({
+	// 	onLength: 1,
+	// 	offLength: 10,
+	// 	curved: true,
+	// 	color: '#ffff00',
+	// 	controlPoints: [
+	// 		new goog.math.Coordinate(30,100),
+	// 		new goog.math.Coordinate(200,100),
+	// 		new goog.math.Coordinate(50,200),
+	// 		new goog.math.Coordinate(200,300),
+	// 		new goog.math.Coordinate(100,350)
+	// 	]
+	// });
+
+	// var lineView = new bc.view.Line(lineModel);
+	// goog.dom.appendChild(document.body, lineView.canvas);
+	// lineView.render();
 };
 
 /**
@@ -121,12 +108,9 @@ bc.Client.pubsubTopics = {
 bc.Client.modes = {
 	SELECT: 0,
 	LINE: 1,
-	ANCHOR: 2,
-	PITON: 3,
-	RAPPEL: 4,
-	BELAY: 5,
-	TEXT: 6,
-	LINE_EDIT: 7
+	STAMP: 2,
+	TEXT: 3,
+	LINE_EDIT: 4
 };
 
 goog.exportSymbol('bc.Client', bc.Client);

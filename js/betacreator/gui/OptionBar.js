@@ -27,9 +27,11 @@ bc.gui.OptionBar = function() {
 
 	this.createControls(this.container);
 
-	this.mode = '';
-	bc.Client.pubsub.subscribe(bc.Client.pubsubTopics.MODE, function(mode) {
+	this.mode = null;
+	this.itemType = null;
+	bc.Client.pubsub.subscribe(bc.Client.pubsubTopics.MODE, function(mode, itemType) {
 		me.mode = mode;
+		me.itemType = itemType;
 		me.refresh();
 	});
 	bc.Client.pubsub.publish(bc.Client.pubsubTopics.MODE, bc.Client.modes.SELECT);
@@ -140,15 +142,21 @@ bc.gui.OptionBar.prototype.createControls = function(container) {
 		return buttons;
 	};
 
-	var createToolButton = function(icon, mode, tooltip) {
+	/**
+	* @param {string} icon
+	* @param {bc.Client.modes} mode
+	* @param {string} tooltip
+	* @param {bc.model.ItemTypes=} itemType
+	*/
+	var createToolButton = function(icon, mode, tooltip, itemType) {
 		return new bc.gui.input.ButtonBar(
 			[{
 				icon:icon,
 				action: function() {
-					bc.Client.pubsub.publish(bc.Client.pubsubTopics.MODE, mode);
+					bc.Client.pubsub.publish(bc.Client.pubsubTopics.MODE, mode, itemType);
 				},
 				tooltip:bc.i18n(tooltip),
-				selected: function() { return me.mode == mode; },
+				selected: function() { return me.mode == mode && (itemType === undefined || itemType == me.itemType); },
 				disabled: function() { return false; }
 			}],
 			null,
@@ -158,10 +166,10 @@ bc.gui.OptionBar.prototype.createControls = function(container) {
 
 	var selectButton = createToolButton('tool-select', bc.Client.modes.SELECT, 'Select Tool');
 	var lineButton = createToolButton('tool-line', bc.Client.modes.LINE, 'Line Tool');
-	var anchorButton = createToolButton('tool-anchor', bc.Client.modes.ANCHOR, 'Anchor Tool');
-	var pitonButton = createToolButton('tool-piton', bc.Client.modes.PITON, 'Piton Tool');
-	var rappelButton = createToolButton('tool-rappel', bc.Client.modes.RAPPEL, 'Rappel Tool');
-	var belayButton = createToolButton('tool-belay', bc.Client.modes.BELAY, 'Belay Tool');
+	var anchorButton = createToolButton('tool-anchor', bc.Client.modes.STAMP, 'Anchor Tool', bc.model.ItemTypes.ANCHOR);
+	var pitonButton = createToolButton('tool-piton', bc.Client.modes.STAMP, 'Piton Tool', bc.model.ItemTypes.PITON);
+	var rappelButton = createToolButton('tool-rappel', bc.Client.modes.STAMP, 'Rappel Tool', bc.model.ItemTypes.RAPPEL);
+	var belayButton = createToolButton('tool-belay', bc.Client.modes.STAMP, 'Belay Tool', bc.model.ItemTypes.BELAY);
 	var textButton = createToolButton('tool-text', bc.Client.modes.TEXT, 'Text Tool');
 
 	this.addDivider(container);

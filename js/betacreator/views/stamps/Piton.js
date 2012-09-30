@@ -14,36 +14,43 @@
  *  limitations under the License.
  */
 
-goog.provide('bc.view.stamp.Anchor');
+goog.provide('bc.view.stamp.Piton');
 
-goog.require('bc.model.stamp.Anchor');
+goog.require('bc.model.stamp.Piton');
 goog.require('bc.view.Stamp');
 
 /**
- * @param {bc.model.stamp.Anchor} model
+ * @param {bc.model.stamp.Piton} model
  *
  * @constructor
  * @extends {bc.view.Stamp}
  */
-bc.view.stamp.Anchor = function(model) {
+bc.view.stamp.Piton = function(model) {
 	bc.view.Stamp.call(this, model);
 	
 	// reassign the model here to make the compiler knows what type the model is.
-	/** @type {bc.model.stamp.Anchor} */
+	/** @type {bc.model.stamp.Piton} */
 	this.model = model;
 };
-goog.inherits(bc.view.stamp.Anchor, bc.view.Stamp);
+goog.inherits(bc.view.stamp.Piton, bc.view.Stamp);
 
 /**
  * @inheritDoc
  */
-bc.view.stamp.Anchor.prototype.draw = function(ctx, color, lineWidth) {
+bc.view.stamp.Piton.prototype.draw = function(ctx, color, lineWidth) {
+	var w = this.model.w(),
+		h = this.model.h(),
+		r = 0.3*h;
+
 	ctx.strokeStyle = color || this.model.color();
 	ctx.lineWidth = lineWidth || this.model.lineWidth();
 	ctx.beginPath();
-	ctx.moveTo(0,0);
-	ctx.lineTo(this.model.w(),this.model.h());
-	ctx.moveTo(this.model.w(),0);
-	ctx.lineTo(0,this.model.h());
+	
+	ctx.moveTo(0.4*w,h);
+	ctx.lineTo(0.4*w,0);
+	ctx.lineTo(w-r,0);
+	ctx.arc(w-r,r,r,-Math.PI/2,Math.PI/2,false);
+	ctx.lineTo(0.4*w,2*r);
+
 	ctx.stroke();
 };

@@ -121,10 +121,19 @@ bc.GUI.prototype.bindEventListeners = function() {
 		var preventDefault = false;
 		switch (e.keyCode) {
 			case goog.events.KeyCodes.A:
-				bc.Client.pubsub.publish(bc.Client.pubsubTopics.MODE, bc.Client.modes.ANCHOR);
+				bc.Client.pubsub.publish(bc.Client.pubsubTopics.MODE, bc.Client.modes.STAMP, bc.model.ItemTypes.ANCHOR);
+				break;
+			case goog.events.KeyCodes.B:
+				bc.Client.pubsub.publish(bc.Client.pubsubTopics.MODE, bc.Client.modes.STAMP, bc.model.ItemTypes.BELAY);
 				break;
 			case goog.events.KeyCodes.L:
 				bc.Client.pubsub.publish(bc.Client.pubsubTopics.MODE, bc.Client.modes.LINE);
+				break;
+			case goog.events.KeyCodes.P:
+				bc.Client.pubsub.publish(bc.Client.pubsubTopics.MODE, bc.Client.modes.STAMP, bc.model.ItemTypes.PITON);
+				break;
+			case goog.events.KeyCodes.R:
+				bc.Client.pubsub.publish(bc.Client.pubsubTopics.MODE, bc.Client.modes.STAMP, bc.model.ItemTypes.RAPPEL);
 				break;
 			case goog.events.KeyCodes.V:
 			case goog.events.KeyCodes.ESC:

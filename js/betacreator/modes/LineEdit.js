@@ -84,7 +84,7 @@ bc.mode.LineEdit.prototype.mouseDown = function(point) {
 
 	// check if we are near a control point, if so store it and a clone
 	goog.array.some(this.activeLine.controlPoints(), function(cp, i) {
-		if (goog.math.Coordinate.squaredDistance(/** @type {goog.math.Coordinate} */(point), /** @type {goog.math.Coordinate} */(cp)) < 100) {
+		if (goog.math.Coordinate.squaredDistance(/** @type {!goog.math.Coordinate} */(point), /** @type {!goog.math.Coordinate} */(cp)) < 100) {
 			me.controlPoint = cp;
 			me.originalControlPoint = cp.clone();
 			return true;

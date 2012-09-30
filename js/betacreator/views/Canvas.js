@@ -19,6 +19,9 @@ goog.provide('bc.view.Canvas');
 goog.require('bc.model.Canvas');
 goog.require('bc.view.Line');
 goog.require('bc.view.stamp.Anchor');
+goog.require('bc.view.stamp.Piton');
+goog.require('bc.view.stamp.Rappel');
+goog.require('bc.view.stamp.Belay');
 goog.require('goog.dom');
 
 /**
@@ -101,6 +104,15 @@ bc.view.Canvas.prototype.renderItem = function(item, pageScale) {
 				break;
 			case bc.model.ItemTypes.ANCHOR:
 				view = new bc.view.stamp.Anchor(/** @type {bc.model.stamp.Anchor} */(item));
+				break;
+			case bc.model.ItemTypes.PITON:
+				view = new bc.view.stamp.Piton(/** @type {bc.model.stamp.Piton} */(item));
+				break;
+			case bc.model.ItemTypes.RAPPEL:
+				view = new bc.view.stamp.Rappel(/** @type {bc.model.stamp.Rappel} */(item));
+				break;
+			case bc.model.ItemTypes.BELAY:
+				view = new bc.view.stamp.Belay(/** @type {bc.model.stamp.Belay} */(item));
 				break;
 			default:
 				break;

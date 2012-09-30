@@ -72,17 +72,17 @@ bc.view.Line.prototype._draw = function(context, color, lineWidth) {
 		var cpLength = cps.length;
 		goog.array.forEach(cps, function(cp, i) {
 			// for first point, just move to it
-			if (i == 0) {
+			if (i === 0) {
 				ctx.moveTo(cp.x, cp.y);
 			}
 			else {
 				var prevCP = cps[i - 1];
 				
-				// for second point just draw a line to half way between it and 
+				// for second point just draw a line to half way between it and
 				// the first
 				if (i == 1)
 					ctx.lineTo((cp.x + prevCP.x)/2, (cp.y + prevCP.y)/2);
-				// for every other points, draw a curve from the previous 
+				// for every other points, draw a curve from the previous
 				// half-way pointto the current half-way point
 				else
 					ctx.quadraticCurveTo(prevCP.x, prevCP.y, (cp.x + prevCP.x)/2, (cp.y + prevCP.y)/2);
@@ -96,7 +96,7 @@ bc.view.Line.prototype._draw = function(context, color, lineWidth) {
 	else {
 		goog.array.forEach(this.model.controlPoints(), function(cp, i) {
 			// for first point, just move to it
-			if (i == 0)
+			if (i === 0)
 				ctx.moveTo(cp.x, cp.y);
 			// for every other points just lineTo it
 			else

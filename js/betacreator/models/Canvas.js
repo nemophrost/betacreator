@@ -18,7 +18,7 @@ goog.provide('bc.model.Canvas');
 
 goog.require('bc.mode.Select');
 goog.require('bc.mode.Line');
-goog.require('bc.mode.Anchor');
+goog.require('bc.mode.Stamp');
 goog.require('bc.mode.LineEdit');
 goog.require('bc.model.Action');
 goog.require('bc.property');
@@ -56,23 +56,20 @@ bc.model.Canvas = function(client, image) {
 	this.addItem(this.tempLine);
 	
 	/* Modes
-	 ======================================================================== */
+	========================================================================= */
 	
 	this.modes = {};
 
 	this.modes[bc.Client.modes.SELECT] = new bc.mode.Select(this, bc.Client.modes.SELECT);
 	this.modes[bc.Client.modes.LINE] = new bc.mode.Line(this, bc.Client.modes.LINE, this.tempLine);
-	this.modes[bc.Client.modes.ANCHOR] = new bc.mode.Anchor(this, bc.Client.modes.ANCHOR);
-	// this.modes[bc.Client.modes.PITON] = new bc.mode.Piton(this, bc.Client.modes.PITON);
-	// this.modes[bc.Client.modes.RAPPEL] = new bc.mode.Rappel(this, bc.Client.modes.RAPPEL);
-	// this.modes[bc.Client.modes.BELAY] = new bc.mode.Belay(this, bc.Client.modes.BELAY);
+	this.modes[bc.Client.modes.STAMP] = new bc.mode.Stamp(this, bc.Client.modes.STAMP);
 	// this.modes[bc.Client.modes.TEXT] = new bc.mode.Text(this, bc.Client.modes.TEXT);
 	this.modes[bc.Client.modes.LINE_EDIT] = new bc.mode.LineEdit(this, bc.Client.modes.LINE_EDIT);
 
-
-	bc.Client.pubsub.subscribe(bc.Client.pubsubTopics.MODE, function(mode) {
+	var lastModeParam = null;
+	bc.Client.pubsub.subscribe(bc.Client.pubsubTopics.MODE, function(mode, param) {
 		if (me.modes[mode]) {
-			var changed = me.mode != me.modes[mode];
+			var changed = me.mode != me.modes[mode] || lastModeParam != param;
 
 			if (changed && me.mode && me.mode.onDeactivate)
 				me.mode.onDeactivate();
@@ -80,7 +77,7 @@ bc.model.Canvas = function(client, image) {
 			me.mode = me.modes[mode];
 
 			if (changed && me.mode.onActivate)
-				me.mode.onActivate();
+				me.mode.onActivate(param);
 		}
 	});
 	
@@ -89,7 +86,7 @@ bc.model.Canvas = function(client, image) {
 	
 	
 	/* Undo/redo functionality
-	 ======================================================================== */
+	========================================================================= */
 	
 	/**
 	 * A list of actions that have been done that could be undone.
@@ -299,6 +296,15 @@ bc.model.Canvas.prototype.runAction = function(action) {
 			switch (action.params.type) {
 				case bc.model.ItemTypes.ANCHOR:
 					item = new bc.model.stamp.Anchor(action.params);
+					break;
+				case bc.model.ItemTypes.PITON:
+					item = new bc.model.stamp.Piton(action.params);
+					break;
+				case bc.model.ItemTypes.RAPPEL:
+					item = new bc.model.stamp.Rappel(action.params);
+					break;
+				case bc.model.ItemTypes.BELAY:
+					item = new bc.model.stamp.Belay(action.params);
 					break;
 				default:
 					break;

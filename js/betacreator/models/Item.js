@@ -37,5 +37,9 @@ bc.model.Item.prototype.setOffset = function(p) {};
  */
 bc.model.ItemTypes = {
 	LINE: 0,
-	ANCHOR: 1
+	ANCHOR: 1,
+	PITON: 2,
+	RAPPEL: 3,
+	BELAY: 4,
+	TEXT: 5
 };

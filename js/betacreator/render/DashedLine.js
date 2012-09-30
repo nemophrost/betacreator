@@ -17,7 +17,7 @@
  *  methods but allows you to draw using dashed lines. Dashed lines are continuous
  *  between drawing commands so dashes won't be interrupted when new lines
  *  are drawn in succession
- * 
+ *
  *  This code is a conversion of Trevor McCauley's ActionScript 3 DashedLine class
  */
  
@@ -42,37 +42,37 @@ bc.render.DashedLine = function(context, onLength, offLength) {
 	/**
 	 * A value representing the accuracy used in determining the length
 	 * of curveTo curves.
-	 * 
+	 *
 	 * @type {number}
 	 */
 	this._curveaccuracy = 6;
 	
-	/** 
+	/**
 	 * @type {boolean}
 	 * @private
 	 */
 	this.isLine = true;
-	/** 
+	/**
 	 * @type {number}
 	 * @private
 	 */
 	this.overflow = 0;
-	/** 
+	/**
 	 * @type {number}
 	 * @private
 	 */
 	this.offLength = 0;
-	/** 
+	/**
 	 * @type {number}
 	 * @private
 	 */
 	this.onLength = 0;
-	/** 
+	/**
 	 * @type {number}
 	 * @private
 	 */
 	this.dashLength = 0;
-	/** 
+	/**
 	 * @type {Object}
 	 * @private
 	 */
@@ -83,7 +83,7 @@ bc.render.DashedLine = function(context, onLength, offLength) {
 	this.isLine = true;
 	this.overflow = 0;
 	this.pen = {x:0, y:0};
-}
+};
 
 
 // public methods
@@ -96,29 +96,32 @@ bc.render.DashedLine.prototype.setDash = function(onLength, offLength) {
 	this.onLength = onLength;
 	this.offLength = offLength;
 	this.dashLength = this.onLength + this.offLength;
-}
+};
+
 /**
 * Gets the current lengths for dash sizes
-* 
+*
 * @return {Array.<number>} Array containing the onLength and offLength values
 * respectively in that order
 */
 bc.render.DashedLine.prototype.getDash = function() {
 	return [this.onLength, this.offLength];
-}
+};
+
 /**
 * Moves the current drawing position in target to (x, y).
-* 
+*
 * @param {number} x
 * @param {number} y
 */
 bc.render.DashedLine.prototype.moveTo = function(x, y) {
 	this.ctxMoveTo(x, y);
-}
+};
+
 /**
 * Draws a dashed line in target using the current line style from the current drawing position
 * to (x, y); the current drawing position is then set to (x, y).
-* 
+*
 * @param {number} x
 * @param {number} y
 */
@@ -154,8 +157,8 @@ bc.render.DashedLine.prototype.lineTo = function(x,y) {
 	
 	if (fullDashCount){
 		var onx = ca*this.onLength,	ony = sa*this.onLength;
-		var offx = ca*this.offLength,	offy = sa*this.offLength;
-		for (var i=0; i<fullDashCount; i++){
+		var offx = ca*this.offLength, offy = sa*this.offLength;
+		for (var i=0; i<fullDashCount; i++) {
 			if (this.isLine){
 				this.ctxLineTo(this.pen.x+onx, this.pen.y+ony);
 				this.ctxMoveTo(this.pen.x+offx, this.pen.y+offy);
@@ -205,29 +208,30 @@ bc.render.DashedLine.prototype.lineTo = function(x,y) {
 			}
 		}
 	}
-}
+};
+
 /**
 * Draws a dashed curve in target using the current line style from the current drawing position to
 * (x, y) using the control point specified by (cx, cy). The current  drawing position is then set
 * to (x, y).
-* 
+*
 * @param {number} cx Control point x
 * @param {number} cy Control point y
 * @param {number} x
 * @param {number} y
 */
 bc.render.DashedLine.prototype.quadraticCurveTo = function(cx, cy, x, y) {
-	/** @type {number} */
+	/**@type {number} */
 	var sx = this.pen.x;
-	/** @type {number} */
+	/**@type {number} */
 	var sy = this.pen.y;
-	/** @type {number} */
+	/**@type {number} */
 	var segLength = bc.math.Line.curveLength(sx, sy, cx, cy, x, y, this._curveaccuracy);
-	/** @type {number} */
+	/**@type {number} */
 	var t = 0;
-	/** @type {number} */
+	/**@type {number} */
 	var t2 = 0;
-	/** @type {Array.<number>} */
+	/**@type {Array.<number>} */
 	var c;
 	
 	if (this.overflow){
@@ -328,7 +332,7 @@ bc.render.DashedLine.prototype.quadraticCurveTo = function(cx, cy, x, y) {
 			}
 		}
 	}
-}
+};
 
 // direct translations
 /**
@@ -336,18 +340,18 @@ bc.render.DashedLine.prototype.quadraticCurveTo = function(cx, cy, x, y) {
 */
 bc.render.DashedLine.prototype.beginPath = function() {
 	this.ctx.beginPath();
-}
+};
 
 /**
 * Apply Stroke
 */
 bc.render.DashedLine.prototype.stroke = function() {
 	this.ctx.stroke();
-}
+};
 
 /**
 * Clears the drawing
-* 
+*
 * @param {number} x
 * @param {number} y
 * @param {number} w
@@ -355,7 +359,7 @@ bc.render.DashedLine.prototype.stroke = function() {
 */
 bc.render.DashedLine.prototype.clearRect = function(x,y,w,h) {
 	this.ctx.clearRect(x,y,w,h);
-}
+};
 
 /**
 * Sets the lineStyle for target
@@ -366,7 +370,7 @@ bc.render.DashedLine.prototype.clearRect = function(x,y,w,h) {
 bc.render.DashedLine.prototype.lineStyle = function(thickness,rgb) {
 	this.ctx.lineWidth = thickness;
 	this.ctx.strokeStyle = rgb;
-}
+};
 
 /**
 * Destroy the Dashed Line instance
@@ -374,33 +378,33 @@ bc.render.DashedLine.prototype.lineStyle = function(thickness,rgb) {
 bc.render.DashedLine.prototype.destroy = function() {
 	this.ctx = null;
 	this.pen = null;
-}
+};
 
-
-
-/**
- * @param {number} x
- * @param {number} y
- * 
- * @private
- */ 
-bc.render.DashedLine.prototype.ctxMoveTo = function(x, y) {
-	this.pen = {x:x, y:y};
-	this.ctx.moveTo(x, y);
-}
 /**
  * @param {number} x
  * @param {number} y
  *
  * @private
- */ 
+ */
+bc.render.DashedLine.prototype.ctxMoveTo = function(x, y) {
+	this.pen = {x:x, y:y};
+	this.ctx.moveTo(x, y);
+};
+
+/**
+ * @param {number} x
+ * @param {number} y
+ *
+ * @private
+ */
 bc.render.DashedLine.prototype.ctxLineTo = function(x, y) {
 	if (x == this.pen.x && y == this.pen.y)
 		return;
 	
 	this.pen = {x:x, y:y};
 	this.ctx.lineTo(x, y);
-}
+};
+
 /**
  * @param {number} cx
  * @param {number} cy
@@ -408,11 +412,11 @@ bc.render.DashedLine.prototype.ctxLineTo = function(x, y) {
  * @param {number} y
  *
  * @private
- */ 
+ */
 bc.render.DashedLine.prototype.ctxCurveTo = function(cx, cy, x, y) {
 	if (cx == x && cy == y && x == this.pen.x && y == this.pen.y)
 		return;
 	
 	this.pen = {x:x, y:y};
 	this.ctx.quadraticCurveTo(cx, cy, x, y);
-}
+};

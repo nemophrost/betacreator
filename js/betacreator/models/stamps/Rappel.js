@@ -13,7 +13,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-goog.provide('bc.model.stamp.Anchor');
+goog.provide('bc.model.stamp.Rappel');
 
 goog.require('bc.model.Stamp');
 
@@ -23,39 +23,31 @@ goog.require('bc.model.Stamp');
  * @constructor
  * @extends {bc.model.Stamp}
  */
-bc.model.stamp.Anchor = function(params) {
+bc.model.stamp.Rappel = function(params) {
 	params = params || {};
 	
-	if (!params.w)
-		params.w = 10;
-	if (!params.h)
-		params.h = 10;
-
+	if (!params.lineWidth)
+		params.lineWidth = 2;
+	
 	bc.model.Stamp.call(this, params);
 	
-	this.type(bc.model.ItemTypes.ANCHOR);
+	this.type(bc.model.ItemTypes.RAPPEL);
 };
-goog.inherits(bc.model.stamp.Anchor, bc.model.Stamp);
+goog.inherits(bc.model.stamp.Rappel, bc.model.Stamp);
 
 /**
  * @param {number} x
  * @param {number} y
  * @return {boolean}
  */
-bc.model.stamp.Anchor.prototype.hitTest = function(x,y) {
-	var dist = this.lineWidth()/2 + 2;
-	
-	if(bc.math.distanceFromLineSegment(
-			new goog.math.Coordinate(x,y),
-			new goog.math.Coordinate(this.x() - this.w()/2, this.y() - this.h()/2),
-			new goog.math.Coordinate(this.x() + this.w()/2, this.y() + this.h()/2)
-		) < dist || bc.math.distanceFromLineSegment(
-			new goog.math.Coordinate(x,y),
-			new goog.math.Coordinate(this.x() + this.w()/2, this.y() - this.h()/2),
-			new goog.math.Coordinate(this.x() - this.w()/2, this.y() + this.h()/2)
-		) < dist) {
+bc.model.stamp.Rappel.prototype.hitTest = function(x,y) {
+	var dist = this.lineWidth()/2 + 1;
+
+	if (goog.math.Coordinate.distance(
+			new goog.math.Coordinate(x, y),
+			new goog.math.Coordinate(this.x(), this.y())
+		) <= this.w()/2 + dist)
 		return true;
-	}
 
 	return false;
 };

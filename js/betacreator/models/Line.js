@@ -290,6 +290,7 @@ bc.model.Line.prototype.updatePoints = function() {
 	if (this.curved()) {
 		var cps = this.controlPoints(),
 			cpLength = cps.length;
+		
 		goog.array.forEach(cps, function(cp, i) {
 			// for first point, just move to it
 			if (i === 0) {
@@ -303,7 +304,7 @@ bc.model.Line.prototype.updatePoints = function() {
 				if (i == 1)
 					ret.push(new goog.math.Coordinate((cp.x + prevCP.x)/2, (cp.y + prevCP.y)/2));
 				// for every other points, get the points for the curve from the
-				// previous half-way pointto the current half-way point
+				// previous half-way point to the current half-way point
 				else
 					ret = ret.concat(me.getCurvePoints(
 							ret[ret.length-1].x,
