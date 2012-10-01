@@ -94,5 +94,6 @@ bc.properties = {
 	LINE_CONTROLPOINTS: 'cp',
 	LINE_CURVED: 'lc',
 	LINE_OFFLENGTH: 'fl',
-	LINE_ONLENGTH: 'nl'
+	LINE_ONLENGTH: 'nl',
+	TEXT: 't'
 };

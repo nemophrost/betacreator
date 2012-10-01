@@ -39,6 +39,7 @@ bc.model.Stamp = function(params) {
 	this.properties[bc.properties.ITEM_Y] = params.y || 0;
 	this.properties[bc.properties.ITEM_W] = params.w || 18;
 	this.properties[bc.properties.ITEM_H] = params.h || 18;
+	this.properties[bc.properties.TEXT] = params.text || '';
 	
 	this.type = /** @type {function(number=):number} */(bc.property.getterSetter(this.properties, bc.properties.ITEM_TYPE));
 	this.scale = /** @type {function(number=):number} */(bc.property.getterSetter(this.properties, bc.properties.ITEM_SCALE));
@@ -49,6 +50,7 @@ bc.model.Stamp = function(params) {
 	this.y = /** @type {function(number=):number} */(bc.property.getterSetter(this.properties, bc.properties.ITEM_Y));
 	this.w = /** @type {function(number=):number} */(bc.property.getterSetter(this.properties, bc.properties.ITEM_W));
 	this.h = /** @type {function(number=):number} */(bc.property.getterSetter(this.properties, bc.properties.ITEM_H));
+	this.text = /** @type {function(string=):string} */(bc.property.getterSetter(this.properties, bc.properties.TEXT));
 	
 	this.offset = new goog.math.Coordinate(0,0);
 };
@@ -82,11 +84,12 @@ bc.model.Stamp.parseParams = function(params) {
 		scale:		params[bc.properties.ITEM_SCALE],
 		color:		params[bc.properties.ITEM_COLOR],
 		alpha:		params[bc.properties.ITEM_ALPHA],
-		lineWidth: 	params[bc.properties.ITEM_LINEWIDTH],
+		lineWidth:	params[bc.properties.ITEM_LINEWIDTH],
 		x:			params[bc.properties.ITEM_X],
 		y:			params[bc.properties.ITEM_Y],
 		w:			params[bc.properties.ITEM_W],
-		h:			params[bc.properties.ITEM_H]
+		h:			params[bc.properties.ITEM_H],
+		text:		params[bc.properties.TEXT]
 	};
 };
 
@@ -123,7 +126,8 @@ bc.model.Stamp.prototype.getActionParams = function() {
 		x: this.x(),
 		y: this.y(),
 		w: this.w(),
-		h: this.h()
+		h: this.h(),
+		text: this.text()
 	};
 };
 
@@ -145,4 +149,6 @@ bc.model.Stamp.prototype.setActionParams = function(params) {
 		this.w(params.w);
 	if (params.h !== undefined)
 		this.h(params.h);
+	if (params.text !== undefined)
+		this.text(params.text);
 };

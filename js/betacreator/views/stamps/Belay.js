@@ -38,15 +38,33 @@ goog.inherits(bc.view.stamp.Belay, bc.view.Stamp);
  * @inheritDoc
  */
 bc.view.stamp.Belay.prototype.draw = function(ctx, color, lineWidth) {
+	var regular = color === undefined,
+		startAngle = 0,
+		w = this.model.w(),
+		h = this.model.h(),
+		r = Math.min(w,h)/2;
+
 	ctx.strokeStyle = color || this.model.color();
 	ctx.lineWidth = lineWidth || this.model.lineWidth();
 	ctx.beginPath();
-	
-	var startAngle = 0,
-		r = Math.min(this.model.w(),this.model.h())/2;
 
-	ctx.moveTo(this.model.w()/2 + r*Math.cos(startAngle), this.model.h()/2 + r*Math.sin(startAngle));
-	ctx.arc(this.model.w()/2,this.model.h()/2,r,startAngle,Math.PI*2,false);
+	ctx.moveTo(w/2 + r*Math.cos(startAngle), h/2 + r*Math.sin(startAngle));
+	ctx.arc(w/2,h/2,r,startAngle,Math.PI*2,false);
 
 	ctx.stroke();
+
+	if (this.model.text()) {
+		ctx.font = '12px Arial, Helvetica, sans-serif';
+		ctx.textAlign = 'center';
+		ctx.textBaseline = 'middle';
+		if (regular) {
+			ctx.fillStyle = this.model.color();
+			ctx.fillText(this.model.text(), w/2, h/2);
+		}
+		else {
+			ctx.strokeStyle = color || this.model.color();
+			ctx.lineWidth = Math.min(2, (lineWidth || this.model.lineWidth()) - this.model.lineWidth());
+			ctx.strokeText(this.model.text(), w/2, h/2);
+		}
+	}
 };

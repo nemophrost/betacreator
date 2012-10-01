@@ -91,7 +91,8 @@ bc.view.Stamp.prototype.render = function(pageScale, selected, mode) {
 		color: this.model.color(),
 		alpha: this.model.alpha(),
 		scale: scale,
-		selected: selected
+		selected: selected,
+		text: this.model.text()
 	};
 	
 	var locationProperties = {

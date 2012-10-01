@@ -98,11 +98,26 @@ bc.mode.Select.prototype.mouseUp = function(point) {
  * @inheritDoc
  */
 bc.mode.Select.prototype.dblClick = function(point) {
-	for (var i = 0, l = this.canvas.items.length; i < l; i++) {
-		if (this.canvas.items[i].type() == bc.model.ItemTypes.LINE && this.canvas.items[i].hitTest(point.x, point.y)) {
+	var me = this;
+	goog.array.some(this.canvas.items, function(item) {
+		if (item.type() == bc.model.ItemTypes.LINE && item.hitTest(point.x, point.y)) {
 			bc.Client.pubsub.publish(bc.Client.pubsubTopics.MODE, bc.Client.modes.LINE_EDIT);
-			return;
+			return true;
 		}
-	}
+		else if (item.type() == bc.model.ItemTypes.BELAY && item.hitTest(point.x, point.y)) {
+			var text = prompt(bc.i18n('Enter text for the belay:'), item.text());
+
+			if (text !== null && text != item.text()) {
+				me.canvas.runAction(new bc.model.Action(bc.model.ActionType.EditItem, {
+					id: item.id,
+					text: text
+				}));
+				bc.Client.pubsub.publish(bc.Client.pubsubTopics.CANVAS_RENDER);
+			}
+			return true;
+		}
+
+		return false;
+	});
 };
 

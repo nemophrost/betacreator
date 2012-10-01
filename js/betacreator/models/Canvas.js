@@ -78,6 +78,8 @@ bc.model.Canvas = function(client, image) {
 
 			if (changed && me.mode.onActivate)
 				me.mode.onActivate(param);
+
+			lastModeParam = param;
 		}
 	});
 	
