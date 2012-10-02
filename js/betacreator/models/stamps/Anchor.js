@@ -43,16 +43,19 @@ goog.inherits(bc.model.stamp.Anchor, bc.model.Stamp);
  * @return {boolean}
  */
 bc.model.stamp.Anchor.prototype.hitTest = function(x,y) {
-	var dist = this.lineWidth()/2 + 2;
+	var scale = this.scale(),
+		w = this.w()*scale,
+		h = this.h()*scale,
+		dist = this.lineWidth()*scale/2 + 6;
 	
 	if(bc.math.distanceFromLineSegment(
 			new goog.math.Coordinate(x,y),
-			new goog.math.Coordinate(this.x() - this.w()/2, this.y() - this.h()/2),
-			new goog.math.Coordinate(this.x() + this.w()/2, this.y() + this.h()/2)
+			new goog.math.Coordinate(this.x() - w/2, this.y() - h/2),
+			new goog.math.Coordinate(this.x() + w/2, this.y() + h/2)
 		) < dist || bc.math.distanceFromLineSegment(
 			new goog.math.Coordinate(x,y),
-			new goog.math.Coordinate(this.x() + this.w()/2, this.y() - this.h()/2),
-			new goog.math.Coordinate(this.x() - this.w()/2, this.y() + this.h()/2)
+			new goog.math.Coordinate(this.x() + w/2, this.y() - h/2),
+			new goog.math.Coordinate(this.x() - w/2, this.y() + h/2)
 		) < dist) {
 		return true;
 	}

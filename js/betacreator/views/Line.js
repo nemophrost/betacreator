@@ -112,22 +112,24 @@ bc.view.Line.prototype._draw = function(context, color, lineWidth) {
 
 /**
  * @param {CanvasRenderingContext2D} ctx
+ * @param {number} pageScale
  * @param {boolean=} selected
  * 
  * @private
  */
-bc.view.Line.prototype.draw = function(ctx, selected) {
+bc.view.Line.prototype.draw = function(ctx, pageScale, selected) {
+	var scale = pageScale*this.model.scale();
 	ctx.save();
 	ctx.lineCap = 'round';
 	
 	if (selected) {
 		ctx.save();
-		this._draw(ctx, 'rgba(255,0,0,0.75)', this.model.lineWidth()*this.model.scale() + 4);
+		this._draw(ctx, 'rgba(255,0,0,0.75)', this.model.lineWidth()*scale + 4/pageScale);
 		ctx.restore();
 	}
 	else {
 		ctx.save();
-		this._draw(ctx, bc.color.highContrastWhiteOrBlack(this.model.color(), .5), this.model.lineWidth()*this.model.scale() + 2);
+		this._draw(ctx, bc.color.highContrastWhiteOrBlack(this.model.color(), .5), this.model.lineWidth()*scale + 2/pageScale);
 		ctx.restore();
 	}
 
@@ -219,7 +221,7 @@ bc.view.Line.prototype.render = function(scale, selected, mode) {
 		ctx.translate(this.padding - Math.round(scale*this.model.bb.x), this.padding - Math.round(scale*this.model.bb.y));
 		ctx.scale(scale, scale);
 		
-		this.draw(ctx, selected);
+		this.draw(ctx, scale, selected);
 
 		if (selected && mode == bc.Client.modes.LINE_EDIT)
 			this.drawControlPoints(ctx);

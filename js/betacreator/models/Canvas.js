@@ -19,8 +19,15 @@ goog.provide('bc.model.Canvas');
 goog.require('bc.mode.Select');
 goog.require('bc.mode.Line');
 goog.require('bc.mode.Stamp');
+goog.require('bc.mode.Text');
 goog.require('bc.mode.LineEdit');
 goog.require('bc.model.Action');
+goog.require('bc.model.stamp.Anchor');
+goog.require('bc.model.stamp.Piton');
+goog.require('bc.model.stamp.Rappel');
+goog.require('bc.model.stamp.Belay');
+goog.require('bc.model.Text');
+goog.require('bc.model.Line');
 goog.require('bc.property');
 goog.require('goog.array');
 
@@ -63,7 +70,7 @@ bc.model.Canvas = function(client, image) {
 	this.modes[bc.Client.modes.SELECT] = new bc.mode.Select(this, bc.Client.modes.SELECT);
 	this.modes[bc.Client.modes.LINE] = new bc.mode.Line(this, bc.Client.modes.LINE, this.tempLine);
 	this.modes[bc.Client.modes.STAMP] = new bc.mode.Stamp(this, bc.Client.modes.STAMP);
-	// this.modes[bc.Client.modes.TEXT] = new bc.mode.Text(this, bc.Client.modes.TEXT);
+	this.modes[bc.Client.modes.TEXT] = new bc.mode.Text(this, bc.Client.modes.TEXT);
 	this.modes[bc.Client.modes.LINE_EDIT] = new bc.mode.LineEdit(this, bc.Client.modes.LINE_EDIT);
 
 	var lastModeParam = null;
@@ -331,6 +338,17 @@ bc.model.Canvas.prototype.runAction = function(action) {
 			}
 			
 			break;
+		case bc.model.ActionType.CreateText:
+			if (action.params.text) {
+				item = new bc.model.Text(action.params);
+				action.params.id = item.id;
+				this.addItem(item);
+			}
+			else {
+				return false;
+			}
+			
+			break;
 		case bc.model.ActionType.EditItem:
 			item = this.getItem(action.params.id);
 			
@@ -355,6 +373,7 @@ bc.model.Canvas.prototype.runAction = function(action) {
 			
 			break;
 		case bc.model.ActionType.DeleteStamp:
+		case bc.model.ActionType.DeleteText:
 		case bc.model.ActionType.DeleteLine:
 			item = this.getItem(action.params.id);
 			

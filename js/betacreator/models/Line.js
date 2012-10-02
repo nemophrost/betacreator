@@ -242,9 +242,11 @@ bc.model.Line.prototype.setActionParams = function(params) {
  * @return {boolean}
  */
 bc.model.Line.prototype.hitTest = function(x,y) {
-	var p = this.points;
+	var p = this.points,
+		minDist = this.lineWidth()*this.scale()/2 + 6;
+	
 	for(var i = 0, l = p.length - 1; i < l; i++) {
-		if(bc.math.distanceFromLineSegment(new goog.math.Coordinate(x,y),p[i],p[i+1]) < 10) {
+		if(bc.math.distanceFromLineSegment(new goog.math.Coordinate(x,y),p[i],p[i+1]) < minDist) {
 			return true;
 		}
 	}

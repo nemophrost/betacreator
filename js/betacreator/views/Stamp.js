@@ -126,13 +126,13 @@ bc.view.Stamp.prototype.render = function(pageScale, selected, mode) {
 
 		if (selected) {
 			ctx.save();
-			// this.draw(ctx, 'rgba(52,156,240,0.75)', this.model.lineWidth() + 4);
-			this.draw(ctx, 'rgba(255,0,0,0.75)', this.model.lineWidth() + 4);
+			// this.draw(ctx, 'rgba(52,156,240,0.75)', this.model.lineWidth() + 4/scale);
+			this.draw(ctx, 'rgba(255,0,0,0.75)', this.model.lineWidth() + 4/scale);
 			ctx.restore();
 		}
 		
 		ctx.save();
-		this.draw(ctx, bc.color.highContrastWhiteOrBlack(this.model.color(), .5), this.model.lineWidth() + 2);
+		this.draw(ctx, bc.color.highContrastWhiteOrBlack(this.model.color(), .5), this.model.lineWidth() + 2/scale);
 		ctx.restore();
 		
 		this.draw(ctx);

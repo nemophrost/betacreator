@@ -135,6 +135,9 @@ bc.GUI.prototype.bindEventListeners = function() {
 			case goog.events.KeyCodes.R:
 				bc.Client.pubsub.publish(bc.Client.pubsubTopics.MODE, bc.Client.modes.STAMP, bc.model.ItemTypes.RAPPEL);
 				break;
+			case goog.events.KeyCodes.T:
+				bc.Client.pubsub.publish(bc.Client.pubsubTopics.MODE, bc.Client.modes.TEXT);
+				break;
 			case goog.events.KeyCodes.V:
 			case goog.events.KeyCodes.ESC:
 				bc.Client.pubsub.publish(bc.Client.pubsubTopics.MODE, bc.Client.modes.SELECT);

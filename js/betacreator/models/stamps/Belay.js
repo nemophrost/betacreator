@@ -41,12 +41,12 @@ goog.inherits(bc.model.stamp.Belay, bc.model.Stamp);
  * @return {boolean}
  */
 bc.model.stamp.Belay.prototype.hitTest = function(x,y) {
-	var dist = this.lineWidth()/2 + 1;
+	var dist = this.lineWidth()*this.scale()/2 + 1;
 
 	if (goog.math.Coordinate.distance(
 			new goog.math.Coordinate(x, y),
 			new goog.math.Coordinate(this.x(), this.y())
-		) <= this.w()/2 + dist)
+		) <= this.w()*this.scale()/2 + dist)
 		return true;
 
 	return false;

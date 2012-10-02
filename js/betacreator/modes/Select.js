@@ -50,7 +50,8 @@ bc.mode.Select.prototype.mouseDown = function(point) {
 
 	this.mouseDownPoint = point;
 
-	for (var i = 0, l = this.canvas.items.length; i < l; i++) {
+	// loop through top down
+	for (var i = this.canvas.items.length - 1; i >= 0; i--) {
 		if (this.canvas.items[i].hitTest(point.x, point.y)) {
 			this.canvas.selectItem(this.canvas.items[i]);
 			return;
@@ -98,11 +99,15 @@ bc.mode.Select.prototype.mouseUp = function(point) {
  * @inheritDoc
  */
 bc.mode.Select.prototype.dblClick = function(point) {
-	var me = this;
-	goog.array.some(this.canvas.items, function(item) {
+	var item,
+		me = this;
+	
+	// loop through top down
+	for (var i = this.canvas.items.length - 1; i >= 0; i--) {
+		item = this.canvas.items[i];
 		if (item.type() == bc.model.ItemTypes.LINE && item.hitTest(point.x, point.y)) {
 			bc.Client.pubsub.publish(bc.Client.pubsubTopics.MODE, bc.Client.modes.LINE_EDIT);
-			return true;
+			break;
 		}
 		else if (item.type() == bc.model.ItemTypes.BELAY && item.hitTest(point.x, point.y)) {
 			var text = prompt(bc.i18n('Enter text for the belay:'), item.text());
@@ -114,10 +119,8 @@ bc.mode.Select.prototype.dblClick = function(point) {
 				}));
 				bc.Client.pubsub.publish(bc.Client.pubsubTopics.CANVAS_RENDER);
 			}
-			return true;
+			break;
 		}
-
-		return false;
-	});
+	}
 };
 

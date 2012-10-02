@@ -170,7 +170,7 @@ bc.gui.OptionBar.prototype.createControls = function(container) {
 	var pitonButton = createToolButton('tool-piton', bc.Client.modes.STAMP, 'Piton Tool', bc.model.ItemTypes.PITON);
 	var rappelButton = createToolButton('tool-rappel', bc.Client.modes.STAMP, 'Rappel Tool', bc.model.ItemTypes.RAPPEL);
 	var belayButton = createToolButton('tool-belay', bc.Client.modes.STAMP, 'Belay Tool', bc.model.ItemTypes.BELAY);
-	// var textButton = createToolButton('tool-text', bc.Client.modes.TEXT, 'Text Tool');
+	var textButton = createToolButton('tool-text', bc.Client.modes.TEXT, 'Text Tool');
 
 	this.addDivider(container);
 
@@ -217,30 +217,40 @@ bc.gui.OptionBar.prototype.createControls = function(container) {
 
 	this.addDivider(container);
 
-	// var textAlignButtonBar = new bc.gui.input.ButtonBar(
-	// 	createButtons({
-	// 		buttons: [
-	// 			{
-	// 				icon:'text-align-l',
-	// 				val: 'left',
-	// 				tooltip:bc.i18n('Left Align')
-	// 			},{
-	// 				icon:'text-align-c',
-	// 				val: 'center',
-	// 				tooltip:bc.i18n('Center Align')
-	// 			},{
-	// 				icon:'text-align-r',
-	// 				val:'right',
-	// 				tooltip:bc.i18n('Right Align')
-	// 			}
-	// 		],
-	// 		property: bc.properties.TEXT_ALIGN
-	// 	}),
-	// 	null,
-	// 	this.getInputWrapper(container)
-	// );
+	var textStyleDisabled = function() {
+		return !goog.isString(bc.property.get(bc.properties.TEXT_ALIGN));
+	};
 
-	// this.addDivider(container);
+	var textAlignButtonBar = new bc.gui.input.ButtonBar(
+		createButtons({
+			buttons: [
+				{
+					icon:'text-align-l',
+					val: 'left',
+					tooltip:bc.i18n('Left Align'),
+					selected: function() { return /** @type {string} */(bc.property.get(bc.properties.TEXT_ALIGN)) == 'l'; },
+					disabled: textStyleDisabled
+				},{
+					icon:'text-align-c',
+					val: 'center',
+					tooltip:bc.i18n('Center Align'),
+					selected: function() { return /** @type {string} */(bc.property.get(bc.properties.TEXT_ALIGN)) == 'c'; },
+					disabled: textStyleDisabled
+				},{
+					icon:'text-align-r',
+					val:'right',
+					tooltip:bc.i18n('Right Align'),
+					selected: function() { return /** @type {string} */(bc.property.get(bc.properties.TEXT_ALIGN)) == 'r'; },
+					disabled: textStyleDisabled
+				}
+			],
+			property: bc.properties.TEXT_ALIGN
+		}),
+		null,
+		this.getInputWrapper(container)
+	);
+
+	this.addDivider(container);
 
 	var lineStyleDisabled = function() {
 		return !goog.isNumber(bc.property.get(bc.properties.LINE_OFFLENGTH));
@@ -315,10 +325,10 @@ bc.gui.OptionBar.prototype.createControls = function(container) {
 		pitonButton,
 		rappelButton,
 		belayButton,
-		// textButton,
+		textButton,
 		colorWell,
 		scaleSpinner,
-		// textAlignButtonBar,
+		textAlignButtonBar,
 		lineStyleButtonBar,
 		lineCurveButton,
 		lineEditButton

@@ -17,11 +17,12 @@
 goog.provide('bc.view.Canvas');
 
 goog.require('bc.model.Canvas');
-goog.require('bc.view.Line');
 goog.require('bc.view.stamp.Anchor');
 goog.require('bc.view.stamp.Piton');
 goog.require('bc.view.stamp.Rappel');
 goog.require('bc.view.stamp.Belay');
+goog.require('bc.view.Text');
+goog.require('bc.view.Line');
 goog.require('goog.dom');
 
 /**
@@ -99,9 +100,6 @@ bc.view.Canvas.prototype.renderItem = function(item, pageScale) {
 	// if no view exists for the item, create it
 	if (!view) {
 		switch (item.type()) {
-			case bc.model.ItemTypes.LINE:
-				view = new bc.view.Line(/** @type {bc.model.Line} */(item));
-				break;
 			case bc.model.ItemTypes.ANCHOR:
 				view = new bc.view.stamp.Anchor(/** @type {bc.model.stamp.Anchor} */(item));
 				break;
@@ -113,6 +111,12 @@ bc.view.Canvas.prototype.renderItem = function(item, pageScale) {
 				break;
 			case bc.model.ItemTypes.BELAY:
 				view = new bc.view.stamp.Belay(/** @type {bc.model.stamp.Belay} */(item));
+				break;
+			case bc.model.ItemTypes.TEXT:
+				view = new bc.view.Text(/** @type {bc.model.Text} */(item));
+				break;
+			case bc.model.ItemTypes.LINE:
+				view = new bc.view.Line(/** @type {bc.model.Line} */(item));
 				break;
 			default:
 				break;
