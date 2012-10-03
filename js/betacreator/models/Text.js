@@ -20,24 +20,27 @@ goog.require('bc.model.Item');
 goog.require('bc.uuid');
 
 /**
- * @param {Object=} params
+ * @param {?Object=} params
+ * @param {Object=} defaults
+ *
  * @constructor
  * @implements {bc.model.Item}
  */
-bc.model.Text = function(params) {
+bc.model.Text = function(params, defaults) {
 	params = params || {};
 
 	this.id = bc.uuid(params.id);
 
 	this.properties = {};
 	this.properties[bc.properties.ITEM_TYPE] = bc.model.ItemTypes.TEXT;
-	this.properties[bc.properties.ITEM_SCALE] = params.scale || 1;
-	this.properties[bc.properties.ITEM_COLOR] = params.color || '#ffff00';
-	this.properties[bc.properties.ITEM_ALPHA] = params.alpha || 1;
+	this.properties[bc.properties.ITEM_SCALE] = params.scale || defaults[bc.properties.ITEM_SCALE];
+	this.properties[bc.properties.ITEM_COLOR] = params.color || defaults[bc.properties.ITEM_COLOR];
+	this.properties[bc.properties.ITEM_ALPHA] = params.alpha || defaults[bc.properties.ITEM_ALPHA];
 	this.properties[bc.properties.ITEM_X] = params.x || 0;
 	this.properties[bc.properties.ITEM_Y] = params.y || 0;
 	this.properties[bc.properties.TEXT] = params.text || '';
-	this.properties[bc.properties.TEXT_ALIGN] = params.textAlign || 'l';
+	this.properties[bc.properties.TEXT_ALIGN] = params.textAlign || defaults[bc.properties.TEXT_ALIGN];
+	this.properties[bc.properties.TEXT_BG] = params.textBG || defaults[bc.properties.TEXT_BG];
 	
 	this.type = /** @type {function(number=):number} */(bc.property.getterSetter(this.properties, bc.properties.ITEM_TYPE));
 	this.scale = /** @type {function(number=):number} */(bc.property.getterSetter(this.properties, bc.properties.ITEM_SCALE));
@@ -47,7 +50,19 @@ bc.model.Text = function(params) {
 	this.y = /** @type {function(number=):number} */(bc.property.getterSetter(this.properties, bc.properties.ITEM_Y));
 	this.text = /** @type {function(string=):string} */(bc.property.getterSetter(this.properties, bc.properties.TEXT));
 	this.textAlign = /** @type {function(string=):string} */(bc.property.getterSetter(this.properties, bc.properties.TEXT_ALIGN));
+	this.textBG = /** @type {function(boolean=):boolean} */(bc.property.getterSetter(this.properties, bc.properties.TEXT_BG));
 	
+	this.actionProperties = [
+		bc.properties.ITEM_SCALE,
+		bc.properties.ITEM_COLOR,
+		bc.properties.ITEM_ALPHA,
+		bc.properties.ITEM_X,
+		bc.properties.ITEM_Y,
+		bc.properties.TEXT,
+		bc.properties.TEXT_ALIGN,
+		bc.properties.TEXT_BG
+	];
+
 	this.offset = new goog.math.Coordinate(0,0);
 
 	/** @type {Array.<bc.TextLine>} */
@@ -63,10 +78,10 @@ bc.TextLine;
  * @return {Object}
  */
 bc.model.Text.prototype.applyOffset = function() {
-	var ret = {
-		x: this.x() + this.offset.x,
-		y: this.y() + this.offset.y
-	};
+	var ret = {};
+
+	ret[bc.properties.ITEM_X] = this.x() + this.offset.x;
+	ret[bc.properties.ITEM_Y] = this.y() + this.offset.y;
 	
 	this.offset.x = 0;
 	this.offset.y = 0;
@@ -115,7 +130,8 @@ bc.model.Text.parseParams = function(params) {
 		x:			params[bc.properties.ITEM_X],
 		y:			params[bc.properties.ITEM_Y],
 		text:		params[bc.properties.TEXT],
-		textAlign:		params[bc.properties.TEXT_ALIGN]
+		textAlign:		params[bc.properties.TEXT_ALIGN],
+		textBG:		params[bc.properties.TEXT_BG]
 	};
 };
 
@@ -145,38 +161,30 @@ bc.model.Text.prototype.serializeParams = function() {
  * @return {Object}
  */
 bc.model.Text.prototype.getActionParams = function() {
-	return {
-		scale: this.scale(),
-		color: this.color(),
-		alpha: this.alpha(),
-		x: this.x(),
-		y: this.y(),
-		text: this.text(),
-		textAlign: this.textAlign()
-	};
+	var me = this,
+		ret = {};
+
+	goog.array.forEach(this.actionProperties, function(key) {
+		ret[key] = me.properties[key];
+	});
+
+	return ret;
 };
 
 /**
  * @param {Object} params
  */
 bc.model.Text.prototype.setActionParams = function(params) {
-	if (params.scale !== undefined)
-		this.scale(params.scale);
-	if (params.color !== undefined)
-		this.color(params.color);
-	if (params.alpha !== undefined)
-		this.alpha(params.alpha);
-	if (params.x !== undefined)
-		this.x(params.x);
-	if (params.y !== undefined)
-		this.y(params.y);
-	if (params.text !== undefined)
-		this.text(params.text);
-	if (params.textAlign !== undefined)
-		this.text(params.textAlign);
+	var me = this;
+	goog.array.forEach(this.actionProperties, function(key) {
+		if (params[key] !== undefined)
+			me.properties[key] = params[key];
+	});
 };
 
 /**
+ * For text we hit test agains each line so we could put other items in the white space if we want
+ *
  * @param {number} x
  * @param {number} y
  * @return {boolean}

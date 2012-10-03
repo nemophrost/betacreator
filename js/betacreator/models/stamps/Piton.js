@@ -18,12 +18,13 @@ goog.provide('bc.model.stamp.Piton');
 goog.require('bc.model.Stamp');
 
 /**
- * @param {Object=} params
+ * @param {?Object=} params
+ * @param {Object=} defaults
  *
  * @constructor
  * @extends {bc.model.Stamp}
  */
-bc.model.stamp.Piton = function(params) {
+bc.model.stamp.Piton = function(params, defaults) {
 	params = params || {};
 
 	if (!params.w)
@@ -31,7 +32,7 @@ bc.model.stamp.Piton = function(params) {
 	if (!params.h)
 		params.h = 12;
 
-	bc.model.Stamp.call(this, params);
+	bc.model.Stamp.call(this, params, defaults);
 	
 	this.type(bc.model.ItemTypes.PITON);
 };

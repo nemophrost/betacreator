@@ -66,24 +66,8 @@ bc.Client.prototype.init = function(image) {
 		'height': ((this.params.h || image.height) + 29) + 'px'
 	});
 	goog.dom.replaceNode(this.gui.wrapper, this.sourceImage);
-		
-	// var lineModel = new bc.model.Line({
-	// 	onLength: 1,
-	// 	offLength: 10,
-	// 	curved: true,
-	// 	color: '#ffff00',
-	// 	controlPoints: [
-	// 		new goog.math.Coordinate(30,100),
-	// 		new goog.math.Coordinate(200,100),
-	// 		new goog.math.Coordinate(50,200),
-	// 		new goog.math.Coordinate(200,300),
-	// 		new goog.math.Coordinate(100,350)
-	// 	]
-	// });
 
-	// var lineView = new bc.view.Line(lineModel);
-	// goog.dom.appendChild(document.body, lineView.canvas);
-	// lineView.render();
+	this.gui.init();
 };
 
 /**
@@ -99,7 +83,8 @@ bc.Client.pubsubTopics = {
 	SELECTION_CHANGE: 'sc',
 	SHOW_COLOR_PICKER: 'scp',
 	HIDE_OVERLAYS: 'ho',
-	MODE: 'm'
+	MODE: 'm',
+	ACTION: 'a'
 };
 
 /**

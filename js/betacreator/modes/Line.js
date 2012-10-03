@@ -54,10 +54,9 @@ bc.mode.Line.prototype.mouseDown = function(point) {
 	this.points.push(new goog.math.Coordinate(point.x, point.y));
 
 	if (this.activeLine) {
-		this.canvas.runAction(new bc.model.Action(bc.model.ActionType.EditItem, {
-			id: this.activeLine.id,
-			controlPoints: this.getPoints()
-		}));
+		var changed = { id: this.activeLine.id };
+		changed[bc.properties.LINE_CONTROLPOINTS] = this.getPoints();
+		this.canvas.runAction(new bc.model.Action(bc.model.ActionType.EditItem, changed));
 	}
 	else if (this.points.length > 1) {
 		this.resetTempLine();
@@ -70,6 +69,8 @@ bc.mode.Line.prototype.mouseDown = function(point) {
 	else {
 		this.movingPoint = new goog.math.Coordinate(point.x, point.y);
 		this.tempLine.controlPoints(this.getPoints(this.movingPoint));
+		this.tempLine.onLength(this.canvas.properties[bc.properties.LINE_ONLENGTH]);
+		this.tempLine.offLength(this.canvas.properties[bc.properties.LINE_OFFLENGTH]);
 		bc.Client.pubsub.publish(bc.Client.pubsubTopics.CANVAS_RENDER);
 	}
 };

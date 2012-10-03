@@ -73,7 +73,12 @@ bc.GUI = function(client) {
 		);
 	});
 	goog.dom.appendChild(this.uiContainer, this.colorPicker.container);
-	
+};
+
+/**
+ * Called after the gui has been added to the DOM
+ */
+bc.GUI.prototype.init = function() {
 	// bind all mouse event listeners
 	this.bindEventListeners();
 
@@ -81,7 +86,8 @@ bc.GUI = function(client) {
 };
 
 /**
- * bind mouse and keyboard event listeners to hitTestDiv and document respectively
+ * Bind mouse and keyboard event listeners to hitTestDiv and document respectively
+ * @private
  */
 bc.GUI.prototype.bindEventListeners = function() {
 	var me = this;

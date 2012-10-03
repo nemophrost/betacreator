@@ -18,18 +18,19 @@ goog.provide('bc.model.stamp.Rappel');
 goog.require('bc.model.Stamp');
 
 /**
- * @param {Object=} params
+ * @param {?Object=} params
+ * @param {Object=} defaults
  *
  * @constructor
  * @extends {bc.model.Stamp}
  */
-bc.model.stamp.Rappel = function(params) {
+bc.model.stamp.Rappel = function(params, defaults) {
 	params = params || {};
 	
 	if (!params.lineWidth)
 		params.lineWidth = 2;
 	
-	bc.model.Stamp.call(this, params);
+	bc.model.Stamp.call(this, params, defaults);
 	
 	this.type(bc.model.ItemTypes.RAPPEL);
 };

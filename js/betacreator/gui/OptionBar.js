@@ -34,13 +34,14 @@ bc.gui.OptionBar = function() {
 		me.itemType = itemType;
 		me.refresh();
 	});
-	bc.Client.pubsub.publish(bc.Client.pubsubTopics.MODE, bc.Client.modes.SELECT);
 };
 
 /**
  */
 bc.gui.OptionBar.prototype.init = function() {
 	bc.Client.pubsub.subscribe(bc.Client.pubsubTopics.SELECTION_CHANGE, goog.bind(this.refresh, this));
+	bc.Client.pubsub.subscribe(bc.Client.pubsubTopics.ACTION, goog.bind(this.refresh, this));
+	bc.Client.pubsub.publish(bc.Client.pubsubTopics.MODE, bc.Client.modes.SELECT);
 };
 
 /**
@@ -226,25 +227,37 @@ bc.gui.OptionBar.prototype.createControls = function(container) {
 			buttons: [
 				{
 					icon:'text-align-l',
-					val: 'left',
+					val: 'l',
 					tooltip:bc.i18n('Left Align'),
 					selected: function() { return /** @type {string} */(bc.property.get(bc.properties.TEXT_ALIGN)) == 'l'; },
 					disabled: textStyleDisabled
 				},{
 					icon:'text-align-c',
-					val: 'center',
+					val: 'c',
 					tooltip:bc.i18n('Center Align'),
 					selected: function() { return /** @type {string} */(bc.property.get(bc.properties.TEXT_ALIGN)) == 'c'; },
 					disabled: textStyleDisabled
 				},{
 					icon:'text-align-r',
-					val:'right',
+					val:'r',
 					tooltip:bc.i18n('Right Align'),
 					selected: function() { return /** @type {string} */(bc.property.get(bc.properties.TEXT_ALIGN)) == 'r'; },
 					disabled: textStyleDisabled
 				}
 			],
 			property: bc.properties.TEXT_ALIGN
+		}),
+		null,
+		this.getInputWrapper(container)
+	);
+
+	var textBGButton = new bc.gui.input.ButtonBar(
+		createButtons({
+			buttons: [{
+				icon:'text-bg',
+				property: bc.properties.TEXT_BG,
+				tooltip:bc.i18n('Toggle Text Background')
+			}]
 		}),
 		null,
 		this.getInputWrapper(container)
@@ -269,8 +282,10 @@ bc.gui.OptionBar.prototype.createControls = function(container) {
 			},{
 				icon:'line-dashed',
 				action: function() {
-					bc.property.set(bc.properties.LINE_OFFLENGTH, 10);
-					bc.property.set(bc.properties.LINE_ONLENGTH, 10);
+					bc.property.setBatch([
+						[bc.properties.LINE_OFFLENGTH, 10],
+						[bc.properties.LINE_ONLENGTH, 10]
+					]);
 				},
 				tooltip:bc.i18n('Dashed Line'),
 				selected: function() { return /** @type {number} */(bc.property.get(bc.properties.LINE_ONLENGTH)) > 2; },
@@ -278,19 +293,19 @@ bc.gui.OptionBar.prototype.createControls = function(container) {
 			},{
 				icon:'line-dotted',
 				action: function() {
-					bc.property.set(bc.properties.LINE_OFFLENGTH, 8);
-					bc.property.set(bc.properties.LINE_ONLENGTH, 0.01);
+					bc.property.setBatch([
+						[bc.properties.LINE_OFFLENGTH, 8],
+						[bc.properties.LINE_ONLENGTH, 0.01]
+					]);
 				},
 				tooltip:bc.i18n('Dotted Line'),
-				selected: function() { return /** @type {number} */(bc.property.get(bc.properties.LINE_ONLENGTH)) > 0 && /** @type {number} */(bc.property.get(bc.properties.LINE_ONLENGTH)) <= 2; },
+				selected: function() { return /** @type {number} */(bc.property.get(bc.properties.LINE_OFFLENGTH)) > 0 && /** @type {number} */(bc.property.get(bc.properties.LINE_ONLENGTH)) <= 2; },
 				disabled: lineStyleDisabled
 			}
 		],
 		null,
 		this.getInputWrapper(container)
 	);
-
-	this.addDivider(container);
 
 	var lineCurveButton = new bc.gui.input.ButtonBar(
 		createButtons({
@@ -329,6 +344,7 @@ bc.gui.OptionBar.prototype.createControls = function(container) {
 		colorWell,
 		scaleSpinner,
 		textAlignButtonBar,
+		textBGButton,
 		lineStyleButtonBar,
 		lineCurveButton,
 		lineEditButton

@@ -28,7 +28,7 @@ goog.require('goog.dom');
  */
 bc.view.Text = function(model) {
 	this.model = model;
-	this.padding = 10;
+	this.padding = 15;
 	
 	/** @type {?Object} */
 	this.drawProperties = null;
@@ -37,7 +37,7 @@ bc.view.Text = function(model) {
 	this.locationProperties = null;
 
 	/** @type {?goog.math.Coordinate} */
-	this.textSize = null;
+	this.boundingBox = null;
 	
 	this.canvas = goog.dom.createElement(goog.dom.TagName.CANVAS);
 	this.canvas.style.position = 'absolute';
@@ -110,7 +110,7 @@ bc.view.Text.prototype.getFontStyle = function(italic, bold, size) {
  * @return {goog.math.Coordinate}
  * @private
  */
-bc.view.Text.prototype.calculateTextSize = function(ctx) {
+bc.view.Text.prototype.calculateBoundingBox = function(ctx) {
 	var me = this,
 		maxWidth = 2048,
 		w = 0;
@@ -134,23 +134,22 @@ bc.view.Text.prototype.updateLocation = function(pageScale) {
 	pageScale = pageScale || 1;
 	
 	var scale = pageScale*this.model.scale(),
-		canvasWidth = Math.round(scale*this.textSize.x) + 2*this.padding,
-		canvasHeight = Math.round(scale*this.textSize.y) + 2*this.padding;
+		canvasWidth = Math.round(scale*this.boundingBox.x) + 2*this.padding,
+		canvasHeight = Math.round(scale*this.boundingBox.y) + 2*this.padding;
 	
 	switch(this.model.textAlign()) {
 		case 'c':
 			this.canvas.style.left = Math.round(pageScale*(this.model.x() + this.model.offset.x) - canvasWidth/2) + 'px';
-			this.canvas.style.top = Math.round(pageScale*(this.model.y() + this.model.offset.y) - canvasHeight/2) + 'px';
 			break;
 		case 'r':
 			this.canvas.style.left = Math.round(pageScale*(this.model.x() + this.model.offset.x) - canvasWidth + this.padding) + 'px';
-			this.canvas.style.top = Math.round(pageScale*(this.model.y() + this.model.offset.y) - canvasHeight + this.padding) + 'px';
 			break;
 		default:
 			this.canvas.style.left = Math.round(pageScale*(this.model.x() + this.model.offset.x) - this.padding) + 'px';
-			this.canvas.style.top = Math.round(pageScale*(this.model.y() + this.model.offset.y) - this.padding) + 'px';
 			break;
 	}
+
+	this.canvas.style.top = Math.round(pageScale*(this.model.y() + this.model.offset.y) - this.padding) + 'px';
 };
 
 
@@ -180,7 +179,8 @@ bc.view.Text.prototype.render = function(pageScale, selected, mode) {
 		scale: scale,
 		selected: selected,
 		text: this.model.text(),
-		textAlign: this.model.textAlign()
+		textAlign: this.model.textAlign(),
+		textBG: this.model.textBG()
 	};
 	
 	var locationProperties = {
@@ -200,10 +200,10 @@ bc.view.Text.prototype.render = function(pageScale, selected, mode) {
 		var ctx = this.canvas.getContext('2d');
 
 		this.model.calculateLines();
-		this.textSize = this.calculateTextSize(ctx);
+		this.boundingBox = this.calculateBoundingBox(ctx);
 
-		var canvasWidth = Math.round(scale*this.textSize.x) + 2*this.padding,
-			canvasHeight = Math.round(scale*this.textSize.y) + 2*this.padding;
+		var canvasWidth = Math.round(scale*this.boundingBox.x) + 2*this.padding,
+			canvasHeight = Math.round(scale*this.boundingBox.y) + 2*this.padding;
 		
 		ctx.canvas.width = canvasWidth;
 		ctx.canvas.height = canvasHeight;
@@ -211,19 +211,41 @@ bc.view.Text.prototype.render = function(pageScale, selected, mode) {
 		ctx.clearRect(0, 0, canvasWidth, canvasHeight);
 
 		ctx.save();
-		ctx.translate(this.padding, this.padding);
-		ctx.scale(scale, scale);
-		ctx.lineCap = 'round';
 
-		if (selected) {
+		if (this.model.textBG()) {
 			ctx.save();
-			this.draw(ctx, 'rgba(255,0,0,0.75)', 4/scale);
+			ctx.fillStyle = bc.color.highContrastWhiteOrBlack(this.model.color(), 0.5);
+			ctx.fillRect(0, 0, canvasWidth, canvasHeight);
 			ctx.restore();
 		}
+		if (selected) {
+			ctx.save();
+			ctx.strokeStyle = 'rgba(255,0,0,0.75)';
+			ctx.lineWidth = 1;
+			ctx.strokeRect(0.5, 0.5, canvasWidth-1, canvasHeight-1);
+			ctx.restore();
+		}
+
+		switch(this.model.textAlign()) {
+			case 'c':
+				ctx.translate(canvasWidth/2, this.padding);
+				break;
+			case 'r':
+				ctx.translate(canvasWidth - this.padding, this.padding);
+				break;
+			default:
+				ctx.translate(this.padding, this.padding);
+				break;
+		}
+
+		ctx.scale(scale, scale);
+		ctx.lineCap = 'round';
 		
-		ctx.save();
-		this.draw(ctx, bc.color.highContrastWhiteOrBlack(this.model.color(), 0.5), 2/scale);
-		ctx.restore();
+		if (!this.model.textBG()) {
+			ctx.save();
+			this.draw(ctx, bc.color.highContrastWhiteOrBlack(this.model.color(), 0.5), 2/scale);
+			ctx.restore();
+		}
 		
 		this.draw(ctx);
 		

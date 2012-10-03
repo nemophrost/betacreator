@@ -18,12 +18,13 @@ goog.provide('bc.model.stamp.Anchor');
 goog.require('bc.model.Stamp');
 
 /**
- * @param {Object=} params
+ * @param {?Object=} params
+ * @param {Object=} defaults
  *
  * @constructor
  * @extends {bc.model.Stamp}
  */
-bc.model.stamp.Anchor = function(params) {
+bc.model.stamp.Anchor = function(params, defaults) {
 	params = params || {};
 	
 	if (!params.w)
@@ -31,7 +32,7 @@ bc.model.stamp.Anchor = function(params) {
 	if (!params.h)
 		params.h = 10;
 
-	bc.model.Stamp.call(this, params);
+	bc.model.Stamp.call(this, params, defaults);
 	
 	this.type(bc.model.ItemTypes.ANCHOR);
 };

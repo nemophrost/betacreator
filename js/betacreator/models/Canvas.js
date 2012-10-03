@@ -50,6 +50,14 @@ bc.model.Canvas = function(client, image) {
 
 	/** @type {Object} */
 	this.properties = {};
+	this.properties[bc.properties.ITEM_SCALE] = 1;
+	this.properties[bc.properties.ITEM_COLOR] = '#ffff00';
+	this.properties[bc.properties.ITEM_ALPHA] = 1;
+	this.properties[bc.properties.LINE_ONLENGTH] = 10;
+	this.properties[bc.properties.LINE_OFFLENGTH] = 10;
+	this.properties[bc.properties.LINE_CURVED] = false;
+	this.properties[bc.properties.TEXT_ALIGN] = 'l';
+	this.properties[bc.properties.TEXT_BG] = false;
 
 	/** @type {string|null} */
 	this.selected = null;
@@ -58,7 +66,7 @@ bc.model.Canvas = function(client, image) {
 
 	this.tempLine = new bc.model.Line({
 		controlPoints: [ new goog.math.Coordinate(0,0) ]
-	});
+	}, this.properties);
 
 	this.addItem(this.tempLine);
 	
@@ -91,7 +99,9 @@ bc.model.Canvas = function(client, image) {
 	});
 	
 	/** @type {bc.Mode} */
-	this.mode = this.modes.SELECT;
+	this.mode = null;
+
+	// bc.Client.pubsub.publish(bc.Client.pubsubTopics.MODE, bc.Client.modes.SELECT);
 	
 	
 	/* Undo/redo functionality
@@ -170,7 +180,6 @@ bc.model.Canvas.prototype.initUndoData = function() {
 
 /**
  * Start a batch of actions that should be undone as a unit.
- * @private
  */
 bc.model.Canvas.prototype.startUndoBatch = function() {
 	this.undoBatchLevel++;
@@ -187,7 +196,6 @@ bc.model.Canvas.prototype.addToUndoBatch = function(a) {
 
 /**
  * End a batch of actions that should be undone as a unit
- * @private
  */
 bc.model.Canvas.prototype.endUndoBatch = function() {	
 	this.undoBatchLevel = Math.max(0, this.undoBatchLevel - 1);
@@ -304,16 +312,16 @@ bc.model.Canvas.prototype.runAction = function(action) {
 		case bc.model.ActionType.CreateStamp:
 			switch (action.params.type) {
 				case bc.model.ItemTypes.ANCHOR:
-					item = new bc.model.stamp.Anchor(action.params);
+					item = new bc.model.stamp.Anchor(action.params, this.properties);
 					break;
 				case bc.model.ItemTypes.PITON:
-					item = new bc.model.stamp.Piton(action.params);
+					item = new bc.model.stamp.Piton(action.params, this.properties);
 					break;
 				case bc.model.ItemTypes.RAPPEL:
-					item = new bc.model.stamp.Rappel(action.params);
+					item = new bc.model.stamp.Rappel(action.params, this.properties);
 					break;
 				case bc.model.ItemTypes.BELAY:
-					item = new bc.model.stamp.Belay(action.params);
+					item = new bc.model.stamp.Belay(action.params, this.properties);
 					break;
 				default:
 					break;
@@ -329,7 +337,7 @@ bc.model.Canvas.prototype.runAction = function(action) {
 			break;
 		case bc.model.ActionType.CreateLine:
 			if (action.params.controlPoints && action.params.controlPoints.length > 1) {
-				item = new bc.model.Line(action.params);
+				item = new bc.model.Line(action.params, this.properties);
 				action.params.id = item.id;
 				this.addItem(item);
 			}
@@ -340,7 +348,7 @@ bc.model.Canvas.prototype.runAction = function(action) {
 			break;
 		case bc.model.ActionType.CreateText:
 			if (action.params.text) {
-				item = new bc.model.Text(action.params);
+				item = new bc.model.Text(action.params, this.properties);
 				action.params.id = item.id;
 				this.addItem(item);
 			}
@@ -395,6 +403,7 @@ bc.model.Canvas.prototype.runAction = function(action) {
 	this.endUndoBatch();
 
 	bc.Client.pubsub.publish(bc.Client.pubsubTopics.CANVAS_RENDER);
+	bc.Client.pubsub.publish(bc.Client.pubsubTopics.ACTION);
 	
 	return true;
 };

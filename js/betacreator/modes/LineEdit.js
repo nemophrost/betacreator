@@ -130,10 +130,9 @@ bc.mode.LineEdit.prototype.mouseUp = function(point) {
 		this.controlPoint.x = this.originalControlPoint.x;
 		this.controlPoint.y = this.originalControlPoint.y;
 
-		this.canvas.runAction(new bc.model.Action(bc.model.ActionType.EditItem, {
-			id: this.activeLine.id,
-			controlPoints: newCPs
-		}));
+		var changed = { id: this.activeLine.id };
+		changed[bc.properties.LINE_CONTROLPOINTS] = newCPs;
+		this.canvas.runAction(new bc.model.Action(bc.model.ActionType.EditItem, changed));
 	}
 
 	this.mouseDownPoint = null;

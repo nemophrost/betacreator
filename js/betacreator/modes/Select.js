@@ -113,11 +113,9 @@ bc.mode.Select.prototype.dblClick = function(point) {
 			var text = prompt(bc.i18n('Enter text for the belay:'), item.text());
 
 			if (text !== null && text != item.text()) {
-				me.canvas.runAction(new bc.model.Action(bc.model.ActionType.EditItem, {
-					id: item.id,
-					text: text
-				}));
-				bc.Client.pubsub.publish(bc.Client.pubsubTopics.CANVAS_RENDER);
+				var changed = { id: item.id };
+				changed[bc.properties.TEXT] = text;
+				me.canvas.runAction(new bc.model.Action(bc.model.ActionType.EditItem, changed));
 			}
 			break;
 		}

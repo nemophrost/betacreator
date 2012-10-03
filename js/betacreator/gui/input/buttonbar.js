@@ -44,15 +44,15 @@ bc.gui.input.ButtonBar = function(buttons, options, parent, width) {
 	});
 	this.containerClasses = new bc.ClassSet(this.container);
 	
-	/** 
+	/**
 	 * @type {boolean}
 	 * @private
 	 */
 	this._disabled = options.disabled || false;
 
-	/** 
+	/**
 	 * @type {Array.<*>}
-	 * @private 
+	 * @private
 	 */
 	this.value = [];
 
@@ -76,7 +76,7 @@ bc.gui.input.ButtonBar = function(buttons, options, parent, width) {
 
 /**
  * Set a new value
- * 
+ *
  * @param {number} newValue
  * @private
  */
@@ -111,10 +111,10 @@ bc.gui.input.ButtonBar.prototype.onChange = function(programmatic) {
 
 /**
  * Append the button bar do a dom element and adjust width (optional)
- * 
+ *
  * @param {Element} parent
  * @param {?number=} width
- * 
+ *
  * @return {bc.gui.input.ButtonBar}
  */
 bc.gui.input.ButtonBar.prototype.appendTo = function(parent, width) {
@@ -140,8 +140,8 @@ bc.gui.input.ButtonBar.prototype.build = function() {
 			me._setValue(button.value);
 		
 		goog.dom.appendChild(me.container, bc.domBuilder({
-			classes: 'button-bar-item' + 
-				(selected ? ' selected' : '') + 
+			classes: 'button-bar-item' +
+				(selected ? ' selected' : '') +
 				(disabled && !me._disabled ? ' disabled' : ''),
 			title: button.tooltip || null,
 			click: function(event) {
@@ -160,9 +160,9 @@ bc.gui.input.ButtonBar.prototype.build = function() {
 
 /**
  * Refresh the DOM (rebuild the buttons)
- * 
+ *
  * @param {boolean=} resultOfClick
- * 
+ *
  * @return {bc.gui.input.ButtonBar}
  */
 bc.gui.input.ButtonBar.prototype.refresh = function(resultOfClick) {
@@ -196,7 +196,7 @@ bc.gui.input.ButtonBar.prototype.getValue = function() {
 
 /**
  * enable the button bar
- * 
+ *
  * @return {bc.gui.input.ButtonBar}
  */
 bc.gui.input.ButtonBar.prototype.enable = function() {
@@ -210,7 +210,7 @@ bc.gui.input.ButtonBar.prototype.enable = function() {
 
 /**
  * disable the button bar
- * 
+ *
  * @return {bc.gui.input.ButtonBar}
  */
 bc.gui.input.ButtonBar.prototype.disable = function() {
@@ -224,7 +224,7 @@ bc.gui.input.ButtonBar.prototype.disable = function() {
 
 /**
  * @return {Element}
- * */
+ */
 bc.gui.input.ButtonBar.prototype.getContainer = function() {
 	return this.container;
 };

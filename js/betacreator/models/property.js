@@ -21,8 +21,9 @@ bc.property.set = function(property, val) {
 
 	if (selection.length > 0) {
 		goog.array.forEach(selection, function(item, i) {
-			if (item.properties[property] !== undefined)
-				item.properties[property] = val;
+			// only change properties that exist
+			if (item.properties[property] === undefined)
+				return;
 
 			var changed = {
 				id: item.id
@@ -34,6 +35,23 @@ bc.property.set = function(property, val) {
 	else {
 		canvas.properties[property] = val;
 	}
+};
+
+/**
+ * @param {Array.<Array>} batch
+ */
+bc.property.setBatch = function(batch) {
+	var canvas = bc.property.canvas;
+	if (!canvas)
+		return;
+
+	bc.property.canvas.startUndoBatch();
+
+	goog.array.forEach(batch, function(data) {
+		bc.property.set(data[0], data[1]);
+	});
+
+	bc.property.canvas.endUndoBatch();
 };
 
 /**
@@ -95,5 +113,6 @@ bc.properties = {
 	LINE_CURVED: 'lc',
 	LINE_OFFLENGTH: 'fl',
 	LINE_ONLENGTH: 'nl',
-	TEXT: 't'
+	TEXT: 't',
+	TEXT_BG: 'tb'
 };
