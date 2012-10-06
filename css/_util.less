@@ -102,38 +102,6 @@
 }
 
 
-// BUTTON STYLE
-.button-style() {
-	border: .6*#fff solid 1px;
-	color: #000;
-	cursor: default;
-
-	.gradientVertical(#fff, .9*#fff);
-    .box-shadow(0, 1px, 0, 0, #fff);
-    .border-radius(3px);
-	.text-shadow(0, 1px, 0, #fff);
-	.user-select-none();
-
-    &:active {
-        .gradientVertical(.9*#fff, .8*#fff);
-    }
-
-	&:hover {
-        .gradientVertical(#fff, .95*#fff);
-		border-color: .4*#fff;
-    }
-
-	&.disabled {
-        .gradientVertical(.95*#fff, .9*#fff);
-		//.gradientVertical(#fff, .95*#fff);
-
-        color: .5*#fff;
-        border-color: .7*#fff;
-    }
-}
-
-
-
 // USER SELECT
 .user-select-none() {
     -khtml-user-select: none;

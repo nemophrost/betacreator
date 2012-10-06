@@ -461,6 +461,28 @@ bc.model.Canvas.prototype.getItem = function(id) {
 };
 
 /**
+ * Call the function f with each item in order, top down (newest first). If any call to f returns true, stop the looping
+ *
+ * @param {function(bc.model.Item)} f
+ * @param {boolean=} selectedFirst If this is set to true then we cycle through selected items first, then the rest top down
+ */
+bc.model.Canvas.prototype.eachOrderedItem = function(f, selectedFirst) {
+	if (selectedFirst) {
+		goog.array.some(this.getSelectedItems(), function(item) {
+			return !!f(item);
+		});
+	}
+
+	for (var i = this.items.length - 1; i >= 0; i--) {
+		if (selectedFirst && this.isItemSelected(this.items[i]))
+			continue;
+
+		if (f(this.items[i]) === true)
+			return;
+	}
+};
+
+/**
  * @param {Event} e
  */
 bc.model.Canvas.prototype.mouseDown = function(e) {

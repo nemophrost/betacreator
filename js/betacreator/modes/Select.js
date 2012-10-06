@@ -44,6 +44,9 @@ bc.mode.Select.prototype.onDeactivate = function() {
  * @inheritDoc
  */
 bc.mode.Select.prototype.mouseDown = function(point) {
+	var me = this,
+		deselect = true;
+
 	// just in case
 	if (this.mouseDownPoint)
 		this.mouseUp(point);
@@ -51,14 +54,16 @@ bc.mode.Select.prototype.mouseDown = function(point) {
 	this.mouseDownPoint = point;
 
 	// loop through top down
-	for (var i = this.canvas.items.length - 1; i >= 0; i--) {
-		if (this.canvas.items[i].hitTest(point.x, point.y)) {
-			this.canvas.selectItem(this.canvas.items[i]);
-			return;
+	this.canvas.eachOrderedItem(function(item) {
+		if (item.hitTest(point.x, point.y, me.canvas.isItemSelected(item))) {
+			me.canvas.selectItem(item);
+			deselect = false;
+			return true;
 		}
-	}
+	});
 
-	this.canvas.deselectAll();
+	if (deselect)
+		this.canvas.deselectAll();
 };
 
 /**
@@ -103,13 +108,12 @@ bc.mode.Select.prototype.dblClick = function(point) {
 		me = this;
 	
 	// loop through top down
-	for (var i = this.canvas.items.length - 1; i >= 0; i--) {
-		item = this.canvas.items[i];
-		if (item.type() == bc.model.ItemTypes.LINE && item.hitTest(point.x, point.y)) {
+	this.canvas.eachOrderedItem(function(item) {
+		if (item.type() == bc.model.ItemTypes.LINE && item.hitTest(point.x, point.y, me.canvas.isItemSelected(item))) {
 			bc.Client.pubsub.publish(bc.Client.pubsubTopics.MODE, bc.Client.modes.LINE_EDIT);
-			break;
+			return true;
 		}
-		else if (item.type() == bc.model.ItemTypes.BELAY && item.hitTest(point.x, point.y)) {
+		else if (item.type() == bc.model.ItemTypes.BELAY && item.hitTest(point.x, point.y, me.canvas.isItemSelected(item))) {
 			var text = prompt(bc.i18n('Enter text for the belay:'), item.text());
 
 			if (text !== null && text != item.text()) {
@@ -117,8 +121,18 @@ bc.mode.Select.prototype.dblClick = function(point) {
 				changed[bc.properties.TEXT] = text;
 				me.canvas.runAction(new bc.model.Action(bc.model.ActionType.EditItem, changed));
 			}
-			break;
+			return true;
 		}
-	}
+		else if (item.type() == bc.model.ItemTypes.TEXT && item.hitTest(point.x, point.y, me.canvas.isItemSelected(item))) {
+			bc.Client.pubsub.publish(bc.Client.pubsubTopics.SHOW_TEXT_AREA, function(text) {
+				if (text !== null && text != item.text()) {
+					var changed = { id: item.id };
+					changed[bc.properties.TEXT] = text;
+					me.canvas.runAction(new bc.model.Action(bc.model.ActionType.EditItem, changed));
+				}
+			}, item.text());
+			return true;
+		}
+	});
 };
 

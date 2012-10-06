@@ -19,6 +19,7 @@ goog.require('bc.view.Canvas');
 goog.require('bc.domBuilder');
 goog.require('bc.gui.ColorPicker');
 goog.require('bc.gui.OptionBar');
+goog.require('bc.gui.TextArea');
 goog.require('goog.dom');
 goog.require('goog.events.KeyCodes');
 
@@ -50,6 +51,10 @@ bc.GUI = function(client) {
 				create: function(dom) {
 					me.uiContainer = dom;
 				}
+			},{
+				create: function(dom) {
+					me.modalContainer = dom;
+				}
 			}
 		]
 	});
@@ -64,6 +69,7 @@ bc.GUI = function(client) {
 
 	// create the color picker and add it to the ui container
 	this.colorPicker = new bc.gui.ColorPicker();
+	goog.dom.appendChild(this.uiContainer, this.colorPicker.container);
 	bc.Client.pubsub.subscribe(bc.Client.pubsubTopics.SHOW_COLOR_PICKER, function(x, y, callback, color) {
 		me.colorPicker.show(
 			/** @type {number} */(x),
@@ -72,7 +78,16 @@ bc.GUI = function(client) {
 			/** @type {null|bc.Color} */(color)
 		);
 	});
-	goog.dom.appendChild(this.uiContainer, this.colorPicker.container);
+
+	// create textarea for inputing text content
+	this.textArea = new bc.gui.TextArea();
+	goog.dom.appendChild(this.modalContainer, this.textArea.container);
+	bc.Client.pubsub.subscribe(bc.Client.pubsubTopics.SHOW_TEXT_AREA, function(callback, defaultText) {
+		me.textArea.show(
+			/** @type {function(string)} */(callback),
+			/** @type {?string|undefined} */(defaultText)
+		);
+	});
 };
 
 /**

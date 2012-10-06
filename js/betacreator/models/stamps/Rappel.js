@@ -39,9 +39,10 @@ goog.inherits(bc.model.stamp.Rappel, bc.model.Stamp);
 /**
  * @param {number} x
  * @param {number} y
+ * @param {boolean=} selected
  * @return {boolean}
  */
-bc.model.stamp.Rappel.prototype.hitTest = function(x,y) {
+bc.model.stamp.Rappel.prototype.hitTest = function(x,y,selected) {
 	var dist = this.lineWidth()*this.scale()/2 + 1;
 
 	if (goog.math.Coordinate.distance(

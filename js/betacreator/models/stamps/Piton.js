@@ -41,16 +41,23 @@ goog.inherits(bc.model.stamp.Piton, bc.model.Stamp);
 /**
  * @param {number} x
  * @param {number} y
+ * @param {boolean=} selected
  * @return {boolean}
  */
-bc.model.stamp.Piton.prototype.hitTest = function(x,y) {
-	var dist = this.lineWidth()/2 + 1;
+bc.model.stamp.Piton.prototype.hitTest = function(x,y,selected) {
+	var dist = this.lineWidth()*this.scale()/2 + 1,
+		w = this.w()*this.scale(),
+		h = this.h()*this.scale();
 
-	if (goog.math.Coordinate.distance(
-			new goog.math.Coordinate(x, y),
-			new goog.math.Coordinate(this.x(), this.y())
-		) <= this.w()/2 + dist)
-		return true;
+	// if the point is outside the bounding box return early
+	if (Math.abs(x - this.x()) > w/2 + dist || Math.abs(y - this.y()) > h/2 + dist)
+		return false;
 
-	return false;
+	var leftEdge = this.x() - 0.1*w,
+		pBottom = this.y() + 0.1*h;
+
+	if (x < leftEdge - dist || (x > leftEdge + dist && y > pBottom + dist))
+		return false;
+
+	return true;
 };

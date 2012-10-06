@@ -41,9 +41,10 @@ goog.inherits(bc.model.stamp.Anchor, bc.model.Stamp);
 /**
  * @param {number} x
  * @param {number} y
+ * @param {boolean=} selected
  * @return {boolean}
  */
-bc.model.stamp.Anchor.prototype.hitTest = function(x,y) {
+bc.model.stamp.Anchor.prototype.hitTest = function(x,y,selected) {
 	var scale = this.scale(),
 		w = this.w()*scale,
 		h = this.h()*scale,

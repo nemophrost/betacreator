@@ -1,0 +1,77 @@
+/* TEXT AREA
+============================================================================= */
+.text-area-container {
+	@margin: 30px;
+	@pad: 15px;
+
+	position: absolute;
+	top: 0;
+	left: 0;
+	bottom: 0;
+	right: 0;
+	display: none;
+
+	.overlay {
+		position: absolute;
+		top: 0;
+		left: 0;
+		bottom: 0;
+		right: 0;
+		background-color: black;
+
+		.transparent(40);
+	}
+
+	.wrapper {
+		position: absolute;
+		top: @margin;
+		left: @margin;
+		bottom: @margin;
+		right: @margin;
+		border: .4*#fff solid 1px;
+		background: .98*#fff;
+		padding: @pad;
+		.border-radius(8px);
+		.box-shadow(0, 1px, 3px, 0, rgba(0,0,0,0.4));
+	}
+
+	.heading {
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		height: 12px;
+		padding: 10px @pad;
+		font-size: 14px;
+		line-height: 14px;
+		background-color: .9*#fff;
+		border-bottom: .8*#fff solid 1px;
+		color: #444;
+		.text-shadow(0, 1px, 0, #fff);
+		.border-radius-top(8px);
+		.box-shadow-both(0, 1px, 0, 0, #fff, 0, 1px, 0, 0, #fff);
+	}
+
+	textarea {
+		position: absolute;
+		display: block;
+		top: @pad + 32px;
+		left: @pad;
+		bottom: @pad + 40px;
+		right: @pad;
+		margin: 0;
+		border: .8*#fff solid 1px;
+		resize: none;
+	}
+
+	button {
+		position: absolute;
+		bottom: @pad;
+		right: @pad;
+		width: 64px;
+
+		&.cancel {
+			right: 64px + 2*@pad;
+		}
+	}
+}

@@ -201,6 +201,7 @@ bc.view.Text.prototype.render = function(pageScale, selected, mode) {
 
 		this.model.calculateLines();
 		this.boundingBox = this.calculateBoundingBox(ctx);
+		this.model.setBoundingBox(this.boundingBox, this.padding);
 
 		var canvasWidth = Math.round(scale*this.boundingBox.x) + 2*this.padding,
 			canvasHeight = Math.round(scale*this.boundingBox.y) + 2*this.padding;

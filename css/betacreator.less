@@ -2,6 +2,8 @@
 	border: .8*#fff solid 1px;
 	display: inline-block;
 	position: relative;
+	overflow: hidden;
+	font-family: "Lucida Sans", "Lucida Grande", Arial, Helvetica, sans-serif;
 
 	// USER SELECT
 	&, * {
@@ -12,7 +14,7 @@
 		user-select: none;
 	}
 
-	input[type="text"] {
+	input[type="text"], textarea {
 		-webkit-user-select: text;
 		-khtml-user-select: text;
 		-moz-user-select: text;
@@ -23,7 +25,9 @@
 	@import "_master";
 	@import "_util";
 	@import "_icons";
+	@import "_buttons";
 	@import "_optionbar";
 	@import "_colorpicker";
 	@import "_callout";
+	@import "_textarea";
 }

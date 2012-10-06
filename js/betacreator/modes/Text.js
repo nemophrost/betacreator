@@ -33,11 +33,16 @@ goog.inherits(bc.mode.Text, bc.Mode);
  * @inheritDoc
  */
 bc.mode.Text.prototype.mouseDown = function(point) {
-	this.canvas.runAction(new bc.model.Action(bc.model.ActionType.CreateText, {
-		text: 'hello\nworld',
-		x: point.x,
-		y: point.y
-	}));
+	var me = this;
+	bc.Client.pubsub.publish(bc.Client.pubsubTopics.SHOW_TEXT_AREA, function(text) {
+		if (text) {
+			me.canvas.runAction(new bc.model.Action(bc.model.ActionType.CreateText, {
+				text: text,
+				x: point.x,
+				y: point.y
+			}));
+		}
+	}, bc.i18n('Enter some text'));
 };
 
 /**

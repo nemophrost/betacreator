@@ -54,44 +54,4 @@
 	.button-container {
 		float: right;
 	}
-
-	button {
-		outline:0;
-		color:.3*#fff;
-		white-space:nowrap;
-		vertical-align:top;
-		cursor:pointer;
-		display:inline-block;
-		border:solid 1px;
-		.border-radius(3px);
-		.box-sizing-border;
-		
-		font-size: 11px;
-		font-weight: bold;
-		line-height: 23px;
-		height: 25px;
-		text-align: center;
-		padding: 0 9px;
-		margin: 0;
-		float: left;
-		
-		border-color:#ccc;
-		background-color:.95*#fff;
-		.box-shadow-inset(0, 1px, 0, 0, #fff);
-		.text-shadow(0, 1px, 0, #fff);
-
-		&:hover{
-			border-color: .67*#fff .67*#fff .6*#fff;
-			.gradientVertical(.95*#fff, .9*#fff);
-			.box-shadow-both(0, 1px, 2px, 0, rgba(0,0,0,0.1), 0, 1px, 0, 0, #fff);
-			color: .2*#fff;
-			text-decoration: none;
-		}
-
-		&:active,&.selected{
-			border-color: .6*#fff .67*#fff .74*#fff;
-			.gradientVertical(.85*#fff, .9*#fff);
-			.box-shadow-both(0, 1px, 0, 0, #fff, 0, 1px, 2px, 0, rgba(0, 0, 0, 0.1));
-		}
-	}
 }

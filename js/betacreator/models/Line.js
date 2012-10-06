@@ -239,9 +239,10 @@ bc.model.Line.prototype.setActionParams = function(params) {
 /**
  * @param {number} x
  * @param {number} y
+ * @param {boolean=} selected
  * @return {boolean}
  */
-bc.model.Line.prototype.hitTest = function(x,y) {
+bc.model.Line.prototype.hitTest = function(x,y,selected) {
 	var p = this.points,
 		minDist = this.lineWidth()*this.scale()/2 + 6;
 	

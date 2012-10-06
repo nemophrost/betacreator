@@ -211,13 +211,10 @@ bc.gui.ColorPicker.prototype.build = function() {
 
 	/** @type {bc.Color} */
 	var color = new bc.Color();
-
-	// transperent
-	me.addElem(null);
 	
 	// grayscale
-	for (i = 0; i < 11; i++) {
-		color.hsv([0, 0, (10 - i)/10]);
+	for (i = 0; i < 12; i++) {
+		color.hsv([0, 0, (11 - i)/11]);
 		me.addColor(color);
 	}
 	

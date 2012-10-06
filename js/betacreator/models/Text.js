@@ -65,6 +65,18 @@ bc.model.Text = function(params, defaults) {
 
 	this.offset = new goog.math.Coordinate(0,0);
 
+	/**
+	 * @type {?goog.math.Coordinate}
+	 * @private
+	 */
+	this.boundingBox = null;
+
+	/**
+	 * @type {number}
+	 * @private
+	 */
+	this.boundingBoxPadding = 0;
+
 	/** @type {Array.<bc.TextLine>} */
 	this.lines = [];
 };
@@ -74,7 +86,7 @@ bc.TextLine;
 
 /**
  * Apply the offset and return the result
- * 
+ *
  * @return {Object}
  */
 bc.model.Text.prototype.applyOffset = function() {
@@ -87,6 +99,17 @@ bc.model.Text.prototype.applyOffset = function() {
 	this.offset.y = 0;
 
 	return ret;
+};
+
+/**
+ * Sets the size of the bounding box (x == w, y == h)
+ *
+ * @param {goog.math.Coordinate} bbSize
+ * @param {number} bbPad
+ */
+bc.model.Text.prototype.setBoundingBox = function(bbSize, bbPad) {
+	this.boundingBox = bbSize;
+	this.boundingBoxPadding = bbPad;
 };
 
 /**
@@ -187,19 +210,46 @@ bc.model.Text.prototype.setActionParams = function(params) {
  *
  * @param {number} x
  * @param {number} y
+ * @param {boolean=} selected
  * @return {boolean}
  */
-bc.model.Text.prototype.hitTest = function(x,y) {
-	var scale = this.scale();
-	for(var i = 0, l = this.lines.length; i < l; i++) {
-		if(this.lines[i].width > -1 &&
-				x >= this.x() &&
-				x <= this.x() + this.lines[i].width*scale &&
-				y >= this.y() + this.lines[i].top*scale &&
-				y <= this.y() + (i+1 < l ? this.lines[i+1].top : (this.lines[i].top + this.lines[i].size))*scale
+bc.model.Text.prototype.hitTest = function(x,y,selected) {
+	if (!this.boundingBox)
+		return false;
+
+	var scale = this.scale(),
+		ta = this.textAlign(),
+		bb = new bc.math.Box(this.x(), this.y(), this.boundingBox.x*this.scale(), this.boundingBox.y*this.scale()),
+		pad = (this.textBG() || selected) ? this.boundingBoxPadding : 0;
+
+	if (ta == 'c')
+		bb.x -= bb.w/2;
+	else if (ta == 'r')
+		bb.x -= bb.w;
+
+	// if we are outside the bounding box (with padding), return early
+	if (Math.abs(x - bb.x - bb.w/2) > bb.w/2 + pad || Math.abs(y - bb.y - bb.h/2) > bb.h/2 + pad) {
+		return false;
+	}
+
+	// if we are in the box (which we have to be to get here) and text bg is on or the item is selected, return true.
+	if (this.textBG() || selected) {
+		return true;
+	}
+	else {
+		var lw = 0; // line width
+		for(var i = 0, l = this.lines.length; i < l; i++) {
+			lw = this.lines[i].width*scale;
+			if( lw > -1 &&
+				x >= bb.x + (ta == 'c' ? bb.w/2 - lw/2 : (ta == 'r' ? bb.w - lw : 0)) &&
+				x <= bb.x + (ta == 'c' ? bb.w/2 + lw/2 : (ta == 'r' ? bb.w : lw)) &&
+				y >= bb.y + this.lines[i].top*scale &&
+				y <= bb.y + (i+1 < l ? this.lines[i+1].top : (this.lines[i].top + this.lines[i].size))*scale
 			) {
-			return true;
+				return true;
+			}
 		}
 	}
+
 	return false;
 };

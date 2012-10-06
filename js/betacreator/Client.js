@@ -82,6 +82,7 @@ bc.Client.pubsubTopics = {
 	CANVAS_RENDER: 'cr',
 	SELECTION_CHANGE: 'sc',
 	SHOW_COLOR_PICKER: 'scp',
+	SHOW_TEXT_AREA: 'sta',
 	HIDE_OVERLAYS: 'ho',
 	MODE: 'm',
 	ACTION: 'a'
