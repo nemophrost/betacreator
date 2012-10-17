@@ -29,17 +29,35 @@ goog.require('goog.math.Coordinate');
 bc.mode.Line = function(canvas, id, tempLine) {
 	bc.Mode.call(this, canvas, id);
 
-	/** @type {Array.<goog.math.Coordinate>} */
+	/**
+	 * @type {Array.<goog.math.Coordinate>}
+	 * @private
+	 */
 	this.points = [];
 
-	/** @type {goog.math.Coordinate|null} */
+	/**
+	 * @type {goog.math.Coordinate|null}
+	 * @private
+	 */
 	this.movingPoint = null;
 
-	/** @type {bc.model.Line|null} */
+	/**
+	 * @type {bc.model.Line|null}
+	 * @private
+	 */
 	this.activeLine = null;
 
-	/** @type {bc.model.Line} */
-	this.tempLine = tempLine;
+	/**
+	 * @type {bc.model.Line|null}
+	 * @private
+	 */
+	this.tempLine = null;
+
+	/**
+	 * @type {bc.model.Line}
+	 * @private
+	 */
+	this._tempLine = tempLine;
 };
 goog.inherits(bc.mode.Line, bc.Mode);
 
@@ -68,6 +86,7 @@ bc.mode.Line.prototype.mouseDown = function(point) {
 	}
 	else {
 		this.movingPoint = new goog.math.Coordinate(point.x, point.y);
+		this.tempLine = this._tempLine;
 		this.tempLine.controlPoints(this.getPoints(this.movingPoint));
 		this.tempLine.onLength(this.canvas.properties[bc.properties.LINE_ONLENGTH]);
 		this.tempLine.offLength(this.canvas.properties[bc.properties.LINE_OFFLENGTH]);
@@ -129,5 +148,7 @@ bc.mode.Line.prototype.getPoints = function(extraPoint) {
  * @private
  */
 bc.mode.Line.prototype.resetTempLine = function() {
-	this.tempLine.controlPoints([new goog.math.Coordinate(0,0)]);
+	if (this.tempLine)
+		this.tempLine.controlPoints([new goog.math.Coordinate(0,0)]);
+	this.tempLine = null;
 };

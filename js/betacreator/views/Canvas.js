@@ -31,8 +31,10 @@ goog.require('goog.dom');
  */
 bc.view.Canvas = function(model) {
 	this.model = model;
+
+	this.scaleLastRender = this.model.scale;
 	
-	this.container = goog.dom.createDom(goog.dom.TagName.DIV, 'fullsize');
+	this.container = goog.dom.createDom(goog.dom.TagName.DIV, 'canvas-container');
 	goog.dom.appendChild(this.container, this.model.image);
 	
 	this.itemContainer = goog.dom.createDom(goog.dom.TagName.DIV, 'fullsize');
@@ -62,7 +64,7 @@ bc.view.Canvas.prototype.invalidate = function(force) {
  */
 bc.view.Canvas.prototype.checkRender = function() {
 	if (this.needsRender)
-		this.render();
+		this.render(this.model.scale);
 		
 	this.needsRender = false;
 };
@@ -86,6 +88,28 @@ bc.view.Canvas.prototype.render = function(pageScale) {
 			delete this.views[viewId];
 		}
 	}
+
+	// if the page scale has changed, change the image size and center when zooming
+	if (this.model.scale != this.scaleLastRender) {
+		var currentLeft = parseInt(this.container.style.left, 10) || 0,
+			currentTop = parseInt(this.container.style.top, 10) || 0,
+			scaleFactor = this.model.scale/this.scaleLastRender,
+			centerX = scaleFactor*(this.model.client.viewportWidth/2 - currentLeft),
+			centerY = scaleFactor*(this.model.client.viewportHeight/2 - currentTop);
+
+		this.model.offsetLeft = -Math.round(centerX - this.model.client.viewportWidth/2),
+		this.model.offsetTop = -Math.round(centerY - this.model.client.viewportHeight/2);
+
+		goog.style.setStyle(this.container, {
+			'width': Math.round(this.model.scale*this.model.w) + 'px',
+			'height': Math.round(this.model.scale*this.model.h) + 'px'
+		});
+
+		this.container.style.left = this.model.offsetLeft + 'px';
+		this.container.style.top = this.model.offsetTop + 'px';
+	}
+
+	this.scaleLastRender = this.model.scale;
 };
 
 /**
@@ -127,7 +151,7 @@ bc.view.Canvas.prototype.renderItem = function(item, pageScale) {
 			return;
 		
 		this.views[item.id] = view;
-		goog.dom.appendChild(this.container, view.canvas);
+		goog.dom.appendChild(this.itemContainer, view.canvas);
 	}
 	
 	view.render(pageScale, this.model.isItemSelected(item), this.model.mode.id);

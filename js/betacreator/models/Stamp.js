@@ -29,6 +29,8 @@ goog.require('bc.uuid');
 bc.model.Stamp = function(params, defaults) {
 	params = params || {};
 
+	this.isStamp = true;
+
 	this.id = bc.uuid(params.id);
 
 	this.properties = {};

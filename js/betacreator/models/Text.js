@@ -29,6 +29,8 @@ goog.require('bc.uuid');
 bc.model.Text = function(params, defaults) {
 	params = params || {};
 
+	this.isText = true;
+
 	this.id = bc.uuid(params.id);
 
 	this.properties = {};

@@ -35,7 +35,7 @@ bc.object.copy = function(dupeObj, level) {
     if (typeof(dupeObj) == 'object') {
         if (typeof(dupeObj.length) != 'undefined')
             retObj = [];
-        for (var objInd in dupeObj) {   
+        for (var objInd in dupeObj) {
 			var type = typeof(dupeObj[objInd]);
             if (type == 'object') {
 				if(dupeObj[objInd] instanceof HTMLElement)

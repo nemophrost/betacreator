@@ -44,6 +44,13 @@ bc.model.Canvas = function(client, image) {
 	
 	this.h = image.height;
 	this.w = image.width;
+
+	this.offsetLeft = 0;
+	this.offsetTop = 0;
+
+	this.scale = 1;
+
+	this.scales = [1/8, 1/6, 1/4, 1/3, 1/2, 2/3, 1, 2, 3, 4, 5, 6, 7, 8, 12, 16];
 	
 	/** @type {Array.<bc.model.Item>} */
 	this.items = [];
@@ -168,7 +175,7 @@ bc.model.Canvas.prototype.eventToCoord = function(e) {
 		y = e.clientY,
 		offset = goog.style.getPageOffset(this.client.gui.viewport);
 	
-	return new goog.math.Coordinate(x - offset.x, y - offset.y);
+	return new goog.math.Coordinate(Math.round((x - offset.x - this.offsetLeft)/this.scale), Math.round((y - offset.y - this.offsetTop)/this.scale));
 };
 
 /**
@@ -515,4 +522,34 @@ bc.model.Canvas.prototype.dblClick = function(e) {
  */
 bc.model.Canvas.prototype.keyDown = function(e) {
 	return this.mode.keyDown(e);
+};
+
+bc.model.Canvas.prototype.zoomOut = function() {
+	bc.Client.pubsub.publish(bc.Client.pubsubTopics.CANVAS_RENDER);
+
+	for (var i = 0, l = this.scales.length; i < l; i++) {
+		if (goog.math.nearlyEquals(this.scales[i], this.scale)) {
+			this.scale = this.scales[goog.math.clamp(i - 1, 0, l - 1)];
+			return;
+		}
+		else if (this.scale > this.scales[i] && (!this.scales[i+1] || this.scale < this.scales[i+1])) {
+			this.scale = this.scales[i];
+			return;
+		}
+	}
+};
+
+bc.model.Canvas.prototype.zoomIn = function() {
+	bc.Client.pubsub.publish(bc.Client.pubsubTopics.CANVAS_RENDER);
+
+	for (var i = 0, l = this.scales.length; i < l; i++) {
+		if (goog.math.nearlyEquals(this.scales[i], this.scale)) {
+			this.scale = this.scales[goog.math.clamp(i + 1, 0, l - 1)];
+			return;
+		}
+		else if (this.scale > this.scales[i] && this.scales[i+1] && this.scale < this.scales[i+1]) {
+			this.scale = this.scales[i+1];
+			return;
+		}
+	}
 };

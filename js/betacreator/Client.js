@@ -58,12 +58,15 @@ bc.Client.prototype.init = function(image) {
 	
 	this.canvas = new bc.model.Canvas(this, image);
 	this.gui = new bc.GUI(this);
+
+	this.viewportWidth = this.params.w || image.width;
+	this.viewportHeight = this.params.h || image.height;
 	
 	goog.style.setStyle(this.gui.wrapper, {
 		'position': 'relative',
 		'display': (this.sourceImage.style.display == 'inherit' ? 'inline-block' : (this.sourceImage.style.display || 'inline-block')),
-		'width': (this.params.w || image.width) + 'px',
-		'height': ((this.params.h || image.height) + 29) + 'px'
+		'width': this.viewportWidth + 'px',
+		'height': (this.viewportHeight + 29) + 'px'
 	});
 	goog.dom.replaceNode(this.gui.wrapper, this.sourceImage);
 

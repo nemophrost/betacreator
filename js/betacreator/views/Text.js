@@ -28,7 +28,8 @@ goog.require('goog.dom');
  */
 bc.view.Text = function(model) {
 	this.model = model;
-	this.padding = 15;
+	this.defaultPadding = 15;
+	this.padding = this.defaultPadding;
 	
 	/** @type {?Object} */
 	this.drawProperties = null;
@@ -195,6 +196,8 @@ bc.view.Text.prototype.render = function(pageScale, selected, mode) {
 	// if something has changed since last rendering that will affect rendering,
 	// redraw the stamp
 	if (!bc.object.areEqual(drawProperties, this.drawProperties)) {
+		this.padding = this.defaultPadding*Math.max(1,scale);
+
 		this.drawProperties = drawProperties;
 
 		var ctx = this.canvas.getContext('2d');

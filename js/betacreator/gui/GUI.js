@@ -42,7 +42,7 @@ bc.GUI = function(client) {
 					me.viewport = dom;
 				}
 			},{
-				classes: 'fullsize viewport',
+				classes: 'fullsize hitdiv',
 				create: function(dom) {
 					me.hitTestDiv = dom;
 				}
@@ -176,6 +176,43 @@ bc.GUI.prototype.bindEventListeners = function() {
 						me.client.canvas.redo();
 					else
 						me.client.canvas.undo();
+				}
+				break;
+			case goog.events.KeyCodes.BACKSPACE:
+			case goog.events.KeyCodes.DELETE:
+				preventDefault = true;
+				me.canvas.model.startUndoBatch();
+				goog.array.forEach(me.canvas.model.getSelectedItems(), function(item) {
+					var properties = null;
+					if (item.isStamp) {
+						properties = bc.model.Stamp.parseParams(item.properties);
+						properties.id = item.id;
+						me.canvas.model.runAction(new bc.model.Action(bc.model.ActionType.DeleteStamp, properties));
+					}
+					else if (item.isLine) {
+						properties = bc.model.Line.parseParams(item.properties);
+						properties.id = item.id;
+						me.canvas.model.runAction(new bc.model.Action(bc.model.ActionType.DeleteLine, properties));
+					}
+					else if (item.isText) {
+						properties = bc.model.Text.parseParams(item.properties);
+						properties.id = item.id;
+						me.canvas.model.runAction(new bc.model.Action(bc.model.ActionType.DeleteText, properties));
+					}
+				});
+				me.canvas.model.endUndoBatch();
+				me.canvas.model.deselectAll();
+				break;
+			case goog.events.KeyCodes.DASH:
+				if (e.ctrlKey || e.metaKey) {
+					preventDefault = true;
+					me.canvas.model.zoomOut();
+				}
+				break;
+			case goog.events.KeyCodes.EQUALS:
+				if (e.ctrlKey || e.metaKey) {
+					preventDefault = true;
+					me.canvas.model.zoomIn();
 				}
 				break;
 			default:

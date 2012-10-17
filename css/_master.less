@@ -12,7 +12,32 @@
 }
 
 .viewport {
+	background: .9*#fff;
+}
+
+.viewport, .hitdiv {
 	top: 29px;
+}
+
+.canvas-container {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+
+	img {
+		position: absolute;
+		display: block;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		border: none;
+		margin: 0;
+		padding: 0;
+		box-shadow: 0 1px 3px 0 rgba(0,0,0,0.4);
+	}
 }
 
 .absolute {

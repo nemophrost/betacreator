@@ -32,8 +32,10 @@ goog.require('goog.array');
  */
 bc.view.Line = function(model) {
 	this.model = model;
-	this.padding = 10;
 	
+	this.defaultPadding = 10;
+	this.padding = this.defaultPadding;
+
 	/** @type {?Object} */
 	this.drawProperties = null;
 	/** @type {?Object} */
@@ -118,7 +120,7 @@ bc.view.Line.prototype._draw = function(context, color, lineWidth) {
  * @private
  */
 bc.view.Line.prototype.draw = function(ctx, pageScale, selected) {
-	var scale = pageScale*this.model.scale();
+	var scale = this.model.scale();
 	ctx.save();
 	ctx.lineCap = 'round';
 	
@@ -129,7 +131,7 @@ bc.view.Line.prototype.draw = function(ctx, pageScale, selected) {
 	}
 	else {
 		ctx.save();
-		this._draw(ctx, bc.color.highContrastWhiteOrBlack(this.model.color(), .5), this.model.lineWidth()*scale + 2/pageScale);
+		this._draw(ctx, bc.color.highContrastWhiteOrBlack(this.model.color(), 0.5), this.model.lineWidth()*scale + 2/pageScale);
 		ctx.restore();
 	}
 
@@ -139,14 +141,17 @@ bc.view.Line.prototype.draw = function(ctx, pageScale, selected) {
 
 /**
  * @param {CanvasRenderingContext2D} ctx
+ * @param {number=} scale
  * 
  * @private
  */
-bc.view.Line.prototype.drawControlPoints = function(ctx) {
+bc.view.Line.prototype.drawControlPoints = function(ctx, scale) {
+	scale = scale || 1;
+
 	var me = this,
 		strokeColor = this.model.color(),
-		shadowColor = bc.color.highContrastWhiteOrBlack(strokeColor, .5),
-		r = 7;
+		shadowColor = bc.color.highContrastWhiteOrBlack(strokeColor, 0.5),
+		r = 7/scale;
 	
 	ctx.save();
 	
@@ -155,10 +160,10 @@ bc.view.Line.prototype.drawControlPoints = function(ctx) {
 		ctx.moveTo(cp.x + r, cp.y);
 		ctx.arc(cp.x,cp.y,r,0,2*Math.PI,false);
 		ctx.strokeStyle = shadowColor;
-		ctx.lineWidth = 6;
+		ctx.lineWidth = 6/scale;
 		ctx.stroke();
 		ctx.strokeStyle = strokeColor;
-		ctx.lineWidth = 4;
+		ctx.lineWidth = 4/scale;
 		ctx.stroke();
 	});
 	
@@ -203,6 +208,8 @@ bc.view.Line.prototype.render = function(scale, selected, mode) {
 	// if something has changed since last rendering that will affect rendering, 
 	// redraw the stamp
 	if (!bc.object.areEqual(drawProperties, this.drawProperties)) {
+		this.padding = this.defaultPadding*Math.max(1,this.model.scale()*scale);
+
 		this.drawProperties = drawProperties;
 		
 		this.model.updateBoundingBox();
@@ -224,7 +231,7 @@ bc.view.Line.prototype.render = function(scale, selected, mode) {
 		this.draw(ctx, scale, selected);
 
 		if (selected && mode == bc.Client.modes.LINE_EDIT)
-			this.drawControlPoints(ctx);
+			this.drawControlPoints(ctx, scale);
 		
 		ctx.restore();
 	}
@@ -235,7 +242,8 @@ bc.view.Line.prototype.render = function(scale, selected, mode) {
 		x: this.model.bb.x,
 		y: this.model.bb.y,
 		w: this.model.bb.w,
-		h: this.model.bb.h
+		h: this.model.bb.h,
+		scale: scale
 	};
 	
 	// if the location or size has changed, update the location

@@ -32,6 +32,8 @@ goog.require('goog.array');
  */
 bc.model.Line = function(params, defaults) {
 	params = params || {};
+
+	this.isLine = true;
 	
 	this.id = bc.uuid(params.id);
 
@@ -197,8 +199,8 @@ bc.model.Line.prototype.serializeParams = function() {
 		ret[key] = this.properties[key];
 	}
 
-	var cps = [];
 	if (ret[bc.properties.LINE_CONTROLPOINTS] && goog.isArray(ret[bc.properties.LINE_CONTROLPOINTS])) {
+		var cps = [];
 		goog.array.forEach(ret[bc.properties.LINE_CONTROLPOINTS], function(p) {
 			cps.push({
 				'x': p.x,
