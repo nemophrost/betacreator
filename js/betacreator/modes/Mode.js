@@ -18,7 +18,7 @@ goog.provide('bc.Mode');
 //goog.require('bc.model.Canvas');
 
 /**
- * @param {bc.model.Canvas} canvas
+ * @param {bc.controller.Canvas} canvas
  * @param {number} id
  *
  * @constructor

@@ -4,7 +4,7 @@ goog.provide('bc.properties');
 goog.require('bc.model.Action');
 
 /**
- * @type {bc.model.Canvas|null}
+ * @type {bc.controller.Canvas|null}
  */
 bc.property.canvas = null;
 
@@ -33,7 +33,7 @@ bc.property.set = function(property, val) {
 		});
 	}
 	else {
-		canvas.properties[property] = val;
+		canvas.model.properties[property] = val;
 	}
 };
 
@@ -45,13 +45,13 @@ bc.property.setBatch = function(batch) {
 	if (!canvas)
 		return;
 
-	bc.property.canvas.startUndoBatch();
+	canvas.startUndoBatch();
 
 	goog.array.forEach(batch, function(data) {
 		bc.property.set(data[0], data[1]);
 	});
 
-	bc.property.canvas.endUndoBatch();
+	canvas.endUndoBatch();
 };
 
 /**
@@ -76,7 +76,7 @@ bc.property.get = function(property) {
 		});
 	}
 	else {
-		ret = canvas.properties[property];
+		ret = canvas.model.properties[property];
 	}
 
 	return ret;

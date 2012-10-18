@@ -19,7 +19,7 @@ goog.require('bc.Mode');
 goog.require('goog.math.Coordinate');
 
 /**
- * @param {bc.model.Canvas} canvas
+ * @param {bc.controller.Canvas} canvas
  * @param {number} id
  *
  * @constructor
@@ -54,7 +54,7 @@ bc.mode.Select.prototype.mouseDown = function(point) {
 	this.mouseDownPoint = point;
 
 	// loop through top down
-	this.canvas.eachOrderedItem(function(item) {
+	this.canvas.model.eachOrderedItem(function(item) {
 		if (item.hitTest(point.x, point.y, me.canvas.isItemSelected(item))) {
 			me.canvas.selectItem(item);
 			deselect = false;
@@ -108,7 +108,7 @@ bc.mode.Select.prototype.dblClick = function(point) {
 		me = this;
 	
 	// loop through top down
-	this.canvas.eachOrderedItem(function(item) {
+	this.canvas.model.eachOrderedItem(function(item) {
 		if (item.type() == bc.model.ItemTypes.LINE && item.hitTest(point.x, point.y, me.canvas.isItemSelected(item))) {
 			bc.Client.pubsub.publish(bc.Client.pubsubTopics.MODE, bc.Client.modes.LINE_EDIT);
 			return true;

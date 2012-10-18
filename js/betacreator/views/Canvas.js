@@ -26,10 +26,12 @@ goog.require('bc.view.Line');
 goog.require('goog.dom');
 
 /**
+ * @param {bc.controller.Canvas} controller
  * @param {bc.model.Canvas} model
  * @constructor
  */
-bc.view.Canvas = function(model) {
+bc.view.Canvas = function(controller, model) {
+	this.controller = controller;
 	this.model = model;
 
 	this.scaleLastRender = this.model.scale;
@@ -91,22 +93,15 @@ bc.view.Canvas.prototype.render = function(pageScale) {
 
 	// if the page scale has changed, change the image size and center when zooming
 	if (this.model.scale != this.scaleLastRender) {
-		var currentLeft = parseInt(this.container.style.left, 10) || 0,
-			currentTop = parseInt(this.container.style.top, 10) || 0,
-			scaleFactor = this.model.scale/this.scaleLastRender,
-			centerX = scaleFactor*(this.model.client.viewportWidth/2 - currentLeft),
-			centerY = scaleFactor*(this.model.client.viewportHeight/2 - currentTop);
-
-		this.model.offsetLeft = -Math.round(centerX - this.model.client.viewportWidth/2),
-		this.model.offsetTop = -Math.round(centerY - this.model.client.viewportHeight/2);
+		this.controller.setZoomOffset(this.model.scale/this.scaleLastRender);
 
 		goog.style.setStyle(this.container, {
 			'width': Math.round(this.model.scale*this.model.w) + 'px',
 			'height': Math.round(this.model.scale*this.model.h) + 'px'
 		});
 
-		this.container.style.left = this.model.offsetLeft + 'px';
-		this.container.style.top = this.model.offsetTop + 'px';
+		this.container.style.left = this.controller.offset.x + 'px';
+		this.container.style.top = this.controller.offset.y + 'px';
 	}
 
 	this.scaleLastRender = this.model.scale;
@@ -154,7 +149,7 @@ bc.view.Canvas.prototype.renderItem = function(item, pageScale) {
 		goog.dom.appendChild(this.itemContainer, view.canvas);
 	}
 	
-	view.render(pageScale, this.model.isItemSelected(item), this.model.mode.id);
+	view.render(pageScale, this.controller.isItemSelected(item), this.controller.mode.id);
 };
 
 /********************************************************************

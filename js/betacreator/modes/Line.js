@@ -20,7 +20,7 @@ goog.require('bc.model.Line');
 goog.require('goog.math.Coordinate');
 
 /**
- * @param {bc.model.Canvas} canvas
+ * @param {bc.controller.Canvas} canvas
  * @param {number} id
  *
  * @constructor
@@ -82,14 +82,14 @@ bc.mode.Line.prototype.mouseDown = function(point) {
 			controlPoints: this.getPoints()
 		});
 		this.canvas.runAction(action);
-		this.activeLine = /** @type {bc.model.Line|null} */(this.canvas.getItem(action.params.id));
+		this.activeLine = /** @type {bc.model.Line|null} */(this.canvas.model.getItem(action.params.id));
 	}
 	else {
 		this.movingPoint = new goog.math.Coordinate(point.x, point.y);
 		this.tempLine = this._tempLine;
 		this.tempLine.controlPoints(this.getPoints(this.movingPoint));
-		this.tempLine.onLength(this.canvas.properties[bc.properties.LINE_ONLENGTH]);
-		this.tempLine.offLength(this.canvas.properties[bc.properties.LINE_OFFLENGTH]);
+		this.tempLine.onLength(this.canvas.model.properties[bc.properties.LINE_ONLENGTH]);
+		this.tempLine.offLength(this.canvas.model.properties[bc.properties.LINE_OFFLENGTH]);
 		bc.Client.pubsub.publish(bc.Client.pubsubTopics.CANVAS_RENDER);
 	}
 };

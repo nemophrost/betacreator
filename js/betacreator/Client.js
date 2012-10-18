@@ -18,7 +18,7 @@ goog.provide('bc.Client');
 //goog.require('bc.view.Line');
 //goog.require('bc.view.stamp.Anchor');
 goog.require('bc.GUI');
-goog.require('bc.model.Canvas');
+goog.require('bc.controller.Canvas');
 goog.require('goog.dom');
 goog.require('goog.style');
 goog.require('goog.events');
@@ -56,7 +56,7 @@ bc.Client = function(sourceImg, params) {
 bc.Client.prototype.init = function(image) {
 	goog.events.unlistenByKey(this.imageLoadHandle);
 	
-	this.canvas = new bc.model.Canvas(this, image);
+	this.canvasController = new bc.controller.Canvas(this, image);
 	this.gui = new bc.GUI(this);
 
 	this.viewportWidth = this.params.w || image.width;

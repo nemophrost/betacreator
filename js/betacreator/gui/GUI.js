@@ -15,7 +15,6 @@
  */
 goog.provide('bc.GUI');
 
-goog.require('bc.view.Canvas');
 goog.require('bc.domBuilder');
 goog.require('bc.gui.ColorPicker');
 goog.require('bc.gui.OptionBar');
@@ -59,15 +58,18 @@ bc.GUI = function(client) {
 		]
 	});
 	
-	// create the canvas view and add it to the viewport
-	this.canvas = new bc.view.Canvas(this.client.canvas);
-	goog.dom.appendChild(this.viewport, this.canvas.container);
+	// add the canvas view to the viewport
+	/** @type {bc.controller.Canvas} */
+	this.canvasController = this.client.canvasController;
+	goog.dom.appendChild(this.viewport, this.canvasController.view.container);
 
 	// create the option bar and add it to the ui container
+	/** @type {bc.gui.OptionBar} */
 	this.optionBar = new bc.gui.OptionBar();
 	goog.dom.appendChild(this.uiContainer, this.optionBar.container);
 
 	// create the color picker and add it to the ui container
+	/** @type {bc.gui.ColorPicker} */
 	this.colorPicker = new bc.gui.ColorPicker();
 	goog.dom.appendChild(this.uiContainer, this.colorPicker.container);
 	bc.Client.pubsub.subscribe(bc.Client.pubsubTopics.SHOW_COLOR_PICKER, function(x, y, callback, color) {
@@ -114,29 +116,29 @@ bc.GUI.prototype.bindEventListeners = function() {
 
 	// mouse down
 	goog.events.listen(this.hitTestDiv, goog.events.EventType.MOUSEDOWN, function(e) {
-		me.canvas.model.mouseDown(e);
+		me.canvasController.mouseDown(e);
 	});
 	
 	// mouse move
 	goog.events.listen(this.hitTestDiv, goog.events.EventType.MOUSEMOVE, function(e) {
-		me.canvas.model.mouseMove(e);
+		me.canvasController.mouseMove(e);
 	});
 	
 	// mouse up
 	goog.events.listen(this.hitTestDiv, goog.events.EventType.MOUSEUP, function(e) {
-		me.canvas.model.mouseUp(e);
+		me.canvasController.mouseUp(e);
 	});
 
 	// double click
 	goog.events.listen(this.hitTestDiv, goog.events.EventType.DBLCLICK, function(e) {
-		me.canvas.model.dblClick(e);
+		me.canvasController.dblClick(e);
 	});
 	
 	// key down
 	goog.events.listen(document, goog.events.EventType.KEYDOWN, function(e) {
 		e.stopPropagation();
 
-		if (me.canvas.model.keyDown(e))
+		if (me.canvasController.keyDown(e))
 			return;
 
 		var preventDefault = false;
@@ -166,53 +168,53 @@ bc.GUI.prototype.bindEventListeners = function() {
 			case goog.events.KeyCodes.Y:
 				if (e.ctrlKey || e.metaKey) {
 					preventDefault = true;
-					me.client.canvas.redo();
+					me.canvasController.redo();
 				}
 				break;
 			case goog.events.KeyCodes.Z:
 				if (e.ctrlKey || e.metaKey) {
 					preventDefault = true;
 					if (e.shiftKey)
-						me.client.canvas.redo();
+						me.canvasController.redo();
 					else
-						me.client.canvas.undo();
+						me.canvasController.undo();
 				}
 				break;
 			case goog.events.KeyCodes.BACKSPACE:
 			case goog.events.KeyCodes.DELETE:
 				preventDefault = true;
-				me.canvas.model.startUndoBatch();
-				goog.array.forEach(me.canvas.model.getSelectedItems(), function(item) {
+				me.canvasController.startUndoBatch();
+				goog.array.forEach(me.canvasController.getSelectedItems(), function(item) {
 					var properties = null;
 					if (item.isStamp) {
 						properties = bc.model.Stamp.parseParams(item.properties);
 						properties.id = item.id;
-						me.canvas.model.runAction(new bc.model.Action(bc.model.ActionType.DeleteStamp, properties));
+						me.canvasController.runAction(new bc.model.Action(bc.model.ActionType.DeleteStamp, properties));
 					}
 					else if (item.isLine) {
 						properties = bc.model.Line.parseParams(item.properties);
 						properties.id = item.id;
-						me.canvas.model.runAction(new bc.model.Action(bc.model.ActionType.DeleteLine, properties));
+						me.canvasController.runAction(new bc.model.Action(bc.model.ActionType.DeleteLine, properties));
 					}
 					else if (item.isText) {
 						properties = bc.model.Text.parseParams(item.properties);
 						properties.id = item.id;
-						me.canvas.model.runAction(new bc.model.Action(bc.model.ActionType.DeleteText, properties));
+						me.canvasController.runAction(new bc.model.Action(bc.model.ActionType.DeleteText, properties));
 					}
 				});
-				me.canvas.model.endUndoBatch();
-				me.canvas.model.deselectAll();
+				me.canvasController.endUndoBatch();
+				me.canvasController.deselectAll();
 				break;
 			case goog.events.KeyCodes.DASH:
 				if (e.ctrlKey || e.metaKey) {
 					preventDefault = true;
-					me.canvas.model.zoomOut();
+					me.canvasController.zoomOut();
 				}
 				break;
 			case goog.events.KeyCodes.EQUALS:
 				if (e.ctrlKey || e.metaKey) {
 					preventDefault = true;
-					me.canvas.model.zoomIn();
+					me.canvasController.zoomIn();
 				}
 				break;
 			default:

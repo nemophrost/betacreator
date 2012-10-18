@@ -19,7 +19,7 @@ goog.require('bc.Mode');
 goog.require('goog.math.Coordinate');
 
 /**
- * @param {bc.model.Canvas} canvas
+ * @param {bc.controller.Canvas} canvas
  * @param {number} id
  * 
  * @constructor
