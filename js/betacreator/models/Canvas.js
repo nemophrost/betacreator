@@ -105,7 +105,7 @@ bc.model.Canvas.prototype.eachOrderedItem = function(f, selectedFirst) {
 	}
 
 	for (var i = this.items.length - 1; i >= 0; i--) {
-		if (selectedFirst && this.controller.isItemSelected(this.items[i]))
+		if (this.items[i] == this.tempLine || (selectedFirst && this.controller.isItemSelected(this.items[i])))
 			continue;
 
 		if (f(this.items[i]) === true)

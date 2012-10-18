@@ -266,9 +266,9 @@ bc.model.Line.prototype.updateBoundingBox = function() {
 	}
 	
 	var minX = Number.MAX_VALUE,
-		maxX = Number.MIN_VALUE,
+		maxX = -Number.MAX_VALUE,
 		minY = Number.MAX_VALUE,
-		maxY = Number.MIN_VALUE;
+		maxY = -Number.MAX_VALUE;
 	
 	goog.array.forEach(this.controlPoints(), function(point) {
 		minX = Math.min(minX, point.x);

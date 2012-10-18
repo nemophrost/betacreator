@@ -243,7 +243,7 @@ bc.view.Line.prototype.render = function(scale, selected, mode) {
 		y: this.model.bb.y,
 		w: this.model.bb.w,
 		h: this.model.bb.h,
-		scale: scale
+		scale: scale*this.model.scale()
 	};
 	
 	// if the location or size has changed, update the location

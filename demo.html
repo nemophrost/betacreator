@@ -12,9 +12,26 @@ goog.require("bc.Client");
 </script>
 
 <script type="text/javascript">
+var betaCreator = null;
 
 function init() {
-	new bc.Client(document.getElementById('srcImg'));
+	betaCreator = BetaCreator(document.getElementById('srcImg'), {
+
+	});
+}
+
+function saveData() {
+	if (!betaCreator)
+		return;
+
+	alert(betaCreator.getData());
+}
+
+function loadData() {
+	if (!betaCreator)
+		return;
+
+	betaCreator.loadData("{\"items\":[{\"it\":0,\"is\":1,\"ic\":\"#ffff00\",\"ia\":1,\"lw\":3,\"cp\":[{\"x\":267,\"y\":43},{\"x\":251,\"y\":97},{\"x\":247,\"y\":160},{\"x\":266,\"y\":214},{\"x\":270,\"y\":256}],\"nl\":0.01,\"fl\":0,\"lc\":true},{\"it\":5,\"is\":1,\"ic\":\"#ffff00\",\"ia\":1,\"x\":586,\"y\":354,\"t\":\"Half Dome\\n======\\n\\nThis is the route to climb!\",\"ta\":\"r\",\"tb\":true},{\"it\":1,\"is\":1,\"ic\":\"#4c0099\",\"ia\":1,\"lw\":3,\"x\":253,\"y\":241,\"w\":10,\"h\":10,\"t\":\"\"},{\"it\":1,\"is\":1,\"ic\":\"#000000\",\"ia\":1,\"lw\":3,\"x\":281,\"y\":245,\"w\":10,\"h\":10,\"t\":\"\"},{\"it\":0,\"is\":1,\"ic\":\"#ff8000\",\"ia\":1,\"lw\":3,\"cp\":[{\"x\":210,\"y\":229},{\"x\":238,\"y\":202},{\"x\":270,\"y\":130},{\"x\":338,\"y\":148},{\"x\":401,\"y\":101}],\"nl\":10,\"fl\":10,\"lc\":false},{\"it\":0,\"is\":2,\"ic\":\"#ff99ff\",\"ia\":1,\"lw\":3,\"cp\":[{\"x\":303,\"y\":252},{\"x\":322,\"y\":196},{\"x\":294,\"y\":102},{\"x\":321,\"y\":48}],\"nl\":0.01,\"fl\":8,\"lc\":true}]}");
 }
 
 </script>
@@ -22,5 +39,8 @@ function init() {
 
 <body onLoad="init()">
 	<img id="srcImg" src="http://www.valleyoutdoors.com/Hikes/images/halfdome.jpg" />
+	<br />
+	<button onClick="saveData()">Save</button>
+	<button onClick="loadData()">Load</button>
 </body>
 </html>

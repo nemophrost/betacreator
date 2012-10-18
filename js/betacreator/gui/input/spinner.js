@@ -172,8 +172,11 @@ bc.gui.input.Spinner = function(options, parent, width) {
 		// enter
 		else if (keyCode == 13) {
 			onChange();
+			me.input.blur();
 			e.preventDefault();
 		}
+
+		e.stopPropagation();
 	});
 
 	goog.events.listen(this.input, goog.events.EventType.FOCUS, function(e) {

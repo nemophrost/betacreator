@@ -22,6 +22,8 @@ goog.require('bc.controller.Canvas');
 goog.require('goog.dom');
 goog.require('goog.style');
 goog.require('goog.events');
+goog.require('goog.json');
+goog.require('goog.string');
 goog.require('goog.pubsub.PubSub');
 
 /**
@@ -53,6 +55,9 @@ bc.Client = function(sourceImg, params) {
 	image.src = this.sourceImage.src;
 };
 
+/**
+ * @private
+ */
 bc.Client.prototype.init = function(image) {
 	goog.events.unlistenByKey(this.imageLoadHandle);
 	
@@ -71,6 +76,109 @@ bc.Client.prototype.init = function(image) {
 	goog.dom.replaceNode(this.gui.wrapper, this.sourceImage);
 
 	this.gui.init();
+};
+
+/**
+ * @param {Object} data
+ * @private
+ */
+bc.Client.prototype.loadData = function(data) {
+	var me = this;
+
+	// each ordered item so that we don't remove the tempLine
+	this.canvasController.model.eachOrderedItem(function(item) {
+		me.canvasController.model.removeItem(item);
+	});
+
+	goog.array.forEach(data['items'] || [], function(itemData) {
+		var item = null;
+		switch(itemData[bc.properties.ITEM_TYPE]) {
+			case bc.model.ItemTypes.ANCHOR:
+				item = new bc.model.stamp.Anchor(bc.model.Stamp.parseParams(itemData), me.canvasController.model.properties);
+				break;
+			case bc.model.ItemTypes.PITON:
+				item = new bc.model.stamp.Piton(bc.model.Stamp.parseParams(itemData), me.canvasController.model.properties);
+				break;
+			case bc.model.ItemTypes.RAPPEL:
+				item = new bc.model.stamp.Rappel(bc.model.Stamp.parseParams(itemData), me.canvasController.model.properties);
+				break;
+			case bc.model.ItemTypes.BELAY:
+				item = new bc.model.stamp.Belay(bc.model.Stamp.parseParams(itemData), me.canvasController.model.properties);
+				break;
+			case bc.model.ItemTypes.LINE:
+				item = new bc.model.Line(bc.model.Line.parseParams(itemData), me.canvasController.model.properties);
+				break;
+			case bc.model.ItemTypes.TEXT:
+				item = new bc.model.Text(bc.model.Text.parseParams(itemData), me.canvasController.model.properties);
+				break;
+			default:
+				break;
+		}
+
+		if (item)
+			me.canvasController.model.addItem(item);
+	});
+
+	bc.Client.pubsub.publish(bc.Client.pubsubTopics.CANVAS_RENDER);
+};
+
+/**
+ * @param {boolean=} escape
+ * @return {string}
+ * @private
+ */
+bc.Client.prototype.getData = function(escape) {
+	var items = [];
+
+	this.canvasController.model.eachOrderedItem(function(item) {
+		items.push(item.serializeParams());
+	});
+
+	if (escape)
+		return goog.string.stripQuotes(goog.string.quote(goog.json.serialize({
+			'items': items
+		})), '"');
+	else
+		return goog.json.serialize({
+			'items': items
+		});
+};
+
+/**
+ * @param {boolean=} includeSource
+ * @return {string}
+ * @private
+ */
+bc.Client.prototype.getImage = function(includeSource) {
+	return '';
+};
+
+/**
+ * @param {Image} sourceImg
+ * @param {Object=} options
+ * @return {Object}
+ */
+bc.Client.go = function(sourceImg, options) {
+	var client = new bc.Client(sourceImg, options),
+		onError = options['onError'] || function(er) { alert (er); };
+
+	return {
+		'loadData': function(data) {
+			try {
+				data = goog.json.parse(data);
+				client.loadData(data);
+			}
+			catch(e) {
+				onError(bc.i18n("Invalid data."));
+			}
+		},
+		'getData': function(escape) {
+			return client.getData(escape);
+		},
+		'getImage': function(includeSource) {
+			return client.getImage(includeSource);
+		}
+	};
 };
 
 /**
@@ -102,4 +210,4 @@ bc.Client.modes = {
 	LINE_EDIT: 4
 };
 
-goog.exportSymbol('bc.Client', bc.Client);
+goog.exportSymbol('BetaCreator', bc.Client.go);
