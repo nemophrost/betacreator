@@ -82,8 +82,6 @@ bc.controller.Canvas = function(client, image) {
 	
 	/** @type {bc.Mode} */
 	this.mode = null;
-
-	// bc.Client.pubsub.publish(bc.Client.pubsubTopics.MODE, bc.Client.modes.SELECT);
 	
 	
 	/* Undo/redo functionality
@@ -447,10 +445,43 @@ bc.controller.Canvas.prototype.zoomIn = function() {
 	this.model.zoomIn();
 };
 
+/**
+ * @param {number|string} zoom can be a number (from 1-1200) or 'cover' or 'contain'
+ */
+bc.controller.Canvas.prototype.setZoom = function(zoom) {
+	if (goog.isNumber(zoom)) {
+		zoom /= 100;
+	}
+	else if (zoom == 'cover') {
+		zoom = Math.max(
+			this.client.viewportWidth/this.model.w,
+			this.client.viewportHeight/this.model.h
+		);
+	}
+	else { // contain
+		zoom = Math.min(
+			this.client.viewportWidth/this.model.w,
+			this.client.viewportHeight/this.model.h
+		);
+	}
+
+	this.model.zoomTo(zoom);
+
+	bc.Client.pubsub.publish(bc.Client.pubsubTopics.CANVAS_RENDER);
+};
+
+/**
+ * @param {number} scaleFactor
+ */
 bc.controller.Canvas.prototype.setZoomOffset = function(scaleFactor) {
 	var centerX = scaleFactor*(this.client.viewportWidth/2 - this.offset.x),
 		centerY = scaleFactor*(this.client.viewportHeight/2 - this.offset.y);
 
 	this.offset.x = -Math.round(centerX - this.client.viewportWidth/2);
 	this.offset.y = -Math.round(centerY - this.client.viewportHeight/2);
+};
+
+bc.controller.Canvas.prototype.setCenterOffset = function() {
+	this.offset.x = Math.round(this.client.viewportWidth/2 - this.model.w*this.model.scale/2);
+	this.offset.y = Math.round(this.client.viewportHeight/2 - this.model.h*this.model.scale/2);
 };

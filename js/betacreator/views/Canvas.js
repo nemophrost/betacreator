@@ -34,7 +34,23 @@ bc.view.Canvas = function(controller, model) {
 	this.controller = controller;
 	this.model = model;
 
-	this.scaleLastRender = this.model.scale;
+	/**
+	 * @type {number}
+	 * @private
+	 */
+	this.scaleLastRender = 1;
+
+	/**
+	 * @type {boolean}
+	 * @private
+	 */
+	this.needsRender = true;
+
+	/**
+	 * @type {boolean}
+	 * @private
+	 */
+	this.needsCentering = false;
 	
 	this.container = goog.dom.createDom(goog.dom.TagName.DIV, 'canvas-container');
 	goog.dom.appendChild(this.container, this.model.image);
@@ -92,13 +108,20 @@ bc.view.Canvas.prototype.render = function(pageScale) {
 	}
 
 	// if the page scale has changed, change the image size and center when zooming
-	if (this.model.scale != this.scaleLastRender) {
-		this.controller.setZoomOffset(this.model.scale/this.scaleLastRender);
-
+	if (this.model.scale != this.scaleLastRender || this.needsCentering) {
 		goog.style.setStyle(this.container, {
 			'width': Math.round(this.model.scale*this.model.w) + 'px',
 			'height': Math.round(this.model.scale*this.model.h) + 'px'
 		});
+
+		if (this.needsCentering) {
+			this.controller.setCenterOffset();
+
+			this.needsCentering = false;
+		}
+		else {
+			this.controller.setZoomOffset(this.model.scale/this.scaleLastRender);
+		}
 
 		this.container.style.left = this.controller.offset.x + 'px';
 		this.container.style.top = this.controller.offset.y + 'px';
@@ -159,3 +182,7 @@ bc.view.Canvas.prototype.renderItem = function(item, pageScale) {
 **
 *********************************************************************
 ********************************************************************/
+
+bc.view.Canvas.prototype.centerInViewport = function() {
+	this.needsCentering = true;
+};

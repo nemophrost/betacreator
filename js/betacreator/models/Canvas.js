@@ -138,3 +138,10 @@ bc.model.Canvas.prototype.zoomIn = function() {
 		}
 	}
 };
+
+/**
+ * @param {number} zoom
+ */
+bc.model.Canvas.prototype.zoomTo = function(zoom) {
+	this.scale = goog.math.clamp(zoom, this.scales[0], this.scales[this.scales.length-1]);
+};

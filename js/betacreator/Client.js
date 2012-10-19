@@ -40,11 +40,13 @@ bc.Client = function(sourceImg, params) {
 	this.params = {
 		w: params['width'] || null, // null for auto
 		h: params['height'] || null, // null for auto
-		imageScale: params['imageScale'] || 1,
-		zoom: params['zoom'] || null, // null for auto
-		replaceImg: params['replaceImg'] || false
+		zoom: params['zoom'] || 'contain',
+		parent: params['parent'] || null, // null to replace image
+		onChange: params['onChange'] || null
 	};
 	
+	this.minWidth = 556;
+
 	this.sourceImage = sourceImg;
 	
 	// load the image url into a new img element and call init on completion
@@ -53,6 +55,12 @@ bc.Client = function(sourceImg, params) {
 		me.init(image);
 	});
 	image.src = this.sourceImage.src;
+
+	if (params.onChange) {
+		bc.Client.pubsub.subscribe(bc.Client.pubsubTopics.ACTION, function() {
+			params.onChange();
+		});
+	}
 };
 
 /**
@@ -66,16 +74,33 @@ bc.Client.prototype.init = function(image) {
 
 	this.viewportWidth = this.params.w || image.width;
 	this.viewportHeight = this.params.h || image.height;
+
+	if (goog.isNumber(this.viewportWidth) && this.viewportWidth < this.minWidth)
+		this.viewportWidth = this.minWidth;
+
+	var optionbarHeight = 29;
 	
 	goog.style.setStyle(this.gui.wrapper, {
 		'position': 'relative',
 		'display': (this.sourceImage.style.display == 'inherit' ? 'inline-block' : (this.sourceImage.style.display || 'inline-block')),
-		'width': this.viewportWidth + 'px',
-		'height': (this.viewportHeight + 29) + 'px'
+		'width': goog.isNumber(this.viewportWidth) ? (this.viewportWidth + 'px') : this.viewportWidth,
+		'height': goog.isNumber(this.viewportHeight) ? ((this.viewportHeight + optionbarHeight) + 'px') : this.viewportHeight
 	});
-	goog.dom.replaceNode(this.gui.wrapper, this.sourceImage);
+
+	if (this.params.parent)
+		goog.dom.appendChild(this.params.parent, this.gui.wrapper);
+	else
+		goog.dom.replaceNode(this.gui.wrapper, this.sourceImage);
+
+	if (!goog.isNumber(this.viewportWidth))
+		this.viewportWidth = goog.style.getBorderBoxSize(this.gui.wrapper).width - 2;
+	if (!goog.isNumber(this.viewportHeight))
+		this.viewportHeight = goog.style.getBorderBoxSize(this.gui.wrapper).height - optionbarHeight - 2;
 
 	this.gui.init();
+
+	this.canvasController.setZoom(this.params.zoom);
+	this.canvasController.view.centerInViewport();
 };
 
 /**

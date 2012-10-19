@@ -16,8 +16,15 @@ bc.gui.ColorPicker = function() {
 
 	/**
 	 * @type {boolean}
+	 * @private
 	 */
 	this.visible = false;
+
+	/**
+	 * @type {boolean}
+	 * @private
+	 */
+	this.userIsTyping = false;
 
 	/**
 	 * @type {Element}
@@ -59,6 +66,18 @@ bc.gui.ColorPicker = function() {
 								classes: 'box-sizing-border',
 								create: function(dom) {
 									me.previewInput = dom;
+
+									goog.events.listen(dom, goog.events.EventType.FOCUS, function(e) {
+										me.userIsTyping = true;
+									});
+
+									goog.events.listen(dom, goog.events.EventType.BLUR, function(e) {
+										me.userIsTyping = false;
+									});
+
+									goog.events.listen(dom, goog.events.EventType.KEYDOWN, function(e) {
+										e.stopPropagation();
+									});
 								},
 								change: function(event, dom) {
 									try {
@@ -147,11 +166,15 @@ bc.gui.ColorPicker.prototype.previewColor = function(color) {
 	if (color && color.rgba()[3] > 0) {
 		goog.dom.classes.remove(this.previewSwatch, 'transparent');
 		this.previewSwatch.style.backgroundColor = color.hex();
-		this.previewInput.value = color.hex();
+
+		if (!this.userIsTyping)
+			this.previewInput.value = color.hex();
 	}
 	else {
 		goog.dom.classes.add(this.previewSwatch, 'transparent');
-		this.previewInput.value = 'transparent';
+
+		if (!this.userIsTyping)
+			this.previewInput.value = 'transparent';
 	}
 };
 
