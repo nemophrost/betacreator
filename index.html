@@ -41,7 +41,23 @@
   <button onClick="loadData()">Load</button>
 </p>
 
-<h2>How to Use</h2>
+<h2>Setup</h2>
+
+<p>
+  To use BetaCreator on your site, you will first need to download the code and include the BetaCreator stylesheet, icon sheet, and javascript file on your server. The stylesheet can be found at <code>css/betacreator.css</code>, the icon sheet at <code>css/images/icons_13.png</code>, and the javascript file at <code>js/bin/betacreator.js</code>. The stylesheet expects the icon sheet to be in a folder called <code>images/</code> that exists along side the stylesheet itself.
+</p>
+<p>
+  Next you will need to include the stylesheet and the javascript file in your page headers as follows:
+</p>
+
+<p>
+  <code>&lt;link rel="stylesheet" type="text/css" href="stylesheets/betacreator.css" /&gt;</code>
+</p>
+<p>
+  <code>&lt;script src="javascripts/betacreator.js"&gt;&lt;/script&gt;</code>
+</p>
+
+<h2>Usage</h2>
 
 <p>
   To create a BetaCreator instance, you must call BetaCreator with an image element as the first parameter. It takes an optional second parameter which contain settings.
