@@ -8,15 +8,19 @@
     <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
     <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen" />
     <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/betacreator.css" media="all" />
 
     <!--[if lt IE 9]>
     <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
 
+    <script src="javascripts/betacreator.js"></script>
+    <script src="javascripts/main.js"></script>
+
     <title>Betacreator by nemophrost</title>
   </head>
 
-  <body>
+  <body onLoad="init()">
     <header>
       <div class="inner">
         <h1>Betacreator</h1>
@@ -28,21 +32,90 @@
     <div id="content-wrapper">
       <div class="inner clearfix">
         <section id="main-content">
-          <h1>BetaCreator</h1>
+          <h1>Try it</h1>
 
-<p>BetaCreator is a free tool for the creation of rock climbing route guides/beta photos.</p>
+<p>
+  <img id="srcImg" src="http://www.valleyoutdoors.com/Hikes/images/halfdome.jpg" />
+  <br />
+  <button onClick="saveData()">Save</button>
+  <button onClick="loadData()">Load</button>
+</p>
 
-<h2>Setting Up A Development Environment</h2>
+<h2>How to Use</h2>
 
-<p>After checking out the git repo you will need to open a command line terminal 
-and go to the directory: <code>&lt;project_root&gt;/js</code></p>
+<p>
+  To create a BetaCreator instance, you must call BetaCreator with an image element as the first parameter. It takes an optional second parameter which contain settings.
+</p>
+<p>
+  <code>
+    BetaCreator(image, settings);
+  </code>
+</p>
+<p>
+  So, in the simplest case, using BetaCreator would look something like this:
+</p>
 
-<p>From there you will need to checkout the Google Closure Library (requires 
-<a href="http://subversion.apache.org/">Subversion</a>) with the following command:</p>
+<p>
+<code>
+  var foo = BetaCreator(document.getElementById('myImg'));
+</code>
+</p>
 
-<p><code>svn checkout http://closure-library.googlecode.com/svn/trunk/ closure</code></p>
+<p>
+  With some settings, it might look like this:
+</p>
 
-<p>Afterwards you should have the goog directory at: <code>&lt;project_root&gt;/js/closure/closure/goog</code></p>
+<p>
+<code>
+  var foo = BetaCreator(document.getElementById('myImg'), {<br />
+  &nbsp; &nbsp; zoom: 'contain',<br />
+  &nbsp; &nbsp; height: 400,<br />
+  &nbsp; &nbsp; width: '100%',<br />
+  &nbsp; &nbsp; parent: document.getElementById('myDiv'),<br />
+  &nbsp; &nbsp; onChange: function() {<br />
+  &nbsp; &nbsp; &nbsp; &nbsp; // do something (call getData and save it?)<br />
+  &nbsp; &nbsp; }<br />
+  });
+</code>
+</p>
+
+<p>
+  The settings are as follows:
+
+<dl>
+  <dt>zoom</dt>
+  <dd>The zoom level for the editor upon load. Accepts a number from 1-1200, 'cover', 'contain' (default).</dd>
+  <dt>height</dt>
+  <dd>The inner height of the editor, not including the option bar at the top. Can be a number or a percentage as a string ('100%'). If omitted it will be the height of the image.</dd>
+  <dt>width</dt>
+  <dd>The inner width of the editor. Can be a number or a percentage as a string ('100%'). If omitted it will be the width of the image. Note: there is a minimum width of 556 enforced if you set this to a number or omit it (to fit the option bar).</dd>
+  <dt>parent</dt>
+  <dd>The parent element for the editor to be appended to. If omitted, the source image will be replaced by the editor.</dd>
+  <dt>onChange</dt>
+  <dd>A callback function that will be called every time the document is changed by the user.</dd>
+</dl>
+</p>
+
+<h2>API</h2>
+
+<p>
+  Calling <code>BetaCreator()</code> returns an object with the following API methods on it:
+
+  <dl>
+    <dt>getData(escape:Boolean = false):String</dt>
+    <dd>Returns a string of JSON encoded data representing the drawing layer of the editor. It takes an optional boolean <code>escape</code> which, if true, will cause the output of <code>getData</code> to have quotes and special characters (like new lines) escaped. This is particularly useful if you were to store this in a database and inject it into some JavaScript code on the server. For example if you did the following in php, you would need to have the data escaped: <code>myBetaCreator.getData("&lt;?php echo $bcData; ?&gt;");</code></dd>
+  </dl>
+  <dl>
+    <dt>getImage(includeSource:Boolean = false, type:String = 'png'):String</dt>
+    <dd>Returns a base64 encoded data URI of the image. It takes two optional parameters. <code>includeSource</code> is a boolean which, if true, will return the image data for the drawing layer composited with the source image. The <code>type</code> parameter can be either 'png' or 'jpg'. In order for 'jpg' to work, <code>includeSource</code> will have to be true. There is no point in giving back the drawing layer without transparency. With no parameters <code>getImage</code> will produce the image data for the drawing layer as a PNG.</dd>
+  </dl>
+  <dl>
+    <dt>loadData(data:String)</dt>
+    <dd>Takes a string of JSON as output from <code>getData</code> and loads it into the editor.</dd>
+  </dl>
+</p>
+
+
         </section>
 
         <aside id="sidebar">
