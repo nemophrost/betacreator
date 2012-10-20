@@ -29,24 +29,28 @@ bc.Mode = function(canvas, id) {
 };
 
 /**
+ * @param {Event} e
  * @param {goog.math.Coordinate} point
  */
-bc.Mode.prototype.mouseDown = function(point) {};
+bc.Mode.prototype.mouseDown = function(e, point) {};
 
 /**
+ * @param {Event} e
  * @param {goog.math.Coordinate} point
  */
-bc.Mode.prototype.mouseMove = function(point) {};
+bc.Mode.prototype.mouseMove = function(e, point) {};
 
 /**
+ * @param {Event} e
  * @param {goog.math.Coordinate} point
  */
-bc.Mode.prototype.mouseUp = function(point) {};
+bc.Mode.prototype.mouseUp = function(e, point) {};
 
 /**
+ * @param {Event} e
  * @param {goog.math.Coordinate} point
  */
-bc.Mode.prototype.dblClick = function(point) {};
+bc.Mode.prototype.dblClick = function(e, point) {};
 
 /**
  * @param {Event} e

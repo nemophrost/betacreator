@@ -17,6 +17,7 @@ goog.provide('bc.mode.Select');
 
 goog.require('bc.Mode');
 goog.require('goog.math.Coordinate');
+goog.require('goog.events');
 
 /**
  * @param {bc.controller.Canvas} canvas
@@ -30,8 +31,54 @@ bc.mode.Select = function(canvas, id) {
 
 	/** @type {goog.math.Coordinate|null} */
 	this.mouseDownPoint = null;
+
+	/**
+	 * @type {?number}
+	 * @private
+	 */
+	this.moveKey = null;
+
+	/**
+	 * @type {?number}
+	 * @private
+	 */
+	this.upOutKey = null;
+
+
 };
 goog.inherits(bc.mode.Select, bc.Mode);
+
+/**
+ * @private
+ */
+bc.mode.Select.prototype.stopDrag = function() {
+	this.canvas.endPan();
+
+	goog.events.unlistenByKey(this.moveKey);
+	goog.events.unlistenByKey(this.upOutKey);
+};
+
+/**
+ * @param {Event} e
+ * @private
+ */
+bc.mode.Select.prototype.startDrag = function(e) {
+	var me = this;
+
+	this.stopDrag();
+	this.canvas.startPan();
+
+	var x = e.clientX,
+		y = e.clientY;
+
+	this.moveKey = goog.events.listen(document.body, goog.events.EventType.MOUSEMOVE, function(e) {
+		me.canvas.panTo(e.clientX - x, e.clientY - y);
+	});
+
+	this.upOutKey = goog.events.listen(document.body, goog.events.EventType.MOUSEUP, function(e) {
+		me.stopDrag();
+	});
+};
 
 /**
  * Called each time the mode is deactivated
@@ -43,13 +90,13 @@ bc.mode.Select.prototype.onDeactivate = function() {
 /**
  * @inheritDoc
  */
-bc.mode.Select.prototype.mouseDown = function(point) {
+bc.mode.Select.prototype.mouseDown = function(e, point) {
 	var me = this,
 		deselect = true;
 
 	// just in case
 	if (this.mouseDownPoint)
-		this.mouseUp(point);
+		this.mouseUp(e, point);
 
 	this.mouseDownPoint = point;
 
@@ -62,14 +109,17 @@ bc.mode.Select.prototype.mouseDown = function(point) {
 		}
 	});
 
-	if (deselect)
+	if (deselect) {
 		this.canvas.deselectAll();
+
+		this.startDrag(e);
+	}
 };
 
 /**
  * @inheritDoc
  */
-bc.mode.Select.prototype.mouseMove = function(point) {
+bc.mode.Select.prototype.mouseMove = function(e, point) {
 	var me = this;
 	if (this.mouseDownPoint) {
 		goog.array.forEach(this.canvas.getSelectedItems(), function(item, i) {
@@ -82,7 +132,7 @@ bc.mode.Select.prototype.mouseMove = function(point) {
 /**
  * @inheritDoc
  */
-bc.mode.Select.prototype.mouseUp = function(point) {
+bc.mode.Select.prototype.mouseUp = function(e, point) {
 	var me = this;
 	if (this.mouseDownPoint) {
 		var dx = point.x - this.mouseDownPoint.x,
@@ -103,7 +153,7 @@ bc.mode.Select.prototype.mouseUp = function(point) {
 /**
  * @inheritDoc
  */
-bc.mode.Select.prototype.dblClick = function(point) {
+bc.mode.Select.prototype.dblClick = function(e, point) {
 	var item,
 		me = this;
 	

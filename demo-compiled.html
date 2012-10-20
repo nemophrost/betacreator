@@ -8,8 +8,38 @@
 
 <script type="text/javascript">
 
+var betaCreator = null;
+
 function init() {
-	new bc.Client(document.getElementById('srcImg'));
+	var outp = document.getElementById('outp');
+	betaCreator = BetaCreator(document.getElementById('srcImg'), {
+		zoom: 'contain',
+		height: 300,
+		width: 20,
+		onChange: function() {
+			outp.value = "Last changed at: " + new Date();
+		}
+	});
+}
+
+function saveData() {
+	if (!betaCreator)
+		return;
+
+	if (window.localStorage)
+		localStorage.bcData = betaCreator.getData();
+	else
+		alert(betaCreator.getData());
+}
+
+function loadData() {
+	if (!betaCreator)
+		return;
+
+	if (window.localStorage && localStorage.bcData)
+		betaCreator.loadData(localStorage.bcData);
+	else
+		alert("No data stored locally. You must save first.");
 }
 
 </script>
@@ -17,5 +47,10 @@ function init() {
 
 <body onLoad="init()">
 	<img id="srcImg" src="http://www.valleyoutdoors.com/Hikes/images/halfdome.jpg" />
+	<br />
+	<button onClick="saveData()">Save</button>
+	<button onClick="loadData()">Load</button>
+	<br />
+	<textarea id="outp" cols="60"></textarea>
 </body>
 </html>

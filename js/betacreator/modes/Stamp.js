@@ -43,7 +43,7 @@ bc.mode.Stamp.prototype.onActivate = function(itemType) {
 /**
  * @inheritDoc
  */
-bc.mode.Stamp.prototype.mouseDown = function(point) {
+bc.mode.Stamp.prototype.mouseDown = function(e, point) {
 	if (this.itemType === null)
 		return;
 

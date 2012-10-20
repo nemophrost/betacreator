@@ -72,10 +72,10 @@ bc.mode.LineEdit.prototype.onDeactivate = function() {
 /**
  * @inheritDoc
  */
-bc.mode.LineEdit.prototype.mouseDown = function(point) {
+bc.mode.LineEdit.prototype.mouseDown = function(e, point) {
 	// just in case
 	if (this.mouseDownPoint)
-		this.mouseUp(point);
+		this.mouseUp(e, point);
 
 	if (!this.activeLine)
 		return;
@@ -102,7 +102,7 @@ bc.mode.LineEdit.prototype.mouseDown = function(point) {
 /**
  * @inheritDoc
  */
-bc.mode.LineEdit.prototype.mouseMove = function(point) {
+bc.mode.LineEdit.prototype.mouseMove = function(e, point) {
 	// if we have an active control point we are moving, just change it's x and y values directly
 	if (this.mouseDownPoint && this.activeLine && this.controlPoint) {
 		this.controlPoint.x = this.originalControlPoint.x + point.x - this.mouseDownPoint.x;
@@ -115,8 +115,8 @@ bc.mode.LineEdit.prototype.mouseMove = function(point) {
 /**
  * @inheritDoc
  */
-bc.mode.LineEdit.prototype.mouseUp = function(point) {
-	this.mouseMove(point);
+bc.mode.LineEdit.prototype.mouseUp = function(e, point) {
+	this.mouseMove(e, point);
 
 	if (this.mouseDownPoint && this.activeLine && this.controlPoint) {
 		// copy the control points in a new array

@@ -64,7 +64,7 @@ goog.inherits(bc.mode.Line, bc.Mode);
 /**
  * @inheritDoc
  */
-bc.mode.Line.prototype.mouseDown = function(point) {
+bc.mode.Line.prototype.mouseDown = function(e, point) {
 	if (this.activeLine) {
 		this.activeLine.controlPoints(this.getPoints());
 	}
@@ -97,7 +97,7 @@ bc.mode.Line.prototype.mouseDown = function(point) {
 /**
  * @inheritDoc
  */
-bc.mode.Line.prototype.mouseMove = function(point) {
+bc.mode.Line.prototype.mouseMove = function(e, point) {
 	var affectedLine = this.activeLine || this.tempLine;
 	if (affectedLine) {
 		this.movingPoint = new goog.math.Coordinate(point.x, point.y);

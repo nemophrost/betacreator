@@ -31,6 +31,7 @@ goog.require('bc.model.Line');
 goog.require('bc.model.Canvas');
 goog.require('bc.view.Canvas');
 goog.require('goog.array');
+goog.require('goog.math');
 goog.require('goog.math.Coordinate');
 
 /**
@@ -402,28 +403,28 @@ bc.controller.Canvas.prototype.deselectAll = function() {
  * @param {Event} e
  */
 bc.controller.Canvas.prototype.mouseDown = function(e) {
-	this.mode.mouseDown(this.eventToCoord(e));
+	this.mode.mouseDown(e, this.eventToCoord(e));
 };
 
 /**
  * @param {Event} e
  */
 bc.controller.Canvas.prototype.mouseMove = function(e) {
-	this.mode.mouseMove(this.eventToCoord(e));
+	this.mode.mouseMove(e, this.eventToCoord(e));
 };
 
 /**
  * @param {Event} e
  */
 bc.controller.Canvas.prototype.mouseUp = function(e) {
-	this.mode.mouseUp(this.eventToCoord(e));
+	this.mode.mouseUp(e, this.eventToCoord(e));
 };
 
 /**
  * @param {Event} e
  */
 bc.controller.Canvas.prototype.dblClick = function(e) {
-	this.mode.dblClick(this.eventToCoord(e));
+	this.mode.dblClick(e, this.eventToCoord(e));
 };
 
 /**
@@ -475,13 +476,54 @@ bc.controller.Canvas.prototype.setZoom = function(zoom) {
  */
 bc.controller.Canvas.prototype.setZoomOffset = function(scaleFactor) {
 	var centerX = scaleFactor*(this.client.viewportWidth/2 - this.offset.x),
-		centerY = scaleFactor*(this.client.viewportHeight/2 - this.offset.y);
+		centerY = scaleFactor*(this.client.viewportHeight/2 - this.offset.y),
+		w = this.model.w*this.model.scale,
+		h = this.model.h*this.model.scale;
 
 	this.offset.x = -Math.round(centerX - this.client.viewportWidth/2);
 	this.offset.y = -Math.round(centerY - this.client.viewportHeight/2);
+
+	if (w <= this.client.viewportWidth)
+		this.offset.x = Math.round(this.client.viewportWidth/2 - w/2);
+	else
+		this.offset.x = goog.math.clamp(this.offset.x, this.client.viewportWidth - w, 0);
+
+	if (h <= this.client.viewportHeight)
+		this.offset.y = Math.round(this.client.viewportHeight/2 - h/2);
+	else
+		this.offset.y = goog.math.clamp(this.offset.y, this.client.viewportHeight - h, 0);
 };
 
 bc.controller.Canvas.prototype.setCenterOffset = function() {
 	this.offset.x = Math.round(this.client.viewportWidth/2 - this.model.w*this.model.scale/2);
 	this.offset.y = Math.round(this.client.viewportHeight/2 - this.model.h*this.model.scale/2);
+};
+
+bc.controller.Canvas.prototype.startPan = function() {
+	var w = Math.round(this.model.w*this.model.scale),
+		h = Math.round(this.model.h*this.model.scale);
+
+	this.minPanDx = -Math.max(this.offset.x + w - this.client.viewportWidth, 0);
+	this.maxPanDx = Math.max(-this.offset.x, 0);
+	this.minPanDy = -Math.max(this.offset.y + h - this.client.viewportHeight, 0);
+	this.maxPanDy = Math.max(-this.offset.y, 0);
+};
+
+bc.controller.Canvas.prototype.panTo = function(dx, dy) {
+	dx = goog.math.clamp(dx, this.minPanDx, this.maxPanDx);
+	dy = goog.math.clamp(dy, this.minPanDy, this.maxPanDy);
+
+	this.lastPanDx = dx;
+	this.lastPanDy = dy;
+
+	this.view.container.style.left = (this.offset.x + dx) + 'px';
+	this.view.container.style.top = (this.offset.y + dy) + 'px';
+};
+
+bc.controller.Canvas.prototype.endPan = function() {
+	this.offset.x += this.lastPanDx || 0;
+	this.offset.y += this.lastPanDy || 0;
+
+	this.lastPanDx = 0;
+	this.lastPanDy = 0;
 };

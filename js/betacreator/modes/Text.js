@@ -32,7 +32,7 @@ goog.inherits(bc.mode.Text, bc.Mode);
 /**
  * @inheritDoc
  */
-bc.mode.Text.prototype.mouseDown = function(point) {
+bc.mode.Text.prototype.mouseDown = function(e, point) {
 	var me = this;
 	bc.Client.pubsub.publish(bc.Client.pubsubTopics.SHOW_TEXT_AREA, function(text) {
 		if (text) {

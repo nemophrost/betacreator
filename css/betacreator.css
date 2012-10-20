@@ -28,7 +28,9 @@
 #betacreator li{margin-left:30px;}
 #betacreator p,#betacreator dl,#betacreator hr,#betacreator h1,#betacreator h2,#betacreator h3,#betacreator h4,#betacreator h5,#betacreator h6,#betacreator ol,#betacreator ul,#betacreator pre,#betacreator table,#betacreator address,#betacreator fieldset,#betacreator figure{margin-bottom:20px;}
 #betacreator .fullsize{position:absolute;top:0;right:0;bottom:0;left:0;width:auto;height:auto;}
-#betacreator .viewport{top:29px;}
+#betacreator .viewport{background:#e6e6e6;}
+#betacreator .viewport,#betacreator .hitdiv{top:29px;}
+#betacreator .canvas-container{position:absolute;top:0;left:0;width:100%;height:100%;overflow:hidden;box-shadow:0 1px 3px 0 rgba(0, 0, 0, 0.4);}#betacreator .canvas-container img{position:absolute;display:block;top:0;left:0;width:100%;height:100%;border:none;margin:0;padding:0;}
 #betacreator .absolute{position:absolute;width:0;height:0;}
 #betacreator .user-select-text{-webkit-user-select:text;-khtml-user-select:text;-moz-user-select:text;-o-user-select:text;user-select:text;}
 #betacreator .box-sizing-border{-moz-box-sizing:border-box;-ms-box-sizing:border-box;-webkit-box-sizing:border-box;-khtml-box-sizing:border-box;box-sizing:border-box;}
