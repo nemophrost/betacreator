@@ -176,11 +176,12 @@ bc.controller.Canvas.prototype.clearUndoHistory = function() {
 bc.controller.Canvas.prototype.eventToCoord = function(e) {
 	var x = e.clientX,
 		y = e.clientY,
+		pageOffset = goog.style.getViewportPageOffset(document),
 		offset = goog.style.getPageOffset(this.client.gui.viewport);
 	
 	return new goog.math.Coordinate(
-		Math.round((x - offset.x - this.offset.x)/this.model.scale),
-		Math.round((y - offset.y - this.offset.y)/this.model.scale)
+		Math.round((x + pageOffset.x - offset.x - this.offset.x)/this.model.scale),
+		Math.round((y + pageOffset.y - offset.y - this.offset.y)/this.model.scale)
 	);
 };
 
