@@ -21,7 +21,7 @@ goog.require('goog.events');
 
 /**
  * @param {bc.controller.Canvas} canvas
- * @param {number} id
+ * @param {bc.Client.modes} id
  *
  * @constructor
  * @extends {bc.Mode}

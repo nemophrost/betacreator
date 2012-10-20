@@ -92,12 +92,13 @@ bc.view.Canvas.prototype.checkRender = function() {
  * @private
  */
 bc.view.Canvas.prototype.render = function(pageScale) {
-	var itemIdMap = {};
+	var me = this,
+		itemIdMap = {};
 	
-	for (var i = 0, l = this.model.items.length; i < l; i++) {
-		this.renderItem(this.model.items[i], pageScale);
-		itemIdMap[this.model.items[i].id] = true;
-	}
+	this.model.eachItem(function(item) {
+		me.renderItem(item, pageScale);
+		itemIdMap[item.id] = true;
+	}, true);
 	
 	// destroy the views for any deleted items
 	for (var viewId in this.views) {
@@ -175,6 +176,7 @@ bc.view.Canvas.prototype.renderItem = function(item, pageScale) {
 	view.render(pageScale, this.controller.isItemSelected(item), this.controller.mode.id);
 };
 
+
 /********************************************************************
 *********************************************************************
 **
@@ -185,4 +187,15 @@ bc.view.Canvas.prototype.renderItem = function(item, pageScale) {
 
 bc.view.Canvas.prototype.centerInViewport = function() {
 	this.needsCentering = true;
+};
+
+/**
+ * @param {CanvasRenderingContext2D} ctx
+ */
+bc.view.Canvas.prototype.renderToContext = function(ctx) {
+	var me = this;
+	this.model.eachItem(function(item) {
+		if (me.views[item.id])
+			me.views[item.id].renderToContext(ctx);
+	});
 };

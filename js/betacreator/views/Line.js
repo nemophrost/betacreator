@@ -181,6 +181,45 @@ bc.view.Line.prototype.updateLocation = function(scale) {
 	this.canvas.style.top = Math.round(scale*(this.model.offset.y + this.model.bb.y) - this.padding) + 'px';
 };
 
+/**
+ * @param {CanvasRenderingContext2D} ctx
+ * @param {number} scale
+ * @param {boolean=} selected
+ * @param {?bc.Client.modes=} mode
+ * @param {boolean=} directOnCanvas Skip resizing and clearing canvas if true
+ * @private
+ */
+bc.view.Line.prototype._render  = function(ctx, scale, selected, mode, directOnCanvas) {
+	this.padding = this.defaultPadding*Math.max(1,this.model.scale()*scale);
+
+	this.model.updateBoundingBox();
+	this.model.updatePoints();
+
+	var canvasWidth = Math.round(scale*this.model.bb.w) + 2*this.padding,
+		canvasHeight = Math.round(scale*this.model.bb.h) + 2*this.padding;
+
+	if (!directOnCanvas) {
+		ctx.canvas.width = canvasWidth;
+		ctx.canvas.height = canvasHeight;
+
+		ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+	}
+
+	ctx.save();
+
+	if (!directOnCanvas)
+		ctx.translate(this.padding - Math.round(scale*this.model.bb.x), this.padding - Math.round(scale*this.model.bb.y));
+
+	ctx.scale(scale, scale);
+
+	this.draw(ctx, scale, selected);
+
+	if (selected && mode == bc.Client.modes.LINE_EDIT)
+		this.drawControlPoints(ctx, scale);
+
+	ctx.restore();
+};
+
 
 
 /*******************************************************************************
@@ -193,9 +232,7 @@ bc.view.Line.prototype.updateLocation = function(scale) {
 
 
 /**
- * @param {number=} scale
- * @param {boolean=} selected
- * @param {number=} mode
+ * @inheritDoc
  */
 bc.view.Line.prototype.render = function(scale, selected, mode) {
 	scale = scale || 1;
@@ -208,32 +245,11 @@ bc.view.Line.prototype.render = function(scale, selected, mode) {
 	// if something has changed since last rendering that will affect rendering, 
 	// redraw the stamp
 	if (!bc.object.areEqual(drawProperties, this.drawProperties)) {
-		this.padding = this.defaultPadding*Math.max(1,this.model.scale()*scale);
-
 		this.drawProperties = drawProperties;
-		
-		this.model.updateBoundingBox();
-		this.model.updatePoints();
-		
-		var ctx = this.canvas.getContext('2d'),
-			canvasWidth = Math.round(scale*this.model.bb.w) + 2*this.padding,
-			canvasHeight = Math.round(scale*this.model.bb.h) + 2*this.padding;
-		
-		ctx.canvas.width = canvasWidth;
-		ctx.canvas.height = canvasHeight;
-		
-		ctx.clearRect(0, 0, canvasWidth, canvasHeight);
-		
-		ctx.save();
-		ctx.translate(this.padding - Math.round(scale*this.model.bb.x), this.padding - Math.round(scale*this.model.bb.y));
-		ctx.scale(scale, scale);
-		
-		this.draw(ctx, scale, selected);
 
-		if (selected && mode == bc.Client.modes.LINE_EDIT)
-			this.drawControlPoints(ctx, scale);
-		
-		ctx.restore();
+		var ctx = this.canvas.getContext('2d');
+
+		this._render(ctx, scale, selected, mode);
 	}
 
 	var locationProperties = {
@@ -252,6 +268,15 @@ bc.view.Line.prototype.render = function(scale, selected, mode) {
 
 		this.updateLocation(scale);
 	}
+};
+
+/**
+ * @inheritDoc
+ */
+bc.view.Line.prototype.renderToContext = function(ctx) {
+	ctx.save();
+	this._render(ctx, 1, false, null, true);
+	ctx.restore();
 };
 
 bc.view.Line.prototype.destroy = function() {

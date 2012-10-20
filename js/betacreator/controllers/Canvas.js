@@ -527,3 +527,34 @@ bc.controller.Canvas.prototype.endPan = function() {
 	this.lastPanDx = 0;
 	this.lastPanDy = 0;
 };
+
+/**
+ * @param {boolean=} includeSource
+ * @param {string=} type
+ * @return {string}
+ */
+bc.controller.Canvas.prototype.getImage = function(includeSource, type) {
+	bc.Client.pubsub.publish(bc.Client.pubsubTopics.CANVAS_RENDER, true);
+
+	var canvas = goog.dom.createElement(goog.dom.TagName.CANVAS),
+		ctx = canvas.getContext('2d');
+
+	type = (includeSource && type && type.toLowerCase() == 'jpg') ? 'jpeg' : 'png';
+
+	canvas.width = this.model.w;
+	canvas.height = this.model.h;
+
+
+	if (includeSource)
+		ctx.drawImage(this.model.image, 0, 0);
+
+	this.view.renderToContext(ctx);
+
+	try {
+		return canvas.toDataURL("image/" + type);
+	}
+	catch(e) {
+		alert('Source image must be from the same domain to be included in getImage. Try getImage() without any parameters.');
+		return '';
+	}
+};

@@ -82,6 +82,14 @@ bc.model.Canvas.prototype.removeItem = function(item) {
 };
 
 /**
+ * @param {bc.model.Item} item
+ */
+bc.model.Canvas.prototype.removeAllItems = function(item) {
+	this.items = [];
+	this.addItem(this.tempLine);
+};
+
+/**
  * @param {string} id
  * @return {bc.model.Item|null}
  */
@@ -106,6 +114,22 @@ bc.model.Canvas.prototype.eachOrderedItem = function(f, selectedFirst) {
 
 	for (var i = this.items.length - 1; i >= 0; i--) {
 		if (this.items[i] == this.tempLine || (selectedFirst && this.controller.isItemSelected(this.items[i])))
+			continue;
+
+		if (f(this.items[i]) === true)
+			return;
+	}
+};
+
+/**
+ * Call the function f with each item in order, bottom up. If any call to f returns true, stop the looping
+ *
+ * @param {function(bc.model.Item)} f
+ * @param {boolean=} includeHidden
+ */
+bc.model.Canvas.prototype.eachItem = function(f, includeHidden) {
+	for (var i = 0, l = this.items.length; i < l; i++) {
+		if (!includeHidden && this.items[i] == this.tempLine)
 			continue;
 
 		if (f(this.items[i]) === true)

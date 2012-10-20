@@ -195,8 +195,8 @@ bc.gui.OptionBar.prototype.createControls = function(container) {
 
 	var scaleSpinner = new bc.gui.input.Spinner(
 		{
-			min:0.5,
-			max:4,
+			min:0.25,
+			max:8,
 			step:10,
 			round:2,
 			width:60,

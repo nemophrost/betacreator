@@ -153,6 +153,88 @@ bc.view.Text.prototype.updateLocation = function(pageScale) {
 	this.canvas.style.top = Math.round(pageScale*(this.model.y() + this.model.offset.y) - this.padding) + 'px';
 };
 
+/**
+ * @param {CanvasRenderingContext2D} ctx
+ * @param {number} scale
+ * @param {boolean=} selected
+ * @param {boolean=} directOnCanvas Skip resizing and clearing canvas if true
+ * @private
+ */
+bc.view.Text.prototype._render  = function(ctx, scale, selected, directOnCanvas) {
+	this.padding = this.defaultPadding*Math.max(1,scale);
+
+	this.model.calculateLines();
+	this.boundingBox = this.calculateBoundingBox(ctx);
+	this.model.setBoundingBox(this.boundingBox, this.padding);
+
+	var canvasWidth = Math.round(scale*this.boundingBox.x) + 2*this.padding,
+		canvasHeight = Math.round(scale*this.boundingBox.y) + 2*this.padding;
+	
+	if (!directOnCanvas) {
+		ctx.canvas.width = canvasWidth;
+		ctx.canvas.height = canvasHeight;
+		
+		ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+	}
+
+	ctx.save();
+
+	if (directOnCanvas) {
+		ctx.translate(this.model.x(), this.model.y());
+		switch(this.model.textAlign()) {
+			case 'c':
+				ctx.translate(-canvasWidth/2, -this.padding);
+				break;
+			case 'r':
+				ctx.translate(-canvasWidth + this.padding, -this.padding);
+				break;
+			default:
+				ctx.translate(-this.padding, -this.padding);
+				break;
+		}
+	}
+
+	if (this.model.textBG()) {
+		ctx.save();
+		ctx.fillStyle = bc.color.highContrastWhiteOrBlack(this.model.color(), 0.5);
+		ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+		ctx.restore();
+	}
+
+	if (selected) {
+		ctx.save();
+		ctx.strokeStyle = 'rgba(255,0,0,0.75)';
+		ctx.lineWidth = 1;
+		ctx.strokeRect(0.5, 0.5, canvasWidth-1, canvasHeight-1);
+		ctx.restore();
+	}
+
+	switch(this.model.textAlign()) {
+		case 'c':
+			ctx.translate(canvasWidth/2, this.padding);
+			break;
+		case 'r':
+			ctx.translate(canvasWidth - this.padding, this.padding);
+			break;
+		default:
+			ctx.translate(this.padding, this.padding);
+			break;
+	}
+
+	ctx.scale(scale, scale);
+	ctx.lineCap = 'round';
+	
+	if (!this.model.textBG()) {
+		ctx.save();
+		this.draw(ctx, bc.color.highContrastWhiteOrBlack(this.model.color(), 0.5), 2/scale);
+		ctx.restore();
+	}
+	
+	this.draw(ctx);
+	
+	ctx.restore();
+};
+
 
 /*******************************************************************************
  * 
@@ -164,9 +246,7 @@ bc.view.Text.prototype.updateLocation = function(pageScale) {
 
 
 /**
- * @param {number=} pageScale
- * @param {boolean=} selected
- * @param {number=} mode
+ * @inheritDoc
  */
 bc.view.Text.prototype.render = function(pageScale, selected, mode) {
 	pageScale = pageScale || 1;
@@ -196,64 +276,11 @@ bc.view.Text.prototype.render = function(pageScale, selected, mode) {
 	// if something has changed since last rendering that will affect rendering,
 	// redraw the stamp
 	if (!bc.object.areEqual(drawProperties, this.drawProperties)) {
-		this.padding = this.defaultPadding*Math.max(1,scale);
-
 		this.drawProperties = drawProperties;
 
 		var ctx = this.canvas.getContext('2d');
 
-		this.model.calculateLines();
-		this.boundingBox = this.calculateBoundingBox(ctx);
-		this.model.setBoundingBox(this.boundingBox, this.padding);
-
-		var canvasWidth = Math.round(scale*this.boundingBox.x) + 2*this.padding,
-			canvasHeight = Math.round(scale*this.boundingBox.y) + 2*this.padding;
-		
-		ctx.canvas.width = canvasWidth;
-		ctx.canvas.height = canvasHeight;
-		
-		ctx.clearRect(0, 0, canvasWidth, canvasHeight);
-
-		ctx.save();
-
-		if (this.model.textBG()) {
-			ctx.save();
-			ctx.fillStyle = bc.color.highContrastWhiteOrBlack(this.model.color(), 0.5);
-			ctx.fillRect(0, 0, canvasWidth, canvasHeight);
-			ctx.restore();
-		}
-		if (selected) {
-			ctx.save();
-			ctx.strokeStyle = 'rgba(255,0,0,0.75)';
-			ctx.lineWidth = 1;
-			ctx.strokeRect(0.5, 0.5, canvasWidth-1, canvasHeight-1);
-			ctx.restore();
-		}
-
-		switch(this.model.textAlign()) {
-			case 'c':
-				ctx.translate(canvasWidth/2, this.padding);
-				break;
-			case 'r':
-				ctx.translate(canvasWidth - this.padding, this.padding);
-				break;
-			default:
-				ctx.translate(this.padding, this.padding);
-				break;
-		}
-
-		ctx.scale(scale, scale);
-		ctx.lineCap = 'round';
-		
-		if (!this.model.textBG()) {
-			ctx.save();
-			this.draw(ctx, bc.color.highContrastWhiteOrBlack(this.model.color(), 0.5), 2/scale);
-			ctx.restore();
-		}
-		
-		this.draw(ctx);
-		
-		ctx.restore();
+		this._render(ctx, scale, selected);
 	}
 	
 	// if the location or size has changed, update the location
@@ -264,13 +291,13 @@ bc.view.Text.prototype.render = function(pageScale, selected, mode) {
 	}
 };
 
-
 /**
- * @param {number=} pageScale
- * @param {boolean=} selected
+ * @inheritDoc
  */
-bc.view.Text.prototype.getPNG = function(pageScale, selected) {
-	
+bc.view.Text.prototype.renderToContext = function(ctx) {
+	ctx.save();
+	this._render(ctx, this.model.scale(), false, true);
+	ctx.restore();
 };
 
 bc.view.Text.prototype.destroy = function() {

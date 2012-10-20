@@ -19,7 +19,7 @@ goog.provide('bc.Mode');
 
 /**
  * @param {bc.controller.Canvas} canvas
- * @param {number} id
+ * @param {bc.Client.modes} id
  *
  * @constructor
  */

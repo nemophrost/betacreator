@@ -110,10 +110,7 @@ bc.Client.prototype.init = function(image) {
 bc.Client.prototype.loadData = function(data) {
 	var me = this;
 
-	// each ordered item so that we don't remove the tempLine
-	this.canvasController.model.eachOrderedItem(function(item) {
-		me.canvasController.model.removeItem(item);
-	});
+	this.canvasController.model.removeAllItems();
 
 	goog.array.forEach(data['items'] || [], function(itemData) {
 		var item = null;
@@ -155,7 +152,7 @@ bc.Client.prototype.loadData = function(data) {
 bc.Client.prototype.getData = function(escape) {
 	var items = [];
 
-	this.canvasController.model.eachOrderedItem(function(item) {
+	this.canvasController.model.eachItem(function(item) {
 		items.push(item.serializeParams());
 	});
 
@@ -171,11 +168,12 @@ bc.Client.prototype.getData = function(escape) {
 
 /**
  * @param {boolean=} includeSource
+ * @param {string=} type
  * @return {string}
  * @private
  */
-bc.Client.prototype.getImage = function(includeSource) {
-	return '';
+bc.Client.prototype.getImage = function(includeSource, type) {
+	return this.canvasController.getImage(includeSource, type);
 };
 
 /**
@@ -200,8 +198,8 @@ bc.Client.go = function(sourceImg, options) {
 		'getData': function(escape) {
 			return client.getData(escape);
 		},
-		'getImage': function(includeSource) {
-			return client.getImage(includeSource);
+		'getImage': function(includeSource, type) {
+			return client.getImage(includeSource, type);
 		}
 	};
 };

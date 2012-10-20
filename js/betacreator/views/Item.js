@@ -24,9 +24,14 @@ bc.view.Item = function() {};
 /**
  * @param {number=} pageScale
  * @param {boolean=} selected
- * @param {number=} mode
+ * @param {bc.Client.modes=} mode
  */
 bc.view.Item.prototype.render = function(pageScale, selected, mode) {};
+
+/**
+ * @param {CanvasRenderingContext2D} ctx
+ */
+bc.view.Item.prototype.renderToContext = function(ctx) {};
 
 /**
  */
