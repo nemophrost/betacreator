@@ -3,6 +3,8 @@ BetaCreator
 
 BetaCreator is a free tool for the creation of rock climbing route guides/beta photos.
 
+See a demo at http://nemophrost.github.com/betacreator/
+
 
 Setting Up A Development Environment
 ------------------------------------
