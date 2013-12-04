@@ -2,7 +2,9 @@ var betaCreator = null;
 
 function init() {
 	var outp = document.getElementById('outp');
-	betaCreator = BetaCreator(document.getElementById('srcImg'), {
+	BetaCreator(document.getElementById('srcImg'), function() {
+		betaCreator = this;
+	},{
 		zoom: 'contain',
 		height: 400,
 		width: '100%'

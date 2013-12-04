@@ -64,7 +64,7 @@
 </p>
 <p>
   <code>
-    BetaCreator(image, settings);
+    BetaCreator(image, onReady, settings);
   </code>
 </p>
 <p>
@@ -83,7 +83,10 @@
 
 <p>
 <code>
-  var foo = BetaCreator(document.getElementById('myImg'), {<br />
+  var foo = BetaCreator(document.getElementById('myImg'), function() {<br />
+  &nbsp; &nbsp; fooIsReady = true;<br />
+  &nbsp; &nbsp; foo = this; // 'this' in the onReady callback is the same object returned by calling BetaCreator();<br />
+  },{<br />
   &nbsp; &nbsp; zoom: 'contain',<br />
   &nbsp; &nbsp; height: 400,<br />
   &nbsp; &nbsp; width: '100%',<br />
@@ -129,6 +132,8 @@
     <dt>loadData(data:String)</dt>
     <dd>Takes a string of JSON as output from <code>getData</code> and loads it into the editor.</dd>
   </dl>
+
+  <strong>Note: These methods will not work until the editor has been initialized. Use the onReady callback to when it is safe to call API methods.</strong>
 </p>
 
 
