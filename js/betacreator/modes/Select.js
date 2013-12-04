@@ -33,13 +33,13 @@ bc.mode.Select = function(canvas, id) {
 	this.mouseDownPoint = null;
 
 	/**
-	 * @type {?number}
+	 * @type {?goog.events.Key}
 	 * @private
 	 */
 	this.moveKey = null;
 
 	/**
-	 * @type {?number}
+	 * @type {?goog.events.Key}
 	 * @private
 	 */
 	this.upOutKey = null;

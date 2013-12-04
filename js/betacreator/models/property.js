@@ -84,7 +84,7 @@ bc.property.get = function(property) {
 
 /**
  * @param {string} property
- * @return {function(?=):?}
+ * @return {function(?):?}
  */
 bc.property.getterSetter = function(properties, property) {
 	return function(val) {

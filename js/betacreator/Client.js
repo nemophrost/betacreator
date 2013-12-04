@@ -28,13 +28,12 @@ goog.require('goog.pubsub.PubSub');
 
 /**
  * @param {Image} sourceImg
+ * @param {?Function=} onReady
  * @param {Object=} params
  *
  * @constructor
  */
-bc.Client = function(sourceImg, params) {
-	var me = this;
-	
+bc.Client = function(sourceImg, onReady, params) {
 	params = params || {};
 	
 	this.params = {
@@ -48,12 +47,24 @@ bc.Client = function(sourceImg, params) {
 	this.minWidth = 556;
 
 	this.sourceImage = sourceImg;
+
+	this.initialized = false;
+
+	/**
+	 * @type {Array.<Function>}
+	 */
+	this.postInitializeCallbacks = [];
+
+	if (onReady) {
+		this.postInitializeCallbacks.push(onReady);
+	}
 	
 	// load the image url into a new img element and call init on completion
 	var image = goog.dom.createElement('img');
 	this.imageLoadHandle = goog.events.listen(image, goog.events.EventType.LOAD, function() {
-		me.init(image);
-	});
+		this.init(image);
+	}, false, this);
+
 	image.src = this.sourceImage.src;
 
 	if (params.onChange) {
@@ -101,6 +112,12 @@ bc.Client.prototype.init = function(image) {
 
 	this.canvasController.setZoom(this.params.zoom);
 	this.canvasController.view.centerInViewport();
+
+	this.initialized = true;
+	goog.array.forEach(this.postInitializeCallbacks, function(f) {
+		f();
+	});
+	this.postInitializeCallbacks = [];
 };
 
 /**
@@ -178,30 +195,51 @@ bc.Client.prototype.getImage = function(includeSource, type) {
 
 /**
  * @param {Image} sourceImg
+ * @param {?Function=} onReady
  * @param {Object=} options
  * @return {Object}
  */
-bc.Client.go = function(sourceImg, options) {
-	var client = new bc.Client(sourceImg, options),
+bc.Client.go = function(sourceImg, onReady, options) {
+	var ret,
+		client = new bc.Client(sourceImg, onReady ? function() { onReady.call(ret); } : null, options),
 		onError = options['onError'] || function(er) { alert (er); };
 
-	return {
+	ret = {
 		'loadData': function(data) {
 			try {
 				data = goog.json.parse(data);
-				client.loadData(data);
+				if (!client.initialized) {
+					client.postInitializeCallbacks.push(function() {
+						client.loadData(data);
+					});
+				}
+				else {
+					client.loadData(data);
+				}
 			}
 			catch(e) {
 				onError(bc.i18n("Invalid data."));
 			}
 		},
 		'getData': function(escape) {
-			return client.getData(escape);
+			try {
+				return client.getData(escape);
+			}
+			catch(e) {
+				onError(bc.i18n("Editor hasn't been initialized yet, make calls in onReady callback."));
+			}
 		},
 		'getImage': function(includeSource, type) {
-			return client.getImage(includeSource, type);
+			try {
+				return client.getImage(includeSource, type);
+			}
+			catch(e) {
+				onError(bc.i18n("Editor hasn't been initialized yet, make calls in onReady callback."));
+			}
 		}
 	};
+
+	return ret;
 };
 
 /**
