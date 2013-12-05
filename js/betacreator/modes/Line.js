@@ -22,6 +22,7 @@ goog.require('goog.math.Coordinate');
 /**
  * @param {bc.controller.Canvas} canvas
  * @param {bc.Client.modes} id
+ * @param {bc.model.Line} tempLine
  *
  * @constructor
  * @extends {bc.Mode}
@@ -90,6 +91,7 @@ bc.mode.Line.prototype.mouseDown = function(e, point) {
 		this.tempLine.controlPoints(this.getPoints(this.movingPoint));
 		this.tempLine.onLength(this.canvas.model.properties[bc.properties.LINE_ONLENGTH]);
 		this.tempLine.offLength(this.canvas.model.properties[bc.properties.LINE_OFFLENGTH]);
+		this.tempLine.scale(this.canvas.model.properties[bc.properties.ITEM_SCALE]);
 		bc.Client.pubsub.publish(bc.Client.pubsubTopics.CANVAS_RENDER);
 	}
 };

@@ -273,9 +273,9 @@ bc.view.Line.prototype.render = function(scale, selected, mode) {
 /**
  * @inheritDoc
  */
-bc.view.Line.prototype.renderToContext = function(ctx) {
+bc.view.Line.prototype.renderToContext = function(ctx, scale) {
 	ctx.save();
-	this._render(ctx, 1, false, null, true);
+	this._render(ctx, (scale || 1), false, null, true);
 	ctx.restore();
 };
 

@@ -19,7 +19,7 @@ function init() {
 	BetaCreator(document.getElementById('srcImg'), function() {
 		betaCreator = this;
 	},{
-		zoom: 100,
+		zoom: 'contain',
 		height: 300,
 		width: 20,
 		onChange: function() {
@@ -48,6 +48,18 @@ function loadData() {
 		alert("No data stored locally. You must save first.");
 }
 
+function getImage() {
+	if (!betaCreator)
+		return;
+
+	var imageSize = document.getElementById('imageSize').value,
+		outpImg = document.getElementById('outpImg'),
+		includeSrc = document.getElementById('includeSrc').checked;
+
+	outpImg.style.display = 'block';
+	outpImg.src = betaCreator.getImage(includeSrc, 'png', parseInt(imageSize, 10) || 0);
+}
+
 </script>
 </head>
 
@@ -56,7 +68,12 @@ function loadData() {
 	<br />
 	<button onClick="saveData()">Save</button>
 	<button onClick="loadData()">Load</button>
+	<button onClick="getImage()">Get Image</button>
+	<input id="imageSize" value="600" />
+	<label><input id="includeSrc" type="checkbox" />Include source image</label>
 	<br />
 	<textarea id="outp" cols="60"></textarea>
+	<br />
+	<img id="outpImg" style="display: none; max-width: 100%; border: black dotted 1px;" />
 </body>
 </html>

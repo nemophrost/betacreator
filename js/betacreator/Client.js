@@ -18,6 +18,7 @@ goog.provide('bc.Client');
 //goog.require('bc.view.Line');
 //goog.require('bc.view.stamp.Anchor');
 goog.require('bc.GUI');
+goog.require('bc.properties');
 goog.require('bc.controller.Canvas');
 goog.require('goog.dom');
 goog.require('goog.style');
@@ -41,7 +42,15 @@ bc.Client = function(sourceImg, onReady, params) {
 		h: params['height'] || null, // null for auto
 		zoom: params['zoom'] || 'contain',
 		parent: params['parent'] || null, // null to replace image
-		onChange: params['onChange'] || null
+		onChange: params['onChange'] || null,
+		scaleFactor: params['scaleFactor'] || 1
+	};
+
+	this.defaultProperties = {};
+	this.defaultProperties[bc.properties.ITEM_SCALE] = this.params.scaleFactor;
+
+	this.guiConfig = {
+		scaleFactor: this.params.scaleFactor
 	};
 	
 	this.minWidth = 556;
@@ -67,10 +76,10 @@ bc.Client = function(sourceImg, onReady, params) {
 
 	image.src = this.sourceImage.src;
 
-	if (params.onChange) {
+	if (this.params.onChange) {
 		bc.Client.pubsub.subscribe(bc.Client.pubsubTopics.ACTION, function() {
-			params.onChange();
-		});
+			this.params.onChange();
+		}, this);
 	}
 };
 
@@ -80,8 +89,8 @@ bc.Client = function(sourceImg, onReady, params) {
 bc.Client.prototype.init = function(image) {
 	goog.events.unlistenByKey(this.imageLoadHandle);
 	
-	this.canvasController = new bc.controller.Canvas(this, image);
-	this.gui = new bc.GUI(this);
+	this.canvasController = new bc.controller.Canvas(this, image, this.defaultProperties);
+	this.gui = new bc.GUI(this, this.guiConfig);
 
 	this.viewportWidth = this.params.w || image.width;
 	this.viewportHeight = this.params.h || image.height;
@@ -186,11 +195,12 @@ bc.Client.prototype.getData = function(escape) {
 /**
  * @param {boolean=} includeSource
  * @param {string=} type
+ * @param {?number=} width
  * @return {string}
  * @private
  */
-bc.Client.prototype.getImage = function(includeSource, type) {
-	return this.canvasController.getImage(includeSource, type);
+bc.Client.prototype.getImage = function(includeSource, type, width) {
+	return this.canvasController.getImage(includeSource, type, width);
 };
 
 /**
@@ -229,9 +239,9 @@ bc.Client.go = function(sourceImg, onReady, options) {
 				onError(bc.i18n("Editor hasn't been initialized yet, make calls in onReady callback."));
 			}
 		},
-		'getImage': function(includeSource, type) {
+		'getImage': function(includeSource, type, width) {
 			try {
-				return client.getImage(includeSource, type);
+				return client.getImage(includeSource, type, parseInt(width, 10) || null);
 			}
 			catch(e) {
 				onError(bc.i18n("Editor hasn't been initialized yet, make calls in onReady callback."));

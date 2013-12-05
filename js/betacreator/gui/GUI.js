@@ -24,13 +24,15 @@ goog.require('goog.events.KeyCodes');
 
 /**
  * @param {bc.Client} client
+ * @param {Object} config
  *
  * @constructor
  */
-bc.GUI = function(client) {
+bc.GUI = function(client, config) {
 	var me = this;
 
 	this.client = client;
+	this.config = config;
 	
 	this.wrapper = bc.domBuilder({
 		id: 'betacreator',
@@ -65,7 +67,7 @@ bc.GUI = function(client) {
 
 	// create the option bar and add it to the ui container
 	/** @type {bc.gui.OptionBar} */
-	this.optionBar = new bc.gui.OptionBar();
+	this.optionBar = new bc.gui.OptionBar(this.config);
 	goog.dom.appendChild(this.uiContainer, this.optionBar.container);
 
 	// create the color picker and add it to the ui container
@@ -182,21 +184,24 @@ bc.GUI.prototype.bindEventListeners = function() {
 				break;
 			case goog.events.KeyCodes.BACKSPACE:
 			case goog.events.KeyCodes.DELETE:
-				preventDefault = true;
+				preventDefault = false;
 				me.canvasController.startUndoBatch();
 				goog.array.forEach(me.canvasController.getSelectedItems(), function(item) {
 					var properties = null;
 					if (item.isStamp) {
+						preventDefault = true;
 						properties = bc.model.Stamp.parseParams(item.properties);
 						properties.id = item.id;
 						me.canvasController.runAction(new bc.model.Action(bc.model.ActionType.DeleteStamp, properties));
 					}
 					else if (item.isLine) {
+						preventDefault = true;
 						properties = bc.model.Line.parseParams(item.properties);
 						properties.id = item.id;
 						me.canvasController.runAction(new bc.model.Action(bc.model.ActionType.DeleteLine, properties));
 					}
 					else if (item.isText) {
+						preventDefault = true;
 						properties = bc.model.Text.parseParams(item.properties);
 						properties.id = item.id;
 						me.canvasController.runAction(new bc.model.Action(bc.model.ActionType.DeleteText, properties));

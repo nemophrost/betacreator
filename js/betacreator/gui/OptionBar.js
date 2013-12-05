@@ -8,10 +8,13 @@ goog.require('bc.i18n');
 goog.require('goog.array');
 
 /**
+ * @param {Object} config
  * @constructor
  */
-bc.gui.OptionBar = function() {
+bc.gui.OptionBar = function(config) {
 	var me = this;
+
+	this.config = config;
 
 	// create the container
 	this.container = goog.dom.createDom(goog.dom.TagName.DIV, 'option-bar');
@@ -193,15 +196,17 @@ bc.gui.OptionBar.prototype.createControls = function(container) {
 
 	this.addLabel(container, 'Scale:', true);
 
+	var scaleFactor = this.config.scaleFactor || 1;
+
 	var scaleSpinner = new bc.gui.input.Spinner(
 		{
-			min:0.25,
-			max:8,
+			min:0.25*scaleFactor,
+			max:8*scaleFactor,
 			step:10,
 			round:2,
 			width:60,
 			value:1,
-			displayFactor: 100,
+			displayFactor: 100/scaleFactor,
 			suffix:'%',
 			change: function(val, programmatic) {
 				if (programmatic)

@@ -37,13 +37,14 @@ goog.require('goog.math.Coordinate');
 /**
  * @param {bc.Client} client
  * @param {Image} image
+ * @param {Object=} defaultProperties
  * @constructor
  */
-bc.controller.Canvas = function(client, image) {
+bc.controller.Canvas = function(client, image, defaultProperties) {
 	var me = this;
 	
 	this.client = client;
-	this.model = new bc.model.Canvas(this, image);
+	this.model = new bc.model.Canvas(this, image, defaultProperties);
 	this.view = new bc.view.Canvas(this, this.model);
 
 	this.offset = new goog.math.Coordinate();
@@ -532,24 +533,38 @@ bc.controller.Canvas.prototype.endPan = function() {
 /**
  * @param {boolean=} includeSource
  * @param {string=} type
+ * @param {?number=} width
  * @return {string}
  */
-bc.controller.Canvas.prototype.getImage = function(includeSource, type) {
+bc.controller.Canvas.prototype.getImage = function(includeSource, type, width) {
 	bc.Client.pubsub.publish(bc.Client.pubsubTopics.CANVAS_RENDER, true);
 
 	var canvas = goog.dom.createElement(goog.dom.TagName.CANVAS),
-		ctx = canvas.getContext('2d');
+		ctx = canvas.getContext('2d'),
+		scale = 1;
 
 	type = (includeSource && type && type.toLowerCase() == 'jpg') ? 'jpeg' : 'png';
 
-	canvas.width = this.model.w;
-	canvas.height = this.model.h;
+	if (width) {
+		scale = width/this.model.w;
+		canvas.width = width;
+		canvas.height = Math.round(width*this.model.h/this.model.w);
+	}
+	else {
+		canvas.width = this.model.w;
+		canvas.height = this.model.h;
+	}
 
+	if (includeSource) {
+		if (scale !== 1) {
+			ctx.drawImage(this.model.image, 0, 0, canvas.width, canvas.height);
+		}
+		else {
+			ctx.drawImage(this.model.image, 0, 0);
+		}
+	}
 
-	if (includeSource)
-		ctx.drawImage(this.model.image, 0, 0);
-
-	this.view.renderToContext(ctx);
+	this.view.renderToContext(ctx, scale);
 
 	try {
 		return canvas.toDataURL("image/" + type);

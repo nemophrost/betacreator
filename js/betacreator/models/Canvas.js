@@ -22,11 +22,12 @@ goog.require('goog.array');
 /**
  * @param {bc.controller.Canvas} controller
  * @param {Image} image
+ * @param {Object=} defaultProperties
  * @constructor
  */
-bc.model.Canvas = function(controller, image) {
-	var me = this;
-	
+bc.model.Canvas = function(controller, image, defaultProperties) {
+	defaultProperties = defaultProperties || {};
+
 	this.controller = controller;
 	this.image = image;
 	
@@ -50,6 +51,11 @@ bc.model.Canvas = function(controller, image) {
 	this.properties[bc.properties.LINE_CURVED] = false;
 	this.properties[bc.properties.TEXT_ALIGN] = 'l';
 	this.properties[bc.properties.TEXT_BG] = false;
+
+	for (var key in defaultProperties) {
+		if (this.properties[key] !== undefined)
+			this.properties[key] = defaultProperties[key];
+	}
 
 	this.tempLine = new bc.model.Line({
 		controlPoints: [ new goog.math.Coordinate(0,0) ]

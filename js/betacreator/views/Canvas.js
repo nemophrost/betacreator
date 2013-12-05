@@ -191,11 +191,12 @@ bc.view.Canvas.prototype.centerInViewport = function() {
 
 /**
  * @param {CanvasRenderingContext2D} ctx
+ * @param {number=} scale
  */
-bc.view.Canvas.prototype.renderToContext = function(ctx) {
+bc.view.Canvas.prototype.renderToContext = function(ctx, scale) {
 	var me = this;
 	this.model.eachItem(function(item) {
 		if (me.views[item.id])
-			me.views[item.id].renderToContext(ctx);
+			me.views[item.id].renderToContext(ctx, scale);
 	});
 };

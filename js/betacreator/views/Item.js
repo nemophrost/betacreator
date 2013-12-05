@@ -30,8 +30,9 @@ bc.view.Item.prototype.render = function(pageScale, selected, mode) {};
 
 /**
  * @param {CanvasRenderingContext2D} ctx
+ * @param {number=} scale
  */
-bc.view.Item.prototype.renderToContext = function(ctx) {};
+bc.view.Item.prototype.renderToContext = function(ctx, scale) {};
 
 /**
  */

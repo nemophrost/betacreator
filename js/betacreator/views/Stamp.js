@@ -70,9 +70,10 @@ bc.view.Stamp.prototype.updateLocation = function(pageScale) {
  * @param {number} scale
  * @param {boolean=} selected
  * @param {boolean=} directOnCanvas Skip resizing and clearing canvas if true
+ * @param {number=} directScale
  * @private
  */
-bc.view.Stamp.prototype._render  = function(ctx, scale, selected, directOnCanvas) {
+bc.view.Stamp.prototype._render  = function(ctx, scale, selected, directOnCanvas, directScale) {
 	this.padding = this.defaultPadding*Math.max(1,scale);
 		
 	var canvasWidth = Math.round(scale*this.model.w()) + 2*this.padding,
@@ -87,8 +88,9 @@ bc.view.Stamp.prototype._render  = function(ctx, scale, selected, directOnCanvas
 
 	ctx.save();
 
-	if (directOnCanvas)
+	if (directOnCanvas) {
 		ctx.translate(Math.round(this.model.x() - canvasWidth/2), Math.round(this.model.y() - canvasHeight/2));
+	}
 	
 	ctx.translate(this.padding, this.padding);
 	ctx.scale(scale, scale);
@@ -100,9 +102,13 @@ bc.view.Stamp.prototype._render  = function(ctx, scale, selected, directOnCanvas
 		this.draw(ctx, 'rgba(255,0,0,0.75)', this.model.lineWidth() + 4/scale);
 		ctx.restore();
 	}
-	
+
 	ctx.save();
-	this.draw(ctx, bc.color.highContrastWhiteOrBlack(this.model.color(), 0.5), this.model.lineWidth() + 2/scale);
+	this.draw(
+		ctx,
+		bc.color.highContrastWhiteOrBlack(this.model.color(), 0.5),
+		this.model.lineWidth() + 2/(scale * (directScale || 1))
+	);
 	ctx.restore();
 	
 	this.draw(ctx);
@@ -170,9 +176,10 @@ bc.view.Stamp.prototype.render = function(pageScale, selected, mode) {
 /**
  * @inheritDoc
  */
-bc.view.Stamp.prototype.renderToContext = function(ctx) {
+bc.view.Stamp.prototype.renderToContext = function(ctx, scale) {
 	ctx.save();
-	this._render(ctx, this.model.scale(), false, true);
+	ctx.scale(scale || 1, scale || 1);
+	this._render(ctx, this.model.scale(), false, true, scale);
 	ctx.restore();
 };
 

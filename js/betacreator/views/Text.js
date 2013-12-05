@@ -158,9 +158,10 @@ bc.view.Text.prototype.updateLocation = function(pageScale) {
  * @param {number} scale
  * @param {boolean=} selected
  * @param {boolean=} directOnCanvas Skip resizing and clearing canvas if true
+ * @param {number=} directScale
  * @private
  */
-bc.view.Text.prototype._render  = function(ctx, scale, selected, directOnCanvas) {
+bc.view.Text.prototype._render  = function(ctx, scale, selected, directOnCanvas, directScale) {
 	this.padding = this.defaultPadding*Math.max(1,scale);
 
 	this.model.calculateLines();
@@ -226,7 +227,7 @@ bc.view.Text.prototype._render  = function(ctx, scale, selected, directOnCanvas)
 	
 	if (!this.model.textBG()) {
 		ctx.save();
-		this.draw(ctx, bc.color.highContrastWhiteOrBlack(this.model.color(), 0.5), 2/scale);
+		this.draw(ctx, bc.color.highContrastWhiteOrBlack(this.model.color(), 0.5), 2/(scale * (directScale || 1)));
 		ctx.restore();
 	}
 	
@@ -294,9 +295,10 @@ bc.view.Text.prototype.render = function(pageScale, selected, mode) {
 /**
  * @inheritDoc
  */
-bc.view.Text.prototype.renderToContext = function(ctx) {
+bc.view.Text.prototype.renderToContext = function(ctx, scale) {
 	ctx.save();
-	this._render(ctx, this.model.scale(), false, true);
+	ctx.scale(scale || 1, scale || 1);
+	this._render(ctx, this.model.scale(), false, true, scale);
 	ctx.restore();
 };
 
