@@ -196,11 +196,12 @@ bc.Client.prototype.getData = function(escape) {
  * @param {boolean=} includeSource
  * @param {string=} type
  * @param {?number=} width
+ * @param {Image=} srcImage
  * @return {string}
  * @private
  */
-bc.Client.prototype.getImage = function(includeSource, type, width) {
-	return this.canvasController.getImage(includeSource, type, width);
+bc.Client.prototype.getImage = function(includeSource, type, width, srcImage) {
+	return this.canvasController.getImage(includeSource, type, width, srcImage);
 };
 
 /**
@@ -239,9 +240,9 @@ bc.Client.go = function(sourceImg, onReady, options) {
 				onError(bc.i18n("Editor hasn't been initialized yet, make calls in onReady callback."));
 			}
 		},
-		'getImage': function(includeSource, type, width) {
+		'getImage': function(includeSource, type, width, srcImage) {
 			try {
-				return client.getImage(includeSource, type, parseInt(width, 10) || null);
+				return client.getImage(includeSource, type, parseInt(width, 10) || null, srcImage);
 			}
 			catch(e) {
 				onError(bc.i18n("Editor hasn't been initialized yet, make calls in onReady callback."));

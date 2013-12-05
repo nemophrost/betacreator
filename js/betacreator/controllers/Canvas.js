@@ -534,9 +534,10 @@ bc.controller.Canvas.prototype.endPan = function() {
  * @param {boolean=} includeSource
  * @param {string=} type
  * @param {?number=} width
+ * @param {Image=} srcImage
  * @return {string}
  */
-bc.controller.Canvas.prototype.getImage = function(includeSource, type, width) {
+bc.controller.Canvas.prototype.getImage = function(includeSource, type, width, srcImage) {
 	bc.Client.pubsub.publish(bc.Client.pubsubTopics.CANVAS_RENDER, true);
 
 	var canvas = goog.dom.createElement(goog.dom.TagName.CANVAS),
@@ -557,10 +558,10 @@ bc.controller.Canvas.prototype.getImage = function(includeSource, type, width) {
 
 	if (includeSource) {
 		if (scale !== 1) {
-			ctx.drawImage(this.model.image, 0, 0, canvas.width, canvas.height);
+			ctx.drawImage(srcImage || this.model.image, 0, 0, canvas.width, canvas.height);
 		}
 		else {
-			ctx.drawImage(this.model.image, 0, 0);
+			ctx.drawImage(srcImage || this.model.image, 0, 0);
 		}
 	}
 
